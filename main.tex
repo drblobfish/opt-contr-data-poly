@@ -1,0 +1,368 @@
+\documentclass{report}
+\input{preamble}
+\input{macros}
+\input{letterfonts}
+
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{biblio.bib}
+
+\begin{document}
+	
+	\thispagestyle{empty}
+	\mytitleb{Optimisation, Control and Data}{Dario Prandi}{dario.prandi@centralesupelec.fr}{2025}
+	\newpage% or \cleardoublepage
+	\tableofcontents
+	
+	\part{Optimisation}
+	\chapter{Convex Analysis}
+
+	This chapter closely follows chapter 5 of the lecture notes \cite{fornasierFoundations}.
+	For most of the proof in this chapter we refer to \cite{rockafellarConvex2015}.
+
+	\section{Convex sets}
+
+	\dfn[convex-set]{}{
+	 A set $K\subset \bbR^d$ is \emph{convex} if 
+				\begin{equation}
+					t x +(1-t)y \in K \qquad \forall x,y \in K, \, t\in [0,1]
+				\end{equation}
+	}
+
+	We have the following fact.
+
+	\prop[convex-comb]{}{
+		The set $K\subset\bbR^d$ is convex if and only if for any $n\in\bbN$, and $t_1,\ldots, t_n\ge 0$ such that $\sum_{i=1}^n t_i=1$, it holds 
+		\begin{equation}
+			\label{eq:convex-comb}
+			x_1,\ldots,x_n\in K \implies \sum_{i=1}^n t_ix_i \in K.
+		\end{equation}
+	}
+
+	 \begin{proof}
+		Property \eqref{eq:convex-comb} with $n=2$ is exactly the definition of $K$ is convex. The statement then follows by induction on $n$. 
+	 \end{proof}
+
+	\dfn{}{
+		The convex hull $\operatorname{conv}(\Omega)$ of $\Omega\subset \bbR^d$ is the smallest convex set $K$ containing $\Omega$.
+	}
+
+	By Proposition~\ref{prop:convex-comb}, it is immediate to observe that 
+	\begin{equation}
+		\operatorname{conv}(\Omega) = \left\{ \sum_{i=1}^n t_i x_i \mid t_i\ge 0, \sum_{i=1}^n t_i = 1,\, x_i \in \Omega \right\}.
+	\end{equation}
+
+	\ex{Convex sets}{
+		\begin{itemize}
+			\item Unit ball w.r.t.~any norm.
+			\item Vector subspaces.
+			\item Hyperplanes, i.e., for any $v\in \bbR^d$ and $\lambda\in \bbR$,
+			\begin{equation}
+				\label{eq:hyperplane}
+				H_{v,\lambda} := \{x\in \bbR^d \mid \langle v, x \rangle \ge \lambda\}.
+			\end{equation}
+		\end{itemize}
+	}
+
+	An important result (that we will not prove) on convex sets is the following.
+
+	\thm{Separation theorem}{
+		Let $K_1,K_2\subset \bbR^d$ be two convex sets such with disjoint interior. Then there exists $v\in \bbR^d$ and $\lambda \in \bbR$ such that 
+		\begin{equation}
+			K_1\subset H_{v,\lambda}, \qquad K_2 \subset \bbR^d \setminus H_{v,\lambda}. 
+		\end{equation}
+		Here, $H_{v,\lambda}$ is defined in \eqref{eq:hyperplane}.
+	}
+
+	When $K$ is a convex polygon, it is natural to expect it to be determined by its vertices. In order to formalize this intuition we need the following.
+
+	\dfn{}{
+		Let $K\subset\bbR^d$ be a convex set. A point $x\in K$ is an extremum of $K$ if for any $y,z\in K$ and $t\in (0,1)$ we have that
+		\begin{equation}
+			x = t y +(1-t) z \implies x=y=z.
+		\end{equation}
+		The set of exterma of $K$ is denoted by $\operatorname{extr}(K)$.
+	}
+
+	In particular, for a convex polygon $\operatorname{extr}(K)$ is the set of its vertices.
+
+	\prop{}{
+		Let $K\subset\bbR^d$ be a convex set that is compact. Then,
+		\begin{equation}
+			\operatorname{conv}(K)= \operatorname{conv}\left(\operatorname{extr}(K)\right).
+		\end{equation}
+	}
+
+	\section{Cones}
+
+	\dfn{}{
+		A set $K\subset \bbR^d$ is a cone if 
+		\begin{equation}
+			tx \in K \qquad \forall x\in K, \, t\ge 0.
+		\end{equation}
+	}
+
+	Observe that every cone contains the origin.
+
+	\ex{Cones}{
+		\begin{itemize}
+			\item The second order cone $$C = \{ x=(x',x_n)\in \bbR^{d}\times \bbR \mid \|x'\|_2 \le x_n\}.$$
+			\item Positive orthant $\bbR_+^d = \{ x\in\bbR^d \mid x_i\ge 0, \quad \forall i\in \llbracket 1,d\rrbracket \}$.
+			\item The set of positive semidefinite matrices $\operatorname{Sym}_+(\bbR^d)$.
+		\end{itemize}
+	}
+
+	\dfn{}{
+		The conic hull $\operatorname{cone}(\Omega)$ of a set $\Omega\subset \bbR^d$ is the smallest cone containing $\Omega$. Namely,
+		\begin{equation}
+			\operatorname{cone}(\Omega) = \left\{ \sum_{i=1}^n t_i x_i \mid t_i\ge 0\text{ and } x_i\in \Omega  \text{ for any } i \in \llbracket 1,n\rrbracket   \right\}.
+		\end{equation}
+	}
+
+	\dfn{}{
+		The polar cone $K^*$ of a cone $K\subset\bbR^d$ is the set 
+		\begin{equation}
+			K^* := \left\{ y\in\bbR^d \mid \rangle x,y \langle \ge 0 \quad \forall x\in K \right\}.
+		\end{equation}
+	}
+
+	\begin{figure}[t]
+		\centering
+		\includegraphics[width=.3\textwidth]{images/polar-cone-1}
+		\hspace{.1\textwidth}
+		\includegraphics[width=.3\textwidth]{images/polar-cone-2}
+		\caption{Two examples of polar cone.}
+	\end{figure}
+
+	We 	have the following properties for the polar cone.
+
+	\prop{}{
+		The polar cone $K^*$ is a closed, convex cone. If, moreover, the cone $K$ is closed, then $K^**=K$.
+	}
+
+	\section{Convex functions}
+
+	We will work with extended functions $F:\bbR^d\to \bbR\cup\{+\infty\}$. The domain of an extended function is 
+	\begin{equation}
+		\operatorname{dom}(F) = \{x\in \bbR^d\mid F(x)<+\infty\}.
+	\end{equation}
+	
+	Given a standard function $F:\Omega\to \bbR$, we can identify it with the extended function $\bar F:\bbR^d\to \bbR\cup\{+\infty\}$ defined by
+	\begin{equation}
+		\bar F(x) = 
+		\begin{cases}
+			F(x) & \text{if }x\in \Omega,\\
+			+\infty & \text{if }x\in \bbR^d\setminus \Omega.
+		\end{cases}
+	\end{equation}
+
+	\dfn{Convex functions}{
+		Let $F:\bbR^d\to\bbR\cup\{+\infty\}$ be an extended function. Then, 
+		\begin{itemize}
+			\item $F$ is convex if 
+			\begin{equation}
+				F(tx + (1-t)y) \le t F(x) + (1-t)F(y) \qquad \forall x,y\in \bbR^d,\, t\in [0,1].
+			\end{equation}
+			\item $F$ is strictly convex if 
+			\begin{equation}
+				F(tx + (1-t)y) < t F(x) + (1-t)F(y) \qquad \forall x,y\in \bbR^d,\, x\neq y, \, t\in [0,1].
+			\end{equation}
+			\item $F$ is strongly convex if there exists $\gamma>0$ such that
+			\begin{equation}
+				F(tx + (1-t)y) \le t F(x) + (1-t)F(y) - \frac{\gamma}{2}t(t-1)\|x-y\|_2^2 \qquad \forall x,y\in \bbR^d,\, t\in [0,1].
+			\end{equation}
+		\end{itemize}
+
+		We say that $F$ is \emph{concave} if $-F$ is convex.
+	}
+
+	Observe that it holds 
+	\begin{equation}
+		\text{convex} \impliedby \text{strongly convex} \impliedby \text{strictly convex}  
+	\end{equation}
+
+	We say that a standard function $F:K\to \bbR$ is convex, strictly convex, strongly convex, or concave, if the same is true for its extension $\bar F$. Observe that this requires $K$ to be convex.
+
+	\ex{}{
+		\begin{itemize}
+			\item 	The prototypical convex function, used in the definition of strongly convex, is the quadratic function 
+		\begin{equation}
+			F(x) = \frac{\|x\|_2^2}{2} = \frac{1}{2}\sum_{i=1}^d |x_i|^2.
+		\end{equation}
+			\item More generally, every norm is convex.
+			\item The norm $\ell_p$ is strictly convex if and only if $p\in (1,+\infty)$.
+			\item $F(x) = x^\top A x$ is convex if $A$ is positive semidefinite (i.e.,  $A\in \operatorname{Sym}_{\ge 0}(\bbR^d)$), and strongly convex if $A$ is positive definite.
+		\end{itemize}
+	}
+
+	\prop{}{
+		A function $F:K\to\bbR$ is convex if and only if its epigraph $\operatorname{epi}(F)\subset \bbR^{d+1}$ is convex. Here, we let 
+		\begin{equation}
+			\operatorname{epi}(F) = \{ (x,r) \mid r\ge F(x) \}.
+		\end{equation}
+	}
+
+	\begin{figure}
+		\begin{minipage}{.48\textwidth}
+			\centering
+			\includegraphics[width=.6\textwidth]{images/epigraph.png}
+			\caption{Epigraph of a function.}
+		\end{minipage}
+		\begin{minipage}{.48\textwidth}
+			\centering
+			\includegraphics[width=.6\textwidth]{images/convexity-diff.png}
+			\caption{Graphical representation of Proposition~\ref{prop:convexity-diff}.}
+		\end{minipage}
+	\end{figure}
+
+	\begin{proof}
+		Assume $F$ is convex and let $(x,r),(y,s)\in\operatorname{epi}(F)$. 
+		In particular, $r\ge F(x)$ and $s\ge F(y)$.
+		Let $t\in [0,1]$ and observe that
+		\begin{equation}
+			t r +(1-t)s \ge t F(x)+(1-t)F(y) \ge  F(tx+(1-t)y).
+		\end{equation}
+		Hence, $t(x,r) + (1-t)(y,s)\in\operatorname{epi}(F)$. A similar reasoning proves the opposite implication.
+	\end{proof}	
+
+	\prop[convexity-diff]{Differential characterisations of convexity}{
+		Let $F:\bbR^d \to \bbR$ be an everywhere differentiable function. Then,
+		\begin{itemize}
+			\item $F$ is convex if and only if 
+			\begin{equation}
+				F(y) \ge F(x) + \langle \nabla F(x), y-x \rangle, \qquad \forall x,y\in \bbR^d.
+			\end{equation}
+			\item $F$ is strongly convex with parameter $\gamma>0$ if and only if 
+			\begin{equation}
+				F(y) \ge F(x) + \langle \nabla F(x), y-x \rangle + \frac{\gamma}{2}\|x-y\|^2_2, \qquad \forall x,y\in \bbR^d.
+			\end{equation}
+			\item If $F$ is everywhere twice differentiable, then it is convex if and only if 
+			\begin{equation}
+				\operatorname{Hess} F(x) \ge 0 \qquad \forall x\in\bbR^d.
+			\end{equation}
+			Here, we denoted by $\operatorname{Hess}F(x)$ the Hessian of $F$ at $x$.
+		\end{itemize}
+	}
+
+	\prop[convex-cont]{}{
+		Let $F:K\to \bbR$ be convex. Then, $F$ is continuous on the interior of $K$.
+	}
+
+	\begin{proof}
+		Let $x_0\in \operatorname{int}(K)$ and consider $r>0$ such that $B(x_0,r)\subset K$. Without loss of generality, we assume $x_0=0$ (otherwise, replace the function $F$ by its translation $G(x) = F(x)-F(x_0)$).
+
+		Convexity will allow to bound the difference $F(y)-F(0)$ with the values of $F$ on the sphere $\partial B(0,r)$.
+		However, without continuity, the function $F$ need not be bounded on the compact set $\partial B(0,r)$, and hence we need some additional care.
+
+		Pick $d+1$ linearly independent points $v_0,\ldots v_{d+1}\in \partial B(0,r)$, and consider the corresponding symplex
+		\begin{equation}
+			\Delta = \operatorname{conv}\left(\{v_0,\ldots,v_{d+1}\}  \right) 
+			= \left\{  \sum_{i=1}^{d+1} t_i v_i \mid t_i\ge 0,\, \sum_i t_i=1 \right\}\subset B(0,r).
+		\end{equation}
+		Then, letting $M = \max_{i\in \llbracket1,d+1 \rrbracket} F(v_i)$, the fact that $F$ is convex yields that for any $x=\sum_{i=1}^{d+1} t_i v_i\in \Delta$ it holds
+		\begin{equation}
+			\label{eq:bdd}
+			F(x) \le \sum_{i=1}^{d+1} t_i F(v_i) \le M.
+		\end{equation}
+		In particular, we can fix a radius $r'<r$ such that  $B(0,r')\subset \Delta$ where $F$ is bounded.
+
+		We now proceed to bound the difference $F(x)-F(0)$.
+		Let $x\in U\subset B(0,r')$ and set $t = \|x\|/r'$. In particular, $t\in [0,1]$ and the ray $\{sx\mid s\ge 0$ meets the sphere $\partial B(x_0,r')$ at the point 
+		\begin{equation}
+			y= \frac{r'}{\|x\|}(x).
+		\end{equation}
+		In particular, $x=(1-t)0 + ty$. By convexity and \eqref{eq:bdd}, we have 
+		\begin{equation}
+			\label{eq:upper}
+			F(x) \le (1-t) F(0) + t F(y) \le. (1-t)F(0)+ t M 
+			\implies 
+			F(x)-F(0) \le t(M-F(0)).
+		\end{equation}
+
+		To derive a bound from below, we proceed similarly, considering 
+		\begin{equation}
+			z = \frac{r'}{\|x\|-r'}x.
+		\end{equation}
+		Indeed, we then have $0 = (1-t)x + t x$, where $t=\|x\|/r'$ as above. Then, convexity and the fact that $z\in B(0,r')$ yield
+		\begin{equation}
+			\label{eq:lower}
+			F(0)\le (1-t)F(x) +tM \implies F(x)-F(0)\ge -\frac{t}{1-t}(M-F(0)).
+		\end{equation}
+
+		Combining \eqref{eq:upper} and \eqref{eq:lower}, we obtain 
+		\begin{equation}
+			- \frac{t}{1-t}(M-F(0)) \le F(x)-F(0) \le t(M-F(0)), \qquad t=\frac{\|x\|}{r'}
+		\end{equation}
+		Since $x$ was arbitrary in $B(0,r')$ we can take the limit as $x\to 0$, which implies $t\to 0$ and thus that 
+		\begin{equation}
+			\lim_{x\to 0}|F(x)-F(0)|=0,
+		\end{equation}
+		concluding the proof.
+	\end{proof}
+
+	The following result is at the core of the relation between optimisation and convexity.
+
+	\thm{}{
+		Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex extended function. Then,
+		\begin{itemize}
+			\item Any local minimum of $F$ is global.
+			\item The set of minima of $F$ is convex.
+			\item If $F$ is strictly convex and admits a minimum, this minimum is unique.
+			\item If $F$ is real-valued and strongly convex, then it has a unique minimum.
+		\end{itemize}
+	}
+
+	\begin{proof}
+		Assume that $x^\star$ is a local minimum, i.e., there exists $r>0$ such that $F(x^\star)\le F(x)$ for any $x\in B(0,r)$. 
+		Let $y\in \bbR^d$ and consider a point on the ray starting at $x^\star$ and passing through $y$:
+		\begin{equation}
+		z = x^\star + s (y-x^\star) =   (1-s)x^\star + s y\qquad s\ge.
+		\end{equation}
+		Taking $s < \min\{1, r'/\|x^\star - y\|\}$ we have that $z\in B(0,r)$. Hence, by local minimality of $x^\star$ and convexity of $F$ we have
+		\begin{equation}
+			F(x^\star) \le F(z) \le (1-s)F(x^\star) + s F(y) \implies F(x^\star) \le F(y).
+		\end{equation}
+		This concludes the proof of the first point.
+
+		Assume now that $x_1,x_2$ are minima for $F$. This clearly implies that $F(x_1)=F(x_2) =: m$, and thus, by convexity of $F$, for any $t\in [0,1]$ we have
+		\begin{equation}
+			m \le F(t x_1 + (1-t)x_2) \le t F(x_1) +(1-t) F(x_2) = m \implies F(t x_1 + (1-t)x_2).
+		\end{equation}
+		This implies that $t x_1 + (1-t)x_2$ is a minimum for any $t\in [0,1]$, thus proving the second point.
+		
+		The same argument as above in the case of a strictly convex function yields to
+		\begin{equation}
+			m \le F(tx_1+(1-t)x_2) < m \qquad \text{ if } x_1\neq x_2.
+		\end{equation}
+		This implies immediately that the minimum is unique.
+	
+		Assume, finally, that $F$ is strongly convex. Since it is strictly convex, we just need to prove the existence of a minimum. 
+		By Proposition~\ref{prop:convex-cont} we have that $F$ is continuos, and thus it suffices to prove its coercivity: $F(x)\to +\infty$ if $\|x\|\to +\infty$. 
+		We provide a proof of this fact in the case where $F$ is differentiable. In this case, by Proposition~\ref{prop:convexity-diff} we have that 
+		\begin{equation}
+			F(y) \ge F(0)+\langle \nabla F(0),y\rangle +\frac\gamma2\|y\|_2^2 \qquad \forall y\in \bbR^d.
+		\end{equation}
+		Since $\langle \nabla F(0),y\rangle \le \|y\|_2$, the quadratic term on the right-hand side of the above equation, implies that the limit as $\|y\|_2\to +\infty$ is $+\infty$.
+	\end{proof}
+
+	\begin{remark}
+		Strict convexity is not enough to ensure the existence of a minimum. Consider, for example, $F(x) = e^x$.
+	\end{remark}
+
+
+	% \dfn{Definition Topic}{Definition Statement}
+	% \thm{Theorem Name}{Theorem Statement}
+	% \cor[cori]{Corollary Name}{Corollary Statement}
+	% \lem{Lemma Name}{Lemma Statement}
+	% \clm{Claim Name}{Claim Statement}
+	% \ex{Example Name}{Example explained}
+% \opn{Open Question Name}{Question Statement}
+% \qs{Question Name}{Question Statement}
+% \nt{Special Note}
+% \wc{Wrong Concept topic}{Explanation}
+% \pf{Proof}{Proof}
+	
+\chapter{Second Chapter}
+\section{Section 1}
+
+\printbibliography
+\end{document}
