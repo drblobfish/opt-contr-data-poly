@@ -6,10 +6,12 @@
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{biblio.bib}
 
+\DeclareMathOperator{\feas}{\Phi}
+
 \begin{document}
 	
 	\thispagestyle{empty}
-	\mytitleb{Optimisation, Control and Data}{Dario Prandi}{dario.prandi@centralesupelec.fr}{2025}
+	\mytitlec{Optimisation, Control,}{and Data}{Dario Prandi}{dario.prandi@centralesupelec.fr}{2025}
 	\newpage% or \cleardoublepage
 	\tableofcontents
 	
@@ -17,7 +19,7 @@
 	\chapter{Convex Analysis}
 
 	This chapter closely follows chapter 5 of the lecture notes \cite{fornasierFoundations}.
-	For most of the proof in this chapter we refer to \cite{rockafellarConvex2015}.
+	For most of the proof in this chapter we refer to \cite{boydConvex2023} or \cite{rockafellarConvex2015}.
 
 	\section{Convex sets}
 
@@ -352,7 +354,7 @@
 	
 		Assume, finally, that $F$ is strongly convex. Since it is strictly convex, we just need to prove the existence of a minimum. 
 		By Proposition~\ref{prop:convex-cont} we have that $F$ is continuos, and thus it suffices to prove its coercivity: $F(x)\to +\infty$ if $\|x\|\to +\infty$. 
-		We provide a proof of this fact in the case where $F$ is differentiable. In this case, by Proposition~\ref{prop:convexity-diff} we have that 
+		We provide a proof of this fact in the case where $F$ is differentiable (the general case can be obtained similarly using Proposition~\ref{prop:subdifferential}, proven later on). In this case, by Proposition~\ref{prop:convexity-diff} we have that 
 		\begin{equation}
 			F(y) \ge F(0)+\langle \nabla F(0),y\rangle +\frac\gamma2\|y\|_2^2 \qquad \forall y\in \bbR^d.
 		\end{equation}
@@ -421,32 +423,7 @@
 	The second point (Fenchel inequality) is a direct consequence of the definition of $F^*$.
 \end{proof}
 
-\thm{Fenchel-Moreau Theorem}{
-	The biconjugate $F^**$ is the largest convex lower semicontinuous function satisfying $F^**(x)\le F(x)$ for any $x\in \bbR^d$. In particular, $F^**=F$ if $F$ is convex and proper.
-}
 
-\begin{proof}
-	% We start by proving that for any extended function $F$ it holds
-	% \begin{equation}
-	% 	F^**(x)\le F(x), \qquad \forall x\in\bbR^d.
-	% \end{equation}	
-	% Indeed, w
-	We have that $-F^*(y)=\inf_{x\in\bbR^d} \left(F(x)-\langle x,y\rangle\right)$, which implies that for any $y,z\in\bbR^d$ it holds 
-	\begin{equation}
-		\langle z,y\rangle - F^*(y) \le \langle z-x,y\rangle +F(x), \qquad \forall x\in\bbR^d.
-	\end{equation}
-	In particular, considering $z=x$ we have 
-	\begin{equation}
-		F^**(x) = \sup_{y\in\bbR^d} \left(\langle x,y\rangle - F^*(y)\right) \le F(x),
-	\end{equation}
-	proving the first part of the statement.
-	
-	Since $F^{**}$ is convex and l.s.c.~by Proposition~\ref{prop:convex-conj-prop}, in order to complete the proof it suffices to show that if $F$ is convex, then 
-	\begin{equation}
-		F^**(x)\ge F(x),\qquad \forall x\in\bbR^d.
-	\end{equation}
-	....
-\end{proof}
 
 
 \ex{}{
@@ -466,31 +443,6 @@
 	\end{equation}
 	A vector $v\in \partial F(x)$ is called a \emph{subgradient} for $F$ at $x$.
 }
-
-We have the following.
-
-\prop{}{
-	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function. Then,
-	\begin{itemize}
-		\item For any $x\in \bbR^d$ the subdifferential $\partial F(x)$ is non-empty.
-		\item If $F$ is differentiable at $x\in\bbR^d$, then $\partial F(x)=\{\nabla F(x)\}$.
-	\end{itemize}
-}
-
-\begin{proof}
-	The first part of the theorem is a consequence of the Supporting Hyperplane Theorem (see Corollary~\ref{th:supporting-hyperplane}) and Proposition~\ref{prop:epigraph}. Indeed, the latter implies that the epigraph $\operatorname{epi}(F)$ is convex and hence, by the former, any of its boundary point admits a supporting hyperplane. Using the fact that $\partial\operatorname{epi}(F)=\{(x,F(x))\mid x\in\bbR^d\}$ allows to conclude.
-
-	Concerning the proof of the second statement, the fact that $\nabla F(x)\in \partial F(x)$ follows from the characterisation of convexity for differentiable functions given in Proposition~\ref{prop:convexity-diff}.
-	To prove the opposite implication, let $v\in \partial F(x)$ and observe that by definition of subgradient the directional derivative $\partial_h F(x)$ of $f$ in the direction $h\in\bbR^d$ at $x$ satisfies
-	\begin{equation}
-		\partial_h F(x) = \lim_{t\to 0} \frac{F(x+th)-F(x)}{t} \ge \langle v, h\rangle.
-	\end{equation}
-	Since we know that $\partial_hF (x)=\langle \nabla F(x),h\rangle$, we have that 
-	\begin{equation}
-		\langle \nabla F(x) - v,h\rangle \ge 0, \qquad \forall h\in\bbR^d.
-	\end{equation}
-	But this implies that $\nabla F(x)=v$, concluding the proof.
-\end{proof}
 
 \begin{figure}
 	\centering
@@ -520,6 +472,78 @@ We have the following.
 	The fact that $x$ is a minimum means that $F(x)\le F(y)$ for any $y\in\bbR^d$, which is the definition of $0\in\partial F(x)$.
 \end{proof}
 
+We have the following.
+
+\prop[subdifferential]{}{
+	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function. Then,
+	\begin{itemize}
+		\item For any $x\in \bbR^d$ the subdifferential $\partial F(x)$ is non-empty.
+		\item It holds that 
+		\begin{equation}
+			\partial F(x) = \left\{ v\in \bbR^d\mid F^*(v) + F(x) = \langle x,v\rangle  \right\}.
+		\end{equation}
+		\item If $F$ is differentiable at $x\in\bbR^d$, then $\partial F(x)=\{\nabla F(x)\}$.
+	\end{itemize}
+}
+
+\begin{proof}
+	The first part of the theorem is a consequence of the Supporting Hyperplane Theorem (see Corollary~\ref{th:supporting-hyperplane}) and Proposition~\ref{prop:epigraph}. Indeed, the latter implies that the epigraph $\operatorname{epi}(F)$ is convex and hence, by the former, any of its boundary point admits a supporting hyperplane. Using the fact that $\partial\operatorname{epi}(F)=\{(x,F(x))\mid x\in\bbR^d\}$ allows to conclude.
+
+	To prove the second statement, observe that $v\in\partial F(x)$ is equivalent to
+	\begin{equation}
+		\langle y,v\rangle - F(y) \le \langle x,v\rangle-F(x), \qquad \forall y\in\bbR^d.
+	\end{equation}
+	Taking the sup for $y\in\bbR^d$ yields that $F^*(v)\le \langle x,v\rangle -F(x)$. The opposite inequality follows from Fenchel inequality (see Proposition~\ref{prop:convex-conj-prop}).
+
+	Concerning the proof of the last statement, the fact that $\nabla F(x)\in \partial F(x)$ follows from the characterisation of convexity for differentiable functions given in Proposition~\ref{prop:convexity-diff}.
+	To prove the opposite implication, let $v\in \partial F(x)$ and observe that by definition of subgradient the directional derivative $\partial_h F(x)$ of $f$ in the direction $h\in\bbR^d$ at $x$ satisfies
+	\begin{equation}
+		\partial_h F(x) = \lim_{t\to 0} \frac{F(x+th)-F(x)}{t} \ge \langle v, h\rangle.
+	\end{equation}
+	Since we know that $\partial_hF (x)=\langle \nabla F(x),h\rangle$, we have that 
+	\begin{equation}
+		\langle \nabla F(x) - v,h\rangle \ge 0, \qquad \forall h\in\bbR^d.
+	\end{equation}
+	But this implies that $\nabla F(x)=v$, concluding the proof.
+\end{proof}
+
+
+
+Thanks to the previous result, we are in a position to prove the following property of the convex biconjugate.
+
+\thm[fenchel-moreau]{Fenchel-Moreau Theorem}{
+	The biconjugate $F^**$ is the largest convex lower semicontinuous function satisfying $F^**(x)\le F(x)$ for any $x\in \bbR^d$. In particular, $F^**=F$ if $F$ is convex and proper.
+}
+
+\begin{proof}
+	% We start by proving that for any extended function $F$ it holds
+	% \begin{equation}
+	% 	F^**(x)\le F(x), \qquad \forall x\in\bbR^d.
+	% \end{equation}	
+	% Indeed, w
+	We have that $-F^*(y)=\inf_{x\in\bbR^d} \left(F(x)-\langle x,y\rangle\right)$, which implies that for any $y,z\in\bbR^d$ it holds 
+	\begin{equation}
+		\langle z,y\rangle - F^*(y) \le \langle z-x,y\rangle +F(x), \qquad \forall x\in\bbR^d.
+	\end{equation}
+	In particular, considering $z=x$ we have 
+	\begin{equation}
+		F^**(x) = \sup_{y\in\bbR^d} \left(\langle x,y\rangle - F^*(y)\right) \le F(x),
+	\end{equation}
+	proving the first part of the statement.
+	
+	Since $F^{**}$ is convex and l.s.c.~by Proposition~\ref{prop:convex-conj-prop}, in order to complete the proof it suffices to show that if $F$ is convex, then 
+	\begin{equation}
+		F^**(x)\ge F(x),\qquad \forall x\in\bbR^d.
+	\end{equation}
+	Let $v\in \partial F(x)$, which exists thanks to Proposition~\ref{prop:subdifferential}. For such a $v$, using the characterisation of the subdifferential in Proposition~\ref{prop:subdifferential}, we have 
+	\begin{equation}
+		F^*(v)=\langle x,v\rangle - F(x), 
+	\end{equation}
+	so that $F^**(z)\ge \langle v,z-x\rangle+F(x)$ for any $z\in \bbR^d$. Picking $z=x$ allows to conclude.
+\end{proof}
+
+
+
 \prop{}{
 	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex function and $x,y\in \bbR^d$. Then, the following are equivalent:
 	\begin{enumerate}
@@ -531,6 +555,207 @@ We have the following.
 		\item[iii.] $x\in \partial F^*(y)$.
 	\end{enumerate}
 }
+
+\begin{proof}
+	To show that \emph{i} is equivalent to \emph{ii}, we just need to show that $y\in \partial F(x)$ is equivalent to 
+	\begin{equation}
+		\label{eq:opp-fenchel-ineq}
+		F(x)+F^*(y) \le \langle  x,y\rangle.
+	\end{equation}
+	Indeed, the opposite inequality is always true due to Fenchel's inequality (see Proposition~\ref{prop:convex-conj-prop}).
+
+	Observe that the fact that $y\in\partial F(x)$ means that
+	\begin{equation}
+		\langle x,y\rangle F(x)
+		\ge \langle z,y\rangle F(z), \qquad \forall z\in \bbR^d.
+	\end{equation}
+	That is, the function $z\mapsto \langle z,y\rangle F(z)$ attains its maximum at $z=x$. But, by definition of $F^*$, this is equivalent to \eqref{eq:opp-fenchel-ineq}, thus proving that \emph{i} is equivalent to \emph{ii}.
+
+	To complete the proof, observe that by Theorem~\ref{th:fenchel-moreau} the lower semicontinuity of $F$ yield that $F^**=F$, so that \emph{ii} is equivalent to $F^**(x)+F^*(y)=\langle x,y\rangle$. Using the fact that \emph{i}$\iff$\emph{ii} with $F$ replaced by $F^*$ completes the proof.
+\end{proof}
+
+
+\section{Convex optimization problems}
+
+\dfn{}{
+An optimization problem is a minimization problem of the form
+\begin{equation}
+	\tag{OP}
+	\label{eq:op}
+	\min_{x\in \bbR^d} F_0(x) 
+	\qquad\text{subject to}\qquad
+	Ax=y
+	\qquad \text{and}\qquad 
+	F_j(x)\le 0, \qquad j\in\llbracket 1, M\rrbracket.
+\end{equation}
+Here,
+\begin{enumerate}
+	\item $F_0:\bbR^d\to \bbR\cup\{+\infty\}$ is the \emph{objective function};
+	\item $F_1,\ldots, F_M:\bbR^d\to \bbR\cup\{+\infty\}$ are the \emph{constraing functions};
+	\item $A\in \bbR^{m\times n}$ and $y\in \bbR^m$ provide the \emph{equality constraints};
+\end{enumerate}
+
+The optimization problem is \emph{convex} (resp.~\emph{linear}) if $F_0,\ldots, F_M$ are convex (resp.~linear) functions.
+}
+
+\dfn{}{
+	Consider an optimization problem \eqref{eq:op}. Then,
+	\begin{itemize}
+		\item The set $\feas\subset\bbR^d$ of points $x\in\bbR^d$ satisfying the constraints is the set of \emph{feasible points}. That is,
+		\begin{equation}
+			\feas = \left\{ x\in \bbR^d \mid Ax = y, \qquad F_j(x)\le 0 \qquad \forall j\in \llbracket 1,M\rrbracket \right\}.
+		\end{equation}
+		In particular, $\feas$ is convex if \eqref{eq:op} is convex.
+		\item Problem \eqref{eq:op} is \emph{feasible} if it admits at least a feasible point (i.e., $\feas\neq \varnothing$).
+		\item The \emph{optimal value} is $p^\star = \min_{x\in\feas} F(x_0)$. 
+		\item A \emph{minimizer} is a feasible point $x^\star$ such that $F_0(x^\star)\le F_0(x)$ for all feasible $x\in \feas$. That is, $F_0(x^\star)=p^\star$.
+	\end{itemize}
+}
+
+Observe that the constrained optimization problem \eqref{eq:op} is equivalent to the uncostrained optimization problem
+\begin{equation}
+	\min_{x\in \bbR^d} F_0(x) + \chi_{\feas},
+\end{equation}
+where $\chi_{\feas}$ is the $0-\infty$ characteristic function defined in \eqref{eq:0-infty-char}.
+
+Let us introduce the notation 
+\begin{equation}
+	\bbR^M=\{\nu\in \bbR^M\mid \nu_j\ge 0\quad \forall j\in \llbracket 1,M\rrbracket\}.
+\end{equation}
+
+\dfn{Lagrange and Lagrange dual functions}{
+	The \emph{Lagrange function} of the optimization problem \eqref{eq:op} is the function $F:\bbR^d \times \bbR^m \times \bbR^M_+\to \bbR\cup\{+\infty\}$ defined by 
+	\begin{equation}
+		L(x,\xi,\nu) = F_0(x) + \langle \xi, Ax-y\rangle +\sum_{j=1}^m \nu_j F_j(x).
+	\end{equation}
+
+	The \emph{Lagrange dual function} is the function $H:\bbR^m\times \bbR^M_+ \to \bbR\cup\{-\infty\}\cup\{+\infty\}$, defined by 
+	\begin{equation}
+		H(\xi,\nu) = \inf_{x\in \bbR^d} L(x,\xi,\nu).
+	\end{equation}
+	}
+
+\prop[weak-duality]{}{
+	The dual function is always concave. Moreover, if $x^\star$ is a minimizer of \eqref{eq:op}, we have
+	\begin{equation}
+		H(\xi,\nu) \le F(x^\star), \qquad \forall \xi\in \bbR^m,\, \nu\in \bbR^M_+.
+	\end{equation}
+}
+
+\begin{proof}
+	Observe that $-H$ is the supremum w.r.t.~$x\in \bbR^d$ of the functions $g_x(\xi,\nu) = -L(x,\xi,\nu)$. The function $g_x$ is affine, and thus convex. Hence, $-H$ is the pointwise supremum of the family $\{g_x\}_{x\in\bbR^d}$ of convex function. It is immediate to check that it is convex, and thus that $H$ is concave.
+
+	On the other hand, for any feasible point $x\in \Phi$, since $\nu_j\ge 0$ for any $j\in \llbracket1,M\rrbracket$, we have 
+	\begin{equation}
+		\langle \xi, Ax-y\rangle +\sum_{j=1}^m \nu_j F_j(x) \le 0.
+	\end{equation}
+	Then, $L(x,\xi,\nu)\le F_0(x)\le F_0(x^\star)$ and, as a consequence,
+	\begin{equation}
+		H(\xi,\nu) \le \inf_{x\in\feas} L(x,\xi,\nu) \le F_0(x^\star).
+	\end{equation}
+	This completes the proof of the statement.
+\end{proof}
+
+The previous result suggests to introduce the following.
+
+\dfn{Primal and dual problem}{
+	The \emph{dual problem} to \eqref{eq:op}, which is called the \emph{primal problem}, it the optimization problem
+	\begin{equation}
+		\tag{DP}
+		\label{eq:dp}
+		\max_{\xi \in \bbR^m,\, \nu \in \bbR^M} H(\xi,\nu) 
+		\qquad \text{subject to} \qquad 
+		\nu_j\ge 0 \quad \forall j\in \llbracket1,M\rrbracket.
+	\end{equation}
+
+	\begin{itemize}
+		\item A pair $(\xi,\nu)\in \bbR^m\times \bbR^M_+$ is called \emph{dual feasible}.
+		\item The \emph{dual optimal value} is the solution $d^\star$ of \eqref{eq:dp}.
+		\item A \emph{dual optimal} or \emph{optimal Lagrange multiplier} is a feasible maximizer $(\xi^\star\nu^\star)\in \bbR^m\times \bbR^M_+$.
+		\item A \emph{primal-dual optimal} is a triple $(x^\star,\xi^\star,\nu^\star)$ where $x^\star$ is a minimizer for \eqref{eq:op} and $(\xi^\star,\nu^\star)$ is a dual optimal.
+	\end{itemize}
+}
+
+\dfn{Duality}{
+	The primal-dual problems always satisfy \emph{weak duality}, that is $d^\star \le p^\star$ where $d^\star$ is the dual optimal value and $p^\star$ is the primal optimal value.
+	
+	We say that the problems enjoy \emph{strong duality} if it holds
+	\begin{equation}
+		p^\star = d^\star.
+	\end{equation}
+}
+
+The above shows the interest of the dual problem: when strong duality holds, in order to solve the minimization problem \eqref{eq:op} it suffices to solve the dual problem \eqref{eq:dp}.
+
+The following is the most used criterion for strong duality. 
+
+\thm[slater]{Slater's constraint quantification}{
+	Assume that $F_0,\ldots, F_M$ are convex functions with domain $\operatorname{dom}(\bbR^d)$ and that $F_0(x)\ge -c$ for some $c\ge 0$. Then, strong duality holds if there exists $x\in \feas\subset \bbR^d$ such that $F_j(x)<0$ for any $j\in \llbracket 1,M\rrbracket$.
+}
+
+For a proof of the above result, we refer to \cite[Section 5.3.2]{boydConvex2023}.
+
+\subsection*{Geometric interpretation}
+
+Let us follow \cite[Section~5.3]{boydConvex2023} and present a geometric interpretation of the previous discussion.
+% 
+% Introduce the domain of the optimisation problem, which is the set $\mcD = \bigcap_{i=0}^M \operatorname{dom}(F_i)\subset \bbR^d$, and define
+% \begin{equation}
+% 	\mcG = \{ (F_1(x), \ldots, F_M(x),Ax-y, F_0(x))\in \bbR^M\times\bbR^m\times \bbR \mid x\in \mcD  \}.
+% \end{equation}
+% This is the set of values taken by the constraints and the objective function. The optimal value is then 
+% \begin{equation}
+% 	p^\star = \inf \left\{ t \mid (u,v,t) \in \mcG \text{ and } u\in \bbR^M_+ \right\}.
+% \end{equation}
+% But then, observing that $L(x,\xi,\nu) = (\nu,\xi,1)^\top (F_1(x),\ldots, F_M(x),Ax-y,F_0(x))$, we have that
+% \begin{equation}
+% 	H(\xi,\nu) = \inf \left\{ (\nu,\xi,1)^\top (u,v,t)\mid (u,v,t) \in \mcG \right\}.
+% \end{equation}
+% In particular, if the infimum is finite the inequality 
+% \begin{equation}
+% 	(\nu,\xi,1)^\top (u,v,t) \ge H(\xi,\nu),
+% \end{equation}
+% defines a supporting hyperplane for the set $\mcG$.
+% 
+Assume that there are no equality constraints and a single inequality constraint, and define 
+\begin{equation}
+	\mcG = \{ (F_1(x), F_0(x)) \mid x\in \bbR^d\}.
+\end{equation}
+By construction, the problem is feasible if and only if $\mcG$ intersects the left-half plane.
+Furthermore, we have
+\begin{equation}
+	p^\star  = \min\{ t \mid (u,t)\in \mcG,\, u\le 0\}.
+\end{equation}
+Since $L(x,\nu) = (\nu,1)^\top (F_1(x),F_0(x))$, we also have 
+\begin{equation}
+	H(\nu) = \inf \{  (\nu,1)^\top (u,t) \mid (u,t)\in \mcG \}.
+\end{equation}
+Hence, if this infimum is finite, the inequality $(\nu,1)^\top (u,t)\ge H(\nu)$ defines a supporting hyperplane for $\mcG$. 
+
+If the problem is convex, then $\mcG$ is convex and under Slater's condition its interior intersects the left-hand plane. This insures that strong duality holds.
+
+\begin{figure}
+	\centering
+	\begin{minipage}{.48\textwidth}
+		\centering
+		\includegraphics[width=.8\textwidth]{images/geometric-primal-dual-1.png}	
+		\caption{Geometric interpretation. The value of the dual function $H(\nu)$ identifies a supporting hyperplane for the set $\mcG$.}
+		\label{fig:geom1}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{.48\textwidth}
+		\centering
+		\includegraphics[width=.8\textwidth]{images/geometric-primal-dual-2.png}	
+		\caption{Geometric interpretation. Solving the dual problem yields the blue hyperplane. In this case $p^\star > d^\star$ and strong duality does not hold.}
+		\label{fig:geom2}
+	\end{minipage}
+	\begin{minipage}{.48\textwidth}
+		\centering
+		\includegraphics[width=.8\textwidth]{images/geometric-primal-dual-3.png}	
+		\caption{Geometric interpretation of Slater's condition. When the set $\mathcal G$ is convex and has interior that intersects the left-hand plane, the best supporting hyperplane yields the optimal value $p^\star$.}
+		\label{fig:geom3}
+	\end{minipage}
+\end{figure}
 
 	% \dfn{Definition Topic}{Definition Statement}
 	% \thm{Theorem Name}{Theorem Statement}
@@ -544,8 +769,8 @@ We have the following.
 % \wc{Wrong Concept topic}{Explanation}
 % \pf{Proof}{Proof}
 	
-\chapter{Second Chapter}
-\section{Section 1}
+% \chapter{Second Chapter}
+% \section{Section 1}
 
 \printbibliography
 \end{document}
