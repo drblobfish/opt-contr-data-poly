@@ -152,7 +152,7 @@
 	We 	have the following properties for the polar cone.
 
 	\prop{}{
-		The polar cone $K^*$ is a closed, convex cone. If, moreover, the cone $K$ is closed, then $K^**=K$.
+		The polar cone $K^*$ is a closed, convex cone. If, moreover, the cone $K$ is closed, then $K^{**}=K$.
 	}
 
 	\section{Convex functions}
@@ -512,13 +512,13 @@ We have the following.
 Thanks to the previous result, we are in a position to prove the following property of the convex biconjugate.
 
 \thm[fenchel-moreau]{Fenchel-Moreau Theorem}{
-	The biconjugate $F^**$ is the largest convex lower semicontinuous function satisfying $F^**(x)\le F(x)$ for any $x\in \bbR^d$. In particular, $F^**=F$ if $F$ is convex and proper.
+	The biconjugate $F^{**}$ is the largest convex lower semicontinuous function satisfying $F^{**}(x)\le F(x)$ for any $x\in \bbR^d$. In particular, $F^{**}=F$ if $F$ is convex and proper.
 }
 
 \begin{proof}
 	% We start by proving that for any extended function $F$ it holds
 	% \begin{equation}
-	% 	F^**(x)\le F(x), \qquad \forall x\in\bbR^d.
+	% 	F^{**}(x)\le F(x), \qquad \forall x\in\bbR^d.
 	% \end{equation}	
 	% Indeed, w
 	We have that $-F^*(y)=\inf_{x\in\bbR^d} \left(F(x)-\langle x,y\rangle\right)$, which implies that for any $y,z\in\bbR^d$ it holds 
@@ -527,19 +527,19 @@ Thanks to the previous result, we are in a position to prove the following prope
 	\end{equation}
 	In particular, considering $z=x$ we have 
 	\begin{equation}
-		F^**(x) = \sup_{y\in\bbR^d} \left(\langle x,y\rangle - F^*(y)\right) \le F(x),
+		F^{**}(x) = \sup_{y\in\bbR^d} \left(\langle x,y\rangle - F^*(y)\right) \le F(x),
 	\end{equation}
 	proving the first part of the statement.
 	
 	Since $F^{**}$ is convex and l.s.c.~by Proposition~\ref{prop:convex-conj-prop}, in order to complete the proof it suffices to show that if $F$ is convex, then 
 	\begin{equation}
-		F^**(x)\ge F(x),\qquad \forall x\in\bbR^d.
+		F^{**}(x)\ge F(x),\qquad \forall x\in\bbR^d.
 	\end{equation}
 	Let $v\in \partial F(x)$, which exists thanks to Proposition~\ref{prop:subdifferential}. For such a $v$, using the characterisation of the subdifferential in Proposition~\ref{prop:subdifferential}, we have 
 	\begin{equation}
 		F^*(v)=\langle x,v\rangle - F(x), 
 	\end{equation}
-	so that $F^**(z)\ge \langle v,z-x\rangle+F(x)$ for any $z\in \bbR^d$. Picking $z=x$ allows to conclude.
+	so that $F^{**}(z)\ge \langle v,z-x\rangle+F(x)$ for any $z\in \bbR^d$. Picking $z=x$ allows to conclude.
 \end{proof}
 
 
@@ -571,7 +571,7 @@ Thanks to the previous result, we are in a position to prove the following prope
 	\end{equation}
 	That is, the function $z\mapsto \langle z,y\rangle F(z)$ attains its maximum at $z=x$. But, by definition of $F^*$, this is equivalent to \eqref{eq:opp-fenchel-ineq}, thus proving that \emph{i} is equivalent to \emph{ii}.
 
-	To complete the proof, observe that by Theorem~\ref{th:fenchel-moreau} the lower semicontinuity of $F$ yield that $F^**=F$, so that \emph{ii} is equivalent to $F^**(x)+F^*(y)=\langle x,y\rangle$. Using the fact that \emph{i}$\iff$\emph{ii} with $F$ replaced by $F^*$ completes the proof.
+	To complete the proof, observe that by Theorem~\ref{th:fenchel-moreau} the lower semicontinuity of $F$ yield that $F^{**}=F$, so that \emph{ii} is equivalent to $F^{**}(x)+F^*(y)=\langle x,y\rangle$. Using the fact that \emph{i}$\iff$\emph{ii} with $F$ replaced by $F^*$ completes the proof.
 \end{proof}
 
 
