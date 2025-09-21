@@ -82,7 +82,7 @@
 		\label{fig:supporting-hyperplane}
 	\end{figure}
 
-	\thm[supporting-hyperplane]{Supporting hyperplane theorem}{
+	\cor[supporting-hyperplane]{Supporting hyperplane theorem}{
 		Let $K\subset \bbR^d$ be a convex set and $x\in\partial K$. Then, there exists a supporting hyperplane of $K$ containing $x_0$. 
 		That is, there exists $v\in\bbR^d$ and $\lambda\in\bbR$ such that $K\subset H_{v,\lambda}$ and $x_0\in \partial H_{v,\lambda}$.
 	}
@@ -209,7 +209,7 @@
 		\end{itemize}
 	}
 
-	\prop{}{
+	\prop[epigraph]{}{
 		A function $F:K\to\bbR$ is convex if and only if its epigraph $\operatorname{epi}(F)\subset \bbR^{d+1}$ is convex. Here, we let 
 		\begin{equation}
 			\operatorname{epi}(F) = \{ (x,r) \mid r\ge F(x) \}.
@@ -314,35 +314,6 @@
 		concluding the proof.
 	\end{proof}
 
-	Recall the following.
-	
-	\dfn{}{A function $F\bbR^d\to \bbR$ is \emph{lower semicontinuous} (l.s.c.) if 
-	\begin{equation}
-		\liminf_{x\to x_0} F(x) \ge F(x_0), \qquad \forall x_0\in\bbR^d.
-	\end{equation}
-	Equivalently, $F$ is l.s.c.~if its epigraph is closed.
-	}
-	
-	\ex{}{
-		\begin{itemize}
-			\item Every continuous function is lower semicontinuous.
-			\item For any set $\Omega\subset \bbR^d$, the $0-\infty$ characteristic function 
-			\begin{equation}
-				\chi_K=\begin{cases}
-					0 & \text{if } x\in\Omega,\\
-					+\infty & \text{otherwise},
-				\end{cases}
-			\end{equation}
-			is lower semicontinuous, but not continuous.
-		\end{itemize}
-	}
-
-	We have the following extension of Proposition~\ref{prop:convex-cont}, which we will not prove.
-
-	\prop[convex-lsc]{}{
-		Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be an exteded convex function. Then, $F$ is lower semicontinuous.
-	}
-
 	The following result is at the core of the relation between optimisation and convexity.
 
 	\thm{}{
@@ -401,6 +372,31 @@
 	\end{equation}
 }
 
+	Recall the following.
+	
+	\dfn{}{A function $F:\bbR^d\to \bbR$ is \emph{lower semicontinuous} (l.s.c.) if 
+	\begin{equation}
+		\liminf_{x\to x_0} F(x) \ge F(x_0), \qquad \forall x_0\in\bbR^d.
+	\end{equation}
+	Equivalently, $F$ is l.s.c.~if its epigraph is closed.
+	}
+	
+	\ex{}{
+		\begin{itemize}
+			\item Every continuous function is lower semicontinuous.
+			\item For any set $\Omega\subset \bbR^d$, the $0-\infty$ characteristic function 
+			\begin{equation}
+				\label{eq:0-infty-char}
+				\chi_K=\begin{cases}
+					0 & \text{if } x\in\Omega,\\
+					+\infty & \text{otherwise},
+				\end{cases}
+			\end{equation}
+			is lower semicontinuous, but not continuous.
+		\end{itemize}
+	}
+
+
 \prop[convex-conj-prop]{}{
 	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$. Then,
 	\begin{enumerate}
@@ -445,12 +441,96 @@
 	\end{equation}
 	proving the first part of the statement.
 	
-	Since $F^**$ is convex by Proposition~\ref{prop:convex-conj-prop} and l.s.c.~by Proposition~\ref{prop:convex-lsc}, in order to complete the proof it suffices to show that if $F$ is convex, then 
+	Since $F^{**}$ is convex and l.s.c.~by Proposition~\ref{prop:convex-conj-prop}, in order to complete the proof it suffices to show that if $F$ is convex, then 
 	\begin{equation}
 		F^**(x)\ge F(x),\qquad \forall x\in\bbR^d.
 	\end{equation}
-
+	....
 \end{proof}
+
+
+\ex{}{
+	\begin{itemize}
+		\item Let $F(x)=\frac12 \|x\|_2^2$. Then, $F^*(y)=\frac12\|y\|_2^2=F(y)$. This is the only function with this property.
+		\item Let $F=\chi_K$ be the $0-\infty$ characteristic function of a convex set $K\subset\bbR^d$ defined in \eqref{eq:0-infty-char}. Then, 
+		\begin{equation}
+			F^*(y)=\sup_{x\in K} \langle x,y\rangle.
+		\end{equation}
+	\end{itemize}
+}
+
+\dfn{}{
+	The \emph{subdifferential} of a convex extended function $F:\bbR^d\to \bbR\cup\{+\infty\}$ at $x\in\bbR^d$ is the set 
+	\begin{equation}
+		\partial F(x) = \left\{ v\in\bbR^d \mid F(y) \ge F(x)+\langle v,y-x \rangle, \qquad \forall y\in\bbR^d \right\}.
+	\end{equation}
+	A vector $v\in \partial F(x)$ is called a \emph{subgradient} for $F$ at $x$.
+}
+
+We have the following.
+
+\prop{}{
+	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function. Then,
+	\begin{itemize}
+		\item For any $x\in \bbR^d$ the subdifferential $\partial F(x)$ is non-empty.
+		\item If $F$ is differentiable at $x\in\bbR^d$, then $\partial F(x)=\{\nabla F(x)\}$.
+	\end{itemize}
+}
+
+\begin{proof}
+	The first part of the theorem is a consequence of the Supporting Hyperplane Theorem (see Corollary~\ref{th:supporting-hyperplane}) and Proposition~\ref{prop:epigraph}. Indeed, the latter implies that the epigraph $\operatorname{epi}(F)$ is convex and hence, by the former, any of its boundary point admits a supporting hyperplane. Using the fact that $\partial\operatorname{epi}(F)=\{(x,F(x))\mid x\in\bbR^d\}$ allows to conclude.
+
+	Concerning the proof of the second statement, the fact that $\nabla F(x)\in \partial F(x)$ follows from the characterisation of convexity for differentiable functions given in Proposition~\ref{prop:convexity-diff}.
+	To prove the opposite implication, let $v\in \partial F(x)$ and observe that by definition of subgradient the directional derivative $\partial_h F(x)$ of $f$ in the direction $h\in\bbR^d$ at $x$ satisfies
+	\begin{equation}
+		\partial_h F(x) = \lim_{t\to 0} \frac{F(x+th)-F(x)}{t} \ge \langle v, h\rangle.
+	\end{equation}
+	Since we know that $\partial_hF (x)=\langle \nabla F(x),h\rangle$, we have that 
+	\begin{equation}
+		\langle \nabla F(x) - v,h\rangle \ge 0, \qquad \forall h\in\bbR^d.
+	\end{equation}
+	But this implies that $\nabla F(x)=v$, concluding the proof.
+\end{proof}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=.4\textwidth]{images/abs-subgrad.png}
+	\caption{Visualization of the subgradients of $F(x)=|x|$ at $x=0$. Image from \href{https://tlienart.github.io/posts/2018/09/23-convex-optimisation-1/}{this website}.}
+	\label{fig:subgrad-abs}
+\end{figure}
+
+\ex{}{
+	Consider $F(x)=|x|$. Then,
+	\begin{equation}
+		\partial F(x) =
+		\begin{cases}
+			\{ \operatorname{sgn}(x) \} & \text{if }x\neq 0,\\
+			[-1,1] & \text{if } x=0.
+		\end{cases}
+	\end{equation}
+	Here, $\operatorname{sgn}(x) = x/|x|$ is the sign function.
+	See Figure~\ref{fig:subgrad-abs}.
+}
+
+\thm{}{
+	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex function. Then, $x\in\bbR^d$ is a minimum for $F$ if and only if $0\in \partial F(x)$
+}
+
+\begin{proof}
+	The fact that $x$ is a minimum means that $F(x)\le F(y)$ for any $y\in\bbR^d$, which is the definition of $0\in\partial F(x)$.
+\end{proof}
+
+\prop{}{
+	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex function and $x,y\in \bbR^d$. Then, the following are equivalent:
+	\begin{enumerate}
+		\item[i.] $y\in \partial F(x)$.
+		\item[ii.] $F(x)+F^*(y) = \langle  x,y\rangle$.
+	\end{enumerate}
+	If, additionally, $F$ is l.s.c.~, then the above are also equivalent to 
+	\begin{enumerate}
+		\item[iii.] $x\in \partial F^*(y)$.
+	\end{enumerate}
+}
 
 	% \dfn{Definition Topic}{Definition Statement}
 	% \thm{Theorem Name}{Theorem Statement}
