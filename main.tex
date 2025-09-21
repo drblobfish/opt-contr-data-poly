@@ -73,6 +73,20 @@
 		Here, $H_{v,\lambda}$ is defined in \eqref{eq:hyperplane}.
 	}
 
+	As a direct consequence, we have the following (see Figure~\ref{fig:supporting-hyperplane}).
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=.3\textwidth]{images/supporting-hyperplane.png}
+		\caption{Supporting hyperplane for a set $S$.}
+		\label{fig:supporting-hyperplane}
+	\end{figure}
+
+	\thm[supporting-hyperplane]{Supporting hyperplane theorem}{
+		Let $K\subset \bbR^d$ be a convex set and $x\in\partial K$. Then, there exists a supporting hyperplane of $K$ containing $x_0$. 
+		That is, there exists $v\in\bbR^d$ and $\lambda\in\bbR$ such that $K\subset H_{v,\lambda}$ and $x_0\in \partial H_{v,\lambda}$.
+	}
+
 	When $K$ is a convex polygon, it is natural to expect it to be determined by its vertices. In order to formalize this intuition we need the following.
 
 	\dfn{}{
@@ -145,6 +159,7 @@
 	\begin{equation}
 		\operatorname{dom}(F) = \{x\in \bbR^d\mid F(x)<+\infty\}.
 	\end{equation}
+	An extended function such that $\operatorname{dom}(F)\neq \varnothing$ is called \emph{proper}.
 	
 	Given a standard function $F:\Omega\to \bbR$, we can identify it with the extended function $\bar F:\bbR^d\to \bbR\cup\{+\infty\}$ defined by
 	\begin{equation}
@@ -299,6 +314,35 @@
 		concluding the proof.
 	\end{proof}
 
+	Recall the following.
+	
+	\dfn{}{A function $F\bbR^d\to \bbR$ is \emph{lower semicontinuous} (l.s.c.) if 
+	\begin{equation}
+		\liminf_{x\to x_0} F(x) \ge F(x_0), \qquad \forall x_0\in\bbR^d.
+	\end{equation}
+	Equivalently, $F$ is l.s.c.~if its epigraph is closed.
+	}
+	
+	\ex{}{
+		\begin{itemize}
+			\item Every continuous function is lower semicontinuous.
+			\item For any set $\Omega\subset \bbR^d$, the $0-\infty$ characteristic function 
+			\begin{equation}
+				\chi_K=\begin{cases}
+					0 & \text{if } x\in\Omega,\\
+					+\infty & \text{otherwise},
+				\end{cases}
+			\end{equation}
+			is lower semicontinuous, but not continuous.
+		\end{itemize}
+	}
+
+	We have the following extension of Proposition~\ref{prop:convex-cont}, which we will not prove.
+
+	\prop[convex-lsc]{}{
+		Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be an exteded convex function. Then, $F$ is lower semicontinuous.
+	}
+
 	The following result is at the core of the relation between optimisation and convexity.
 
 	\thm{}{
@@ -348,6 +392,65 @@
 		Strict convexity is not enough to ensure the existence of a minimum. Consider, for example, $F(x) = e^x$.
 	\end{remark}
 
+\section{Convex conjugate and sub-differential}
+
+\dfn{}{
+	The convex conjugate (of Fenchel dual)  of an extended function $F:\bbR^d\to \bbR\cup\{+\infty\}$ is the function $F^*:\bbR^d\to \bbR\cup\{+\infty\}$ defined by
+	\begin{equation}
+		F^*(y) = \sup_{x\in\bbR^d}\left[\langle x,y\rangle-F(x)\right].
+	\end{equation}
+}
+
+\prop[convex-conj-prop]{}{
+	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$. Then,
+	\begin{enumerate}
+		\item The convex conjugate $F^*$ is a lower semicontinuous convex function.
+		\item We have the Fenchel (or Young, or Fenchel-Young) inequality
+		\begin{equation}
+			\langle x,y\rangle \le F(x)+F^*(y)
+		\end{equation}
+	\end{enumerate}
+}
+
+\begin{proof}
+	For any $y_1,y_2\in\bbR^d$ and $t\in[0,1]$ we have
+	\begin{equation}
+		\langle x, ty_1+(1-t)y_2 \rangle-F(x) = 
+		t \left(\langle x, y_1\rangle-F(x)\right) + (1-t) \left(\langle x, y_2\rangle-F(x)\right).
+	\end{equation}
+	Taking the supremum for $x\in\bbR^d$ of the above, and recalling that $\sup(g(x)+h(x))\le \sup g(x)+\sup h(x)$ proves convexity of $F^*$. 
+
+	Lower semicontinuity of $F^*$ follows since it is the supremum for $x\in\bbR^d$ of $g_x(y):=\langle x,y\rangle -F(x)$, which is affine and in particular lower semicontinuous. Indeed, the supremum of a family of l.s.c.~functions is l.s.c..
+
+	The second point (Fenchel inequality) is a direct consequence of the definition of $F^*$.
+\end{proof}
+
+\thm{Fenchel-Moreau Theorem}{
+	The biconjugate $F^**$ is the largest convex lower semicontinuous function satisfying $F^**(x)\le F(x)$ for any $x\in \bbR^d$. In particular, $F^**=F$ if $F$ is convex and proper.
+}
+
+\begin{proof}
+	% We start by proving that for any extended function $F$ it holds
+	% \begin{equation}
+	% 	F^**(x)\le F(x), \qquad \forall x\in\bbR^d.
+	% \end{equation}	
+	% Indeed, w
+	We have that $-F^*(y)=\inf_{x\in\bbR^d} \left(F(x)-\langle x,y\rangle\right)$, which implies that for any $y,z\in\bbR^d$ it holds 
+	\begin{equation}
+		\langle z,y\rangle - F^*(y) \le \langle z-x,y\rangle +F(x), \qquad \forall x\in\bbR^d.
+	\end{equation}
+	In particular, considering $z=x$ we have 
+	\begin{equation}
+		F^**(x) = \sup_{y\in\bbR^d} \left(\langle x,y\rangle - F^*(y)\right) \le F(x),
+	\end{equation}
+	proving the first part of the statement.
+	
+	Since $F^**$ is convex by Proposition~\ref{prop:convex-conj-prop} and l.s.c.~by Proposition~\ref{prop:convex-lsc}, in order to complete the proof it suffices to show that if $F$ is convex, then 
+	\begin{equation}
+		F^**(x)\ge F(x),\qquad \forall x\in\bbR^d.
+	\end{equation}
+
+\end{proof}
 
 	% \dfn{Definition Topic}{Definition Statement}
 	% \thm{Theorem Name}{Theorem Statement}
