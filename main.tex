@@ -1137,7 +1137,7 @@ Recall also that a function $f\in C^2(\bbR^d)$ that is strongly convex (i.e., th
 
 A natural time-discretization of the gradient flow \eqref{eq:grad-flow} is via the Explicit Euler scheme, which yields the gradient descent algorithm.
 
-\dfn{Gradient descent algorithm}{
+\dfn[grad-desc]{Gradient descent algorithm}{
 	The gradient descent algorithm for $f\in C^1(\bbR^d)$ starting at $x_0\in \bbR^d$ with parameters $(\alpha_n)_n\subset \bbR_+$, is 
 	\begin{equation}
 		\label{eq:discr-grad-desc}
@@ -1147,7 +1147,7 @@ A natural time-discretization of the gradient flow \eqref{eq:grad-flow} is via t
 
 Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line search. However, also a constant choice $\alpha = \alpha_n$ suﬃciently small will suffice. Let us show now a result of convergence of the algorithm above. 
 
-\thm{}{
+\thm[grad-desc]{}{
 	Let $f\in C^1(\bbR^d)$ be convex, coercive (i.e., $f(x)\to +\infty$ as $x\to +\infty$), and such that $\nabla f$ is Lipschitz continuous with constant $L>0$, and admitting a unique minimizer $x^\star$. 
 	Assume that 
 	\begin{equation}
@@ -1161,8 +1161,8 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 
 \begin{proof}
 	Fix $n\in\bbN$.
-	To ease the notation, set $x=x_n$, $\alpha = \alpha_n$, and $x^+=x_{n+1}=x-\alpha \nabla f(x)$. Then, 
-	By the quadratic upper bound of Lemma~\ref{th:co-coercivity}, we have
+	% To ease the notation, set $x=x_n$, $\alpha = \alpha_n$, and $x^+=x_{n+1}=x-\alpha \nabla f(x)$. 
+	Then, by the quadratic upper bound of Lemma~\ref{th:co-coercivity}, we have
 	\begin{equation}
 		\label{eq:first-step}
 			f(x_{n+1}) 
@@ -1174,7 +1174,7 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 	\begin{equation}
 		\sum_{n=0}^{N-1} \alpha_n \left(1-\frac{\alpha_n L}2\right) \|\nabla f(x_n)\|_2^2 \le \sum_{n=0}^{N-1} \left(f(x_{n})-f(x_{n+1})\right) =f(x_0) - f(x_N) \le f(x_0)-f(x^\star).
 	\end{equation}
-	Since the r.h.s.~is independent of $N$ and $1-L\alpha_n/2 \ge 1/2$, this shows that 
+	Since the r.h.s.~is independent of $N$ and $(1-L\alpha_n/2) \ge 1/2$, this shows that 
 	\begin{equation}
 		\sum_{n=0}^{N-1} \alpha_n  \|\nabla f(x_n)\|_2^2 \le
 		\frac12\sum_{n=0}^{N-1} \alpha_n \left(1-\frac{\alpha_n L}2\right) \|\nabla f(x_n)\|_2^2 < +\infty.
@@ -1189,5 +1189,191 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 	Is it also possible to remove the assumption of uniqueness of the minimum, in which case we have that every cluster point of the iterates is a minimum.
 \end{remark}
 
+\section{Stochastic gradient descent}
+
+For this section, we mainly refer to \cite{royerLecture}.
+
+The gradient descent algorithm of Definition~\ref{def:grad-desc} is simple to implement and widely used in machine learning. However, it requires to be able to compute $\nabla f(x)$ fairly efficiently at any point $x\in\bbR^d$.
+
+A situation frequently encountered in machine learning is when the objective function is of the form 
+\begin{equation}
+	\label{eq:loss}
+	f(x) = \bbE \left[f(x,\cdot)\right] = \int_\Omega f(x,\omega)\, d\bbP(\omega),
+\end{equation}
+where $f(x,\cdot):\Omega\to \bbR$ are all random variables over a probability space $(\Omega,\mcF, \bbP)$.
+This probability space tipically represents the space of training data: each realization $f(\cdot,\omega)$ is a loss function on the specific sample $\omega\in \Omega$: it tells ``how bad'' picking the parameter $x\in\bbR^d$ for our model performs on this sample. 
+Since $\Omega$ can be extremely large,  the computation of
+\begin{equation}
+	\label{eq:full-grad}
+	\nabla f(x) = \int_{\Omega} \nabla f(x,\omega) \, d\bbP(\omega),
+\end{equation}
+can become extremely expensive and the implementation of a gradient descent unreasonable.
+This is known as the \emph{curse of dimensionality}.
+
+\ex{}{
+If we are trying to learn a regression model $\omega = (\hat z, \hat y)$ would be the observations, the model would be $y=mz+q$, with parameter $x=(m,q)$. 
+Then, the loss function for the sample $(\hat z,\hat y)$ is then
+\begin{equation}
+	\ell((m,q),(\hat z, \hat y)) = ( \hat y- m\hat z - q )^2.
+\end{equation}
+The final loss function over $N$ samples is then 
+\begin{equation}
+	\ell((m,q)) = \frac1N \sum_{i=1}^N \ell((m,q),(\hat z_i,\hat y_i)) = \frac{1}{N}\sum_{i=1}^N ( \hat y_i- m\hat z_i - q )^2.
+\end{equation}
+
+In this case, $\Omega = \{(\hat z_i,\hat y_i) \mid i\in \llbracket 1 ,N\rrbracket\}$ endowed with a uniform probability.
+}
+
+For this particular setting, there is a way out which stems from replacing the actual gradient $\nabla f(x)$ with a ``stochastic approximation'', obtained by sampling \eqref{eq:full-grad}.
+
+\dfn{Stochastic gradient descent}{
+	Let $f$ be given as in \eqref{eq:loss}, with $f(\cdot,\omega)\in C^1(\bbR^d)$ for any $\omega\in \Omega$. The stochastic gradient descent algorithm starting at $x_0\in\bbR^d$ with parameters $(\alpha_n)_n\subset \bbR_+$ is
+	\begin{equation}
+		\label{eq:stoc-grad-desc}
+		x_{n+1} = x_n -\alpha_k \nabla_x f(x_n,\omega_n),
+	\end{equation} 
+	where $(\omega_n)_n\in \Omega$ is a sequence of indipendent and identically distributed random variables.
+}
+
+Due to the randomness in the choice of $\omega_n$, this algorithm is probabilistic. We can, however, control its average behavior. For this we need to require certain assumptions on the stochastic gradient.
+
+\begin{assumption}
+	\label{ass:stoc-grad}
+	At any iteration $n\in \bbN$ of \eqref{eq:stoc-grad-desc}, the random variable $\omega_n$ satisfies
+	\begin{enumerate}
+		\item The stochastic gradient $\nabla f(x,\omega_n)$ is an unbiased estimator of the real gradient, meaning that $\bbE_{\omega_n}\left[ \nabla f(x,\omega_n) \right] = \nabla f(x)$ for any $x\in \bbR^d$.
+		\item There exists $\sigma^2$ such that the following variance estimate holds 
+		\begin{equation}
+			\bbE_{\omega_n}\left[ \|\nabla f(x,\omega_n)\|_2^2\right] \le \|\nabla f(x)\|_2^2 + \sigma^2,\qquad \forall x\in \bbR^d.
+		\end{equation}
+	\end{enumerate}
+\end{assumption}
+
+\begin{remark}
+	In the above, one has to pay attention to the fact that $\nabla f(x,\omega_n)$ is a random variable through $\omega_n$. E.g., in the case where $\Omega$ is discrete 
+	\begin{equation}
+		\bbE_{\omega_n}\left[ \nabla f(x,\omega_n)\right] = \sum_{\omega \in \Omega} \nabla f(x,\omega) \bbP(\omega_n=\omega).
+	\end{equation}
+\end{remark}
+	
+\ex{Uniform sampling}{
+	In the case where $\Omega = \llbracket 1,N\rrbracket$ and $\omega_n$ is just a uniform sampling over $\Omega$ (i.e., $\bbP(\omega_n=k)=1/N$ for any $k\in \Omega$), we have
+	\begin{equation}
+		\bbE_{\omega_n}\left[ \nabla f(x,\omega_n) \right] = \sum_{k=1}^N 	\nabla f(x,k) \bbP(\omega_n=k) = \frac{1}{N} \sum_{k=1}^N \nabla f(x,k) = \nabla f(x).
+	\end{equation}
+	In particular, this shows that the first requirement above is always satisfied in this case. 
+}
+
+Under these assumptions we have the following. 
+
+\prop[estimate-stoc-grad]{}{
+	The objective function $f$ in \eqref{eq:loss} is $C^1(\bbR^d)$, strongly convex, and such that $\nabla f$ is Lipschitz continuous with constant $L>0$. 
+	Moreover, assume that Assumption~\ref{ass:stoc-grad} holds.
+
+	Then, the $n$-th iterate of the stocastich gradient descent satisfies 
+	\begin{equation}
+		\bbE_{\omega_n} [f(x_{n+1})] \le  f(x_n) - \alpha_n\left( 1 - \frac{L\alpha_n}{2}\right)\|\nabla f(x_n)\|_2^2+\frac{L\alpha_n}{2}\sigma^2.
+	\end{equation}
+}
+
+\begin{proof}
+	Fix $n\in\bbN$.
+	Then, by the quadratic upper bound of Lemma~\ref{th:co-coercivity}, we have
+	\begin{equation}
+		\label{eq:first-step}
+			f(x_{n+1}) 
+			\le f(x_n) + \langle \nabla f(x_n), x_{n+1}-x_n \rangle+\frac{L}2\|x_{n+1}-x_n\|_2^2
+			=  f(x_n) -\alpha_k \langle \nabla f(x_n), \nabla f(x_n,\omega_n) \rangle +\frac{L\alpha_n^2}2\|\nabla f(x_{n+1},\omega_n)\|_2^2
+	\end{equation}
+	Taking expectation w.r.t.~$\omega_n$ (recall that here $x_{n+1}$ depends on $\omega_n$, while $x_n$ does not) and applying Assumption~\ref{ass:stoc-grad} yields the statement.
+\end{proof}
+
+\begin{remark}
+	Due to the independence of the $\omega_n$ and the fact that $x_n$ is independent of $\omega_k$ for $k\ge n$, it holds
+\begin{equation}
+	\bbE(f(x_n)) = \bbE_{\omega_0} \left[ \bbE_{\omega_1} \left[ \ldots \bbE_{\omega_{n-1}}\left[ f(x_n) \right]\right] \right]
+\end{equation}
+Note that this quantity will be deterministic (fixed) with respect to every $\omega_k$ with $k\ge n$.
+\end{remark}
+
+We then have the following.
+
+\thm[stoc-grad-const-stepsize]{Stochastic gradient with constant stepsize}{
+	Assume that the objective function $f$ in \eqref{eq:loss} is $C^1(\bbR^d)$, $\gamma$-strongly convex, and such that $\nabla f$ is Lipschitz continuous with constant $L>0$. 
+	Moreover, assume that Assumption~\ref{ass:stoc-grad} holds.
+
+	Then, if $\alpha_n=\alpha$ with $0<\alpha\le 1/L$, the $n$-th iterate of the stocastich gradient descent satisfies 
+	\begin{equation}
+		\bbE\left[ f(x_n)-f(x^\star) \right] 
+		\le \frac{\alpha L \sigma^2}{2\gamma} + (1-\alpha \gamma)^n \left[ f(x_0) - f(x^\star) - \frac{\alpha L \sigma^2}{2\gamma} \right].
+	\end{equation}
+}
+
+\begin{remark}
+	It follows from the above that for any $\varepsilon>0$ there exist $\alpha$ and $n_0$ such that 
+	\begin{equation}
+		\bbE\left[ f(x_n)-f(x^\star) \right] \le \varepsilon \qquad \text{if }n\ge n_0.
+	\end{equation}
+	However, in general 
+	\begin{equation}
+		\lim_{n\to +\infty} \bbE\left[ f(x_n)-f(x^\star) \right] \neq 0.
+	\end{equation}
+\end{remark}
+
+\begin{proof}
+	Fix $n\in\bbN$. 
+	By Proposition~\ref{prop:estimate-stoc-grad} and Lemma~\ref{th:co-coercivity}, we have 
+	\begin{equation}
+		\bbE_{\omega_n}\left[ f(x_{n+1}) \right] -f(x_n)
+		\le	\alpha\left( 1 - \frac{L\alpha}{2}\right)\|\nabla f(x_n)\|_2^2+\frac{L\alpha}{2}\sigma^2
+		\le	2L\alpha\left( 1 - \frac{L\alpha}{2}\right)(f(x_n)-f(x^\star))+\frac{L\alpha}{2}\sigma^2
+	\end{equation}
+	Observe that $\bbE_{\omega_n}[f(x_n)]=f(x_n)$ and $\bbE_{\omega_n}[f(x^\star)]=f(x^\star)$. Hence, 
+	\begin{equation}
+		\bbE_{\omega_n}\left[ f(x_{n+1}) \right] -f(x_n) = \bbE_{\omega_n}\left[ f(x_{n+1}) -f(x^\star)\right] -\left[f(x_n) - f(x^\star) \right].
+	\end{equation}
+	Plugging this into the preceding equation, by simple manipulations, similar to those for the deterministic case (see Theorem~\ref{th:grad-desc}), we obtain
+	\begin{equation}
+		\bbE_{\omega_n}\left[ f(x_{n+1}) -f(x^\star)\right]	-\frac{L\alpha}{2\gamma} \sigma^2 \le (1-\gamma\alpha)\left[  f(x_{n}) -f(x^\star)	-\frac{L\alpha}{2\gamma} \sigma^2 \right]
+	\end{equation}
+	Taking the expected value with respect to $\omega_{n-1}, \omega_{n-2},\ldots, \omega_0$ of the above yield 
+	\begin{equation}
+		\label{eq:ciao}
+		\bbE\left[ f(x_{n+1}) -f(x^\star)\right]	-\frac{L\alpha}{2\gamma} \sigma^2 \le (1-\gamma\alpha)\left[  \bbE\left[f(x_{n}) -f(x^\star)\right]	-\frac{L\alpha}{2\gamma} \sigma^2 \right]
+	\end{equation}
+	Finally, recursively applying the above allows to prove the statement.
+\end{proof}
+
+We present a simple result concerning variable stepsize, showing that a correct choice allows to have
+\begin{equation}
+	\lim_{n\to +\infty} \bbE\left[ f(x_n)-f(x^\star) \right] = 0.	
+\end{equation}
+
+\thm{Stochastic gradient with variable stepsize}{
+	Assume that the objective function $f$ in \eqref{eq:loss} is $C^1(\bbR^d)$, $\gamma$-strongly convex, and such that $\nabla f$ is Lipschitz continuous with constant $L>0$. 
+	Moreover, assume that Assumption~\ref{ass:stoc-grad} holds.
+
+	Consider the variable stepsize 
+	\begin{equation}
+		\alpha_n = \frac{\beta}{\delta + n}, \qquad\forall n\in\bbN,
+	\end{equation}
+	where $\beta \ge 1/\gamma$ and $\delta>0$ is such that $\alpha_0=\beta/\delta < 1/L$.
+	Then, the $n$-th iterate of the stocastich gradient descent satisfies 
+	\begin{equation}
+		\bbE\left[ f(x_n)-f(x^\star) \right] 
+		\le \frac{\nu}{\delta+n},
+		\qquad\text{where}\qquad 
+		\nu = \max \left\{ \delta\left[ f(x_0)-f(x^\star) \right], \frac{\beta^2L\sigma^2}{2(\beta\gamma-1)}\right\}.
+	\end{equation}
+}
+
+\begin{proof}
+	Proceeding as in the proof of the constant stepsize case (see Theorem~\ref{th:stoc-grad-const-stepsize}), we arrive at \eqref{eq:ciao} with $\alpha_n$ instead of $\alpha$, that we rearrange as 
+	\begin{equation}
+		\bbE\left[ f(x_{n+1}) -f(x^\star)\right] \le (1-\gamma\alpha_n)  \bbE\left[f(x_{n}) -f(x^\star)\right]	-\frac{L\alpha_n^2}{2} \sigma^2 .
+	\end{equation}
+	To complete the proof of the statement it suffices to apply a recurrence over $n\in\bbN$.
+\end{proof}
+
 \printbibliography
-\end{document}
+\end{document}	
