@@ -134,10 +134,10 @@
 		\end{equation}
 	}
 
-	\dfn{}{
-		The polar cone $K^*$ of a cone $K\subset\bbR^d$ is the set 
+	\dfn[dual-cone]{}{
+		The dual cone $K^*$ of a cone $K\subset\bbR^d$ is the set 
 		\begin{equation}
-			K^* := \left\{ y\in\bbR^d \mid \rangle x,y \langle \ge 0 \quad \forall x\in K \right\}.
+			K^* := \left\{ y\in\bbR^d \mid \langle x,y \rangle \ge 0 \quad \forall x\in K \right\}.
 		\end{equation}
 	}
 
@@ -246,6 +246,7 @@
 		\begin{itemize}
 			\item $F$ is convex if and only if 
 			\begin{equation}
+				\label{eq:supporting-hyper-fct}
 				F(y) \ge F(x) + \langle \nabla F(x), y-x \rangle, \qquad \forall x,y\in \bbR^d.
 			\end{equation}
 			\item $F$ is strongly convex with parameter $\gamma>0$ if and only if 
@@ -254,7 +255,11 @@
 			\end{equation}
 			\item If $F$ is everywhere twice differentiable, then it is convex if and only if 
 			\begin{equation}
-				\operatorname{Hess} F(x) \ge 0 \qquad \forall x\in\bbR^d.
+				\operatorname{Hess} F(x) \ge 0 \qquad \forall x\in\bbR^d,
+			\end{equation}
+			and strongly convex if and only if there exists $\gamma>0$ such that
+			\begin{equation}
+				\operatorname{Hess} F(x) \ge \frac{\gamma}/2 \qquad \forall x\in\bbR^d.
 			\end{equation}
 			Here, we denoted by $\operatorname{Hess}F(x)$ the Hessian of $F$ at $x$.
 		\end{itemize}
@@ -318,7 +323,7 @@
 
 	The following result is at the core of the relation between optimisation and convexity.
 
-	\thm{}{
+	\thm[min-convex]{}{
 		Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex extended function. Then,
 		\begin{itemize}
 			\item Any local minimum of $F$ is global.
@@ -464,7 +469,7 @@
 	See Figure~\ref{fig:subgrad-abs}.
 }
 
-\thm{}{
+\thm[suff-cond-minimum]{}{
 	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex function. Then, $x\in\bbR^d$ is a minimum for $F$ if and only if $0\in \partial F(x)$
 }
 
@@ -574,6 +579,7 @@ Thanks to the previous result, we are in a position to prove the following prope
 	To complete the proof, observe that by Theorem~\ref{th:fenchel-moreau} the lower semicontinuity of $F$ yield that $F^{**}=F$, so that \emph{ii} is equivalent to $F^{**}(x)+F^*(y)=\langle x,y\rangle$. Using the fact that \emph{i}$\iff$\emph{ii} with $F$ replaced by $F^*$ completes the proof.
 \end{proof}
 
+\chapter{Optimization problems}
 
 \section{Convex optimization problems}
 
@@ -690,10 +696,50 @@ The above shows the interest of the dual problem: when strong duality holds, in 
 The following is the most used criterion for strong duality. 
 
 \thm[slater]{Slater's constraint quantification}{
-	Assume that $F_0,\ldots, F_M$ are convex functions with domain $\operatorname{dom}(\bbR^d)$ and that $F_0(x)\ge -c$ for some $c\ge 0$. Then, strong duality holds if there exists $x\in \feas\subset \bbR^d$ such that $F_j(x)<0$ for any $j\in \llbracket 1,M\rrbracket$.
+	Assume that $F_0,\ldots, F_M$ are convex functions with domain $\operatorname{dom}(F_i)=\bbR^d$ for $i\in\llbracket1,M\rrbracket$. Then, strong duality holds if there exists $x\in \feas\subset \bbR^d$ such that $F_j(x)<0$ for any $j\in \llbracket 1,M\rrbracket$. In particular, strong duality always holds for feasible optimization problems with no inequality constraints.
+
+	If, moreover, $F_0,\ldots,F_M$ are lower semicontinuous, then the existence of a prima-dual optimal is guaranteed.
 }
 
 For a proof of the above result, we refer to \cite[Section 5.3.2]{boydConvex2023}.
+
+\ex{$\ell_1$-minimization problem}{
+	Consider the optimization problem 
+	\begin{equation}
+		\min_{x\in \bbR^d} \|x\|_1 \qquad \text{subject to}\qquad Ax=y,
+	\end{equation}	
+	for some $A\in \bbR^{m\times d}$ and $y\in \bbR^m$.
+	
+	The Lagrange function is independent of $\nu$, since there are no inequality constraints, and is 
+	\begin{equation}
+		L(x,\xi) = \|x\|_1 + \langle \xi, Ax-y\rangle.
+	\end{equation}
+	We have that the dual Lagrange function is 
+	\begin{equation}
+		H(\xi) = 
+		\begin{cases}
+			-\langle \xi, y\rangle & \text{if }\|A^\top \xi\|_\infty \le 1,\\
+			-\infty &\text{otherwise}.
+		\end{cases}
+	\end{equation}
+	Indeed, it holds
+	\begin{equation}
+		H(\xi) = \inf_{x\in\bbR^d} \left[ \|x\|_1 + \langle A^\top \xi,x\rangle - \langle \xi,y\rangle \right]
+	\end{equation}
+	If $\|A^\top \xi\|_\infty\le 1$ then $\langle A^\top\xi, x\rangle \ge -\|x\|_1$ and thus the infimum is attained for $x=0$, yielding $H(\xi)=-\langle\xi,y\rangle$. On the other hand, for $\|A^\top\xi\|_\infty>1$ let $i\in \llbracket1, m\rrbracket$ be the index such that $|(A^\top \xi)_i|=\|A^\top \xi\|$ and consider $x=-\operatorname{sgn}((A^\top \xi)_i)e_i$, so that $\langle A^\top\xi,x\rangle = -\|A^\top \xi\|_\infty$ and $\|x\|_1=1$. Thus, for any $\lambda>0$,
+	\begin{equation}
+		H(\xi) \le \lambda \left[ 1 - \|A^\top \xi\|_\infty \right] - \langle\xi,y\rangle  
+		\xrightarrow{\lambda\to +\infty} -\infty.
+	\end{equation}
+
+	Hence, the dual program is given by
+	\begin{equation}
+		\max_{\xi\in \bbR^m} (-\langle \xi,y\rangle) \qquad\text{subject to}\qquad \|A^\top \xi\|_\infty\le 1.
+	\end{equation}
+	By Theorem~\ref{th:slater} strong optimization holds for this primal-dual problems, provided the primal problem be feasible.
+}
+
+
 
 \subsection*{Geometric interpretation}
 
@@ -757,6 +803,182 @@ If the problem is convex, then $\mcG$ is convex and under Slater's condition its
 	\end{minipage}
 \end{figure}
 
+
+\section{Conic optimization problems}
+
+\dfn{}{
+A \emph{conic optimization problem} is a minimization problem of the form
+\begin{equation}
+	\tag{COP}
+	\label{eq:cop}
+	\min_{x\in \bbR^d} F_0(x) 
+	\qquad\text{subject to}\qquad
+	x\in K
+	\qquad \text{and}\qquad 
+	F_j(x)\le 0, \qquad j\in\llbracket 1, M\rrbracket.
+\end{equation}
+Here, $F_0,\ldots, F_M:\bbR^d\to \bbR\cup\{+\infty\}$ are convex functions and $K\subset \bbR^d$ is a convex cone.
+}
+
+Also conic optimization problems have their duality theory.
+
+\dfn{Duality for conic optimization problems}{
+	The \emph{Lagrange function} of the optimization problem \eqref{eq:cop} is the function $F:\bbR^d \times \bbR^m \times \bbR^M_+\to \bbR\cup\{+\infty\}$ defined by 
+	\begin{equation}
+		L(x,\xi,\nu) = F_0(x) - \langle \xi,x\rangle +\sum_{j=1}^m \nu_j F_j(x).
+	\end{equation}
+
+	The \emph{Lagrange dual function} is the function $H:\bbR^m\times \bbR^M_+ \to \bbR\cup\{-\infty\}\cup\{+\infty\}$, defined by 
+	\begin{equation}
+		H(\xi,\nu) = \inf_{x\in \bbR^d} L(x,\xi,\nu).
+	\end{equation}
+	
+	The dual problem associated with \eqref{eq:cop} is then
+	\begin{equation}
+		\max_{\xi\in \bbR^m, \nu \in \bbR^M}H(\xi,\nu)
+		\qquad\text{subject to}\qquad 
+		\xi \in K^*,\, \nu\in \bbR_+^M.
+	\end{equation}
+	Here, $K^*$ is the dual cone of $K$ (see Definition~\ref{def:dual-cone})
+	}
+
+The duality theory is set up in order to have weak duality. 
+
+\prop[]{}{
+	The dual function is always concave. Moreover, if $x^\star$ is a minimizer of \eqref{eq:cop}, we have
+	\begin{equation}
+		H(\xi,\nu) \le F(x^\star), \qquad \forall \xi\in \bbR^m,\, \nu\in \bbR^M_+.
+	\end{equation}
+}
+The proof of this result can be done as for Proposition~\ref{prop:weak-duality}, taking into account the definition of dual cone.
+
+Similar conditions as in Slater's constraint qualification (Theorem~\ref{th:slater}) ensure strong duality for conic problems; for instance, if there exists a point in the interior of K such that all inequality constraints hold strictly, see e.g., \cite[Section~5.9]{boydConvex2023}.
+
+\ex{}{
+	For a convex cone $K\subset\bbR^d$ and a vector $v\in \bbR^d$, consider the conic optimization problem 
+	\begin{equation}
+		\min_{x\in\bbR^d} \langle x,v\rangle 
+		\qquad\text{subject to}\qquad 
+		x\in K,\, \|x\|_2^2\le 1.
+	\end{equation}
+
+	The Lagrange function is given by
+	\begin{equation}
+		L(x,\xi,\nu) = \langle x,v\rangle -\langle \xi,x\rangle +\nu(\|x\|_2^2 - 1), \qquad \xi\in K^*,\, \nu\ge 0.
+	\end{equation}
+	Minimizing the above w.r.t.~$x$ one immediately obtains 
+	\begin{equation}
+		H(\xi,\nu) = -\nu -\frac{1}{4\nu}\|\xi-v\|_2^2, \qquad \xi\in K^*,\, \nu\ge 0.
+	\end{equation}
+	For fixed $\xi$ it is easy to maximize $H(\xi,\nu)$ w.r.t.~$\nu\ge 0$, yielding $\nu = \|\xi-v\|_2^2/2$. Thus, the dual problem simplifies to
+	\begin{equation}
+		\label{eq:dual-example}
+		\max_{\xi\in \bbR^m} \left(-\frac{\|\xi-v\|_2}{2}\right) 
+		\qquad \text{subject to} \qquad
+		\xi\in K^*.
+	\end{equation}
+	That is, the optimal value of the dual problem is the optimal value of the above, and any dual optimal $(\xi^\star,\nu^\star)$ is such that $\nu^\star=\|\xi^\star-v\|_2^2/2$ and $\xi^\star$ is optimal for the above. 
+
+	Observe, that minimizers for \eqref{eq:dual-example} are the orthogonal projections of $v$ on the dual cone $K^*$. 
+}
+
+\section{Saddle-point interepretation and penalty method}
+
+
+
+
+\thm[saddle-point]{Saddle-point property}{
+	Consider an optimisation problem (convex of conical). Then, the primal-dual optimal values $p^\star$ and $d^\star$ satisfy
+	\begin{equation}
+\label{eq:saddle-point} = F_0(x)
+		p^\star = \inf_{x\in \bbR^d}\sup_{\xi\in \bbR^m,\, \nu\in \bbR^M_+} L(x,\xi,\nu)
+		\qquad\text{and}\qquad
+		d^\star = \sup_{\xi\in \bbR^m,\, \nu\in \bbR^M_+} \inf_{x\in \bbR^d} L(x,\xi,\nu).
+	\end{equation}
+	In particular, 
+	\begin{itemize}
+		\item Strong duality is equivalent to the fact that 
+		\begin{equation}
+			\inf_{x\in \bbR^d}\sup_{\xi\in \bbR^m,\, \nu\in \bbR^M_+} L(x,\xi,\nu)
+			=
+			\sup_{\xi\in \bbR^m,\, \nu\in \bbR^M_+}\inf_{x\in \bbR^d} L(x,\xi,\nu).
+		\end{equation}
+		\item Primal-dual optimizer $(x^\star,\xi^\star,\nu^\star)$ are exactly the saddle points of $L$. That is,
+		\begin{equation}
+			L(x^\star, \xi,\nu) \le L(x^\star,\xi^\star,\nu^\star)\le L(x,\xi^\star,\nu^\star), \qquad \forall x\in \bbR^d, \, (\xi,\nu)\in \bbR^m\times \bbR^M_+.
+		\end{equation}
+	\end{itemize}
+}
+
+\begin{proof}
+	We consider a convex optimisation problem (the same considerations hold \emph{mutas mutandis} for conical problems).
+
+	The fact that $d^\star$ satisfyies \eqref{eq:saddle-point} is a direct consequence of the definition.
+	On the other hand, we have
+	\begin{equation}
+		\sup_{\xi\in\bbR^m, \nu\in \bbR^M_+} L(x,\xi,\nu) = F_0(x) + \sup_{\xi\in \bbR^m} \langle \xi,Ax-y\rangle + \sup_{\nu_j\ge 0} \sum_{j=1}^M \nu_j F_j(x) 
+		=
+		\begin{cases}
+			F_0(x) & \text{if } Ax=y\text{ and } F_j(x)\le 0 \, \forall j\in\llbracket1,M\rrbracket,\\
+			+\infty &\text{otherwise}.
+		\end{cases}
+	\end{equation}
+	In other words, the above supremum is $+\infty$ if $x$ is not feasible (i.e., $x\notin\feas$). This shows that minimizing the above w.r.t.~$x\in \bbR^d$ yields $p^\star$.
+\end{proof}
+
+As a consequence of the saddle-point property, we recover a classical method (penalty method or Tychonoff regularization), that allows to transform constrained problems in different but equivalent unconstrained problems that are typically easier to solve.
+
+Given two parameters $\eta> 0$ and $\lambda \ge 0$, we consider the following two problems:
+	\begin{equation}
+		\label{eq:op-eta}
+		\tag{PO$_2$($\eta$)}
+		\min_{x\in\bbR^d}F_0(x) 
+		\qquad\text{subject to}\qquad 
+		F_1(x)\le \eta,
+	\end{equation}
+	and
+	\begin{equation}
+		\label{eq:op-lambda}
+		\tag{PO$_2$($\lambda$)}
+		\min_{x\in\bbR^d}F_0(x) + \lambda F_1(x).
+	\end{equation}
+
+	We have the following.
+
+\thm{Penalty method}{
+	% Assume that \eqref{eq:op-eta} is strictly feasible, in the sense that there exists $x^\star\in\bbR^d$ such that $F_1(x^\star)<\eta$. 
+	Assume that $F_0,F_1$ are lower semicontinuous, satisfy the assumptions of Theorem~\ref{th:slater}, and that $F_1(x)\ge 0$ for all $x\in \bbR^d$.
+	Then, for $x^\star\in \bbR^d$ the following statements are equivalent:
+	\begin{itemize}
+		\item There exists $\eta\ge 0$ such that $x^\star$ is a minimizer of \eqref{eq:op-eta}.
+		\item There exists $\lambda\ge 0$ such that $x^\star$ is a minimizer of \eqref{eq:op-lambda}.
+	\end{itemize}
+}
+
+\begin{proof}
+	Assume that $x^\star$ is a minimizer for \eqref{eq:op-eta}, and recall that for this problem 
+	\begin{equation}
+		L(x,\nu) = F_0(x) +\nu (F_1(x)-\eta), \qquad x\in \bbR^d,\, \nu\ge 0.
+	\end{equation}
+	By Theorem~\ref{th:slater}, we have that strong duality holds for \eqref{eq:op-eta} and that there exists a primal-dual optimal $(x^\star,\nu^\star)$. By the saddle-point propery (Theorem~\ref{th:saddle-point}) it holds that $L(x^\star, \nu^\star)\le L(x, \nu^\star)$ for any $x \in\bbR^d$. Since the constant term $-\nu^\star\eta$ does not affect the minimization, this proves that $x^\star$ is a minimizer of \eqref{eq:op-lambda} with $\lambda=\nu$.
+
+	For the converse statement, assume now that $x^\star$ is a minimizer of \eqref{eq:op-lambda}. 
+	Choose $\eta = F_1(x^\star)\ge 0$, so that the dual function of problem \eqref{eq:op-eta} satisfies
+	\begin{equation}
+		H(\lambda) = \inf_{x\in \bbR^d} L(x, \lambda) = \inf_{x\in \bbR^d} \left[ F_0(x) +\lambda F_1(x) \right] - \lambda F_1(x^\star) 
+		= F_0(x^\star).
+	\end{equation}
+	Here, we used that $x^\star$ is a minimizer for \eqref{eq:op-lambda}.
+	% Observe that here we used the non-negativity of $F_1$.
+	Since weak duality implies that $H(\lambda)\le F_0(x)$ for any feasible $x\in \bbR^d$, and $x^\star$ is feasible due to the choice of $\eta$, it follows that $x^\star$ is a minimizer of \eqref{eq:op-eta}.
+\end{proof}
+
+\begin{remark}
+	The non-negativity assumption on $F_1$ can be removed by replacing $F_1(x)$ in \eqref{eq:op-lambda} by $\min\{0,F_1(x)\}$.
+\end{remark}
+
+
+
 	% \dfn{Definition Topic}{Definition Statement}
 	% \thm{Theorem Name}{Theorem Statement}
 	% \cor[cori]{Corollary Name}{Corollary Statement}
@@ -769,8 +991,203 @@ If the problem is convex, then $\mcG$ is convex and under Slater's condition its
 % \wc{Wrong Concept topic}{Explanation}
 % \pf{Proof}{Proof}
 	
-% \chapter{Second Chapter}
-% \section{Section 1}
+\chapter{Numerical methods for (non)convex optimization}
+
+\section{Gradient descent}
+
+We are concerned with the following unconstrained minimization problem 
+\begin{equation}
+	\label{eq:unc-opt}
+	\min_{x\in\bbR^d} f(x),
+\end{equation}
+where $f:\bbR^d\to \bbR$ is a sufficiently smooth (say $C^1$) function.
+
+Since the gradient $\nabla f(x)$ encodes the direction of maximal growth of $f$ at $x$, it is natural to expect that moving in the direction $-\nabla f(x)$ will lead to a minimum $x^\star$ \eqref{eq:unc-opt}. 
+
+\dfn{Gradient flow}{
+	Assume that $f\in C^1(\bbR^d)$. 
+	The associated gradient flow from $x_0\in \bbR^d$ is ordinary differential equation:
+	\begin{equation}
+		\label{eq:grad-flow}
+		\dot x = -\nabla f(x), \qquad x(0)=x_0.
+	\end{equation} 
+}
+
+By Cauchy-Lipschitz theorem, \eqref{eq:grad-flow} admits local solutions. 
+In order for them to be global, we assume the following.
+
+\begin{assumption}
+	\label{ass:grad-lip}
+	The function $f\in C^{1}(\bbR^d)$ and, moreover, $\nabla f:\bbR^d\to \bbR^d$ is Lipschitz continuous with constant $L>0$. That is,
+	\begin{equation}
+		\label{eq:grad-lip}
+		\|\nabla f(x)-\nabla f(y)\|_2 \le L \|x-y\|_2,\qquad \forall x,y\in\bbR^d.
+	\end{equation}
+\end{assumption}
+
+Observe that if $f\in C^2(\bbR^d)$, the above assumption is verified by assuming that $\operatorname{Hess} f(x)\le L \operatorname{Id}$ in the sense of symmetric matrices (i.e.,  all eigenvalues of $\operatorname{Hess}f(x)$ are bounded above by $L$).
+
+Recall also that a function $f\in C^2(\bbR^d)$ that is strongly convex (i.e., there exists $\gamma>0$ such that $\operatorname{Hess}f(x)\ge \gamma/2$ for any $x\in \bbR^d$) always admits a unique minimizer (see Proposition~\ref{prop:convexity-diff} and Theorem~\ref{th:min-convex}).
+
+\thm[conv-grad-flow]{}{
+	Assume that $f\in C^2(\bbR^d)$ is strongly convex function satisfying Assumption~\ref{ass:grad-lip}. 
+	Then, for any initial condition $x_0\in \bbR^d$, the gradient flow \eqref{eq:grad-flow} converges to the unique minimizer $x^\star = \arg\min_{x\in\bbR^d} f(x)$.
+}
+
+\begin{proof}
+	Since $x^\star$ is unique, it is characterized by property $\nabla f(x^\star)=0$. In particular, the statement is trivial if $x_0=x^\star$.
+	Otherwise, let $V(x) = \frac12\|\nabla f(x)\|_2^2$ and observe that $\nabla V(x) = \operatorname{Hess}f(x) \nabla f(x)$. Computing $V$ along a solution $t\mapsto x(t)$ of \eqref{eq:grad-flow} we have
+	\begin{equation}
+		\begin{split}
+			\frac{d}{dt}V(x(t)) 
+			&= \nabla V(x(t))^\top \dot x(t) \\
+			&= \nabla f(x(t))^\top \operatorname{Hess}f(x(t)) \dot x(t) \\
+			&= -\nabla f(x(t))^\top \operatorname{Hess}f(x(t)) \nabla f(x(t))\\
+			&\le -\frac{\gamma}2 \|\nabla f(x(t))\|_2^2 = -\gamma V(x(t)).
+		\end{split}
+	\end{equation}
+	Here, we used the fact that $\operatorname{Hess}f(x)\ge \gamma/2$.
+	By integration of the above, we then obtain that for any $t\ge 0$ it holds
+	\begin{equation}
+		V(x(t)) \le V(x_0)e^{-\gamma t} 
+		\iff
+		\|\nabla f(x(t))\|_2\le \|\nabla f(x_0)\|_2 e^{-\gamma t/2}.
+	\end{equation}
+	Recall that $\nabla f(x^\star)=0$, this implies that 
+	\begin{equation}
+		\label{eq:estimate-grad}
+		\lim_{t\to +infty} \|\nabla f(x(t)) - \nabla f(x^\star)\|_2 \le \|\nabla f(x_0)\|_2 \lim_{t\to +\infty} e^{-\gamma t/2} = 0.
+	\end{equation}
+
+	Let us now use the above to show that $x(t)\rightarrow x^\star$ as $t\to +\infty$.
+	Indeed, we have 
+	\begin{equation}
+		\begin{split}
+			\frac{d}{dt}\frac12\|x(t)-x^\star\|_2^2
+			&= \langle x(t)-x^\star, \dot x(t) \rangle\\
+			&= -\langle x(t)-x^\star, \nabla f( x(t)) \rangle\\ 
+			&= -\langle x(t)-x^\star, \nabla f( x(t)) - \nabla f(x^\star) \rangle.
+		\end{split}
+	\end{equation}
+	By Lemma~\ref{th:co-coercivity}, to be proven later, this implies
+	\begin{equation}
+		\frac{d}{dt}\frac12\|x(t)-x^\star\|_2^2	
+		\le -\frac{1}{L} \|\nabla f(x(t))-\nabla f(x_0)\|_2^2
+		\le 0.
+	\end{equation}
+	Integrating the above, we obtain $\|x(t)-x^\star\|_2 \le \|x_0-x^\star\|_2$, which implies that $x(t)\in \bar B(x^\star, \|x_0-x^\star\|_2)$ (i.e., the evolution $t\mapsto x(t)$ is uniformly bounded in time). 
+	By compactness, there exists a sequence of times $(t_n)_n\subset \bbR_+$ and a point $x_\infty$ such that $x(t_n)\rightarrow x_\infty$. 
+	However, the fact that $f\in C^2(\bbR^d)$ implies that $\nabla f(x(t_n))\rightarrow \nabla f(x_\infty)$, and thus  \eqref{eq:estimate-grad} yields that $\nabla f(x_\infty) = \nabla f(x^\star)=0$.
+	By existence and uniqueness of the minimizer of $f$, this shows that $x_\infty=x^\star$.
+\end{proof}
+
+\lem[co-coercivity]{Co-coercivity}{
+	Let $f\in C^1(\bbR^d)$ be convex and such that $\nabla f$ is Lipschitz continuous with constant $L>0$. Then, we have that 
+	\begin{enumerate}
+		\item Quadratic upper bound (compare with Proposition~\ref{prop:convexity-diff}):
+		\begin{equation}
+			\label{eq:quad-low-bound}
+			f(y) \le f(x) + \langle \nabla f(x), y-x \rangle + \frac{L}2 \|y-x\|^2, \qquad \forall x,y\in \bbR^d.
+		\end{equation}
+		\item If $x^\star$ is a minimizer for $f$,
+	\begin{equation}
+		\label{eq:previous}
+		\frac{1}{2L}\|\nabla f(y)\|_2^2 \le f(y) - f(x^\star) \le \frac{1}{2}\|y-x^\star\|_2^2, \qquad \forall y\in \bbR^d.
+	\end{equation}
+		\item Co-coercivity:
+			\begin{equation}
+		\|\nabla f(x)-\nabla f(y)\|_2^2\le L \langle x-y, \nabla f(x)-\nabla f(y) \rangle,
+		\qquad \forall x,y\in \bbR^d.
+			\end{equation}
+	\end{enumerate}
+}
+
+\begin{proof}
+	The quadratic upper bound is a direct consequence of \eqref{eq:grad-lip} and the linear lower bound given by convexity (see Proposition~\ref{prop:convexity-diff}).
+
+	To prove the second part of the statement, since $\nabla f(x^\star) =0$ the right-hand inequality follows from the quadratic lower bound \eqref{eq:quad-low-bound} with $x=x^\star$. On the other hand, still by \eqref{eq:quad-low-bound} with $x=y$ and $y=z$ we obtain 
+	\begin{equation}
+		\begin{split}
+			f(x^\star) 
+			&= \inf_{z} f(z) \\
+			&\le \inf_z \left[ f(y) + \langle \nabla f(y), z-y \rangle + \frac{L}2 \|y-z\|^2 \right]\\
+			&\le \inf_{\|v\|=1} \inf_{t\ge 0} \left[ f(y) + t\langle \nabla f(y), v \rangle + \frac{Lt^2}2  \right]\\
+			&= \inf_{\|v\|=1} \left[ f(y) - \frac{1}{2L} \left(\langle \nabla f(y),x\rangle\right)^2 \right]\\
+			&= f(y) - \frac{1}{2L} \|\nabla f(y)\|_2^2.
+		\end{split}
+	\end{equation}
+
+	To conclude the proof, let us fix $x\in \bbR^d$ and consider the two functions
+	\begin{eqnarray}
+		f_x(z) = f(z)-\langle \nabla f(x),z\rangle
+		\qquad\text{and}\qquad
+		f_y(z) = f(z)-\langle \nabla f(y),z\rangle.
+	\end{eqnarray}
+	It is immediate to check that $\nabla f_x(z) = \nabla f(z)-\nabla f(x)$ is Lipschitz continuous of constant $L$, and that $f_x$ is convex. 
+	Since $z=x$ minimizes $f_x$ by convexity, the left-hand inequality in \eqref{eq:previous} applied to $f_x$ at $x^\star =x$ shows that 
+	\begin{equation}
+		f(y)-f(x)-\langle \nabla f(x),y-x \rangle = f_x(y)-f_x(x) \ge \frac{1}{2L}\|\nabla f_x(y)\|_2^2 = \frac{1}{2L}\|\nabla f(y)-\nabla f(x)\|_2^2.
+	\end{equation} 
+	The same reasoning applied to $f_y$, which is minimized by $z=y$, yields 
+	\begin{equation}
+		f(x)-f(y)-\langle \nabla f(y),x-y \rangle \ge \frac{1}{2L}\|\nabla f(y)-\nabla f(x)\|_2^2.
+	\end{equation}
+	Combining the two inequalities completes the proof.
+\end{proof}
+
+A natural time-discretization of the gradient flow \eqref{eq:grad-flow} is via the Explicit Euler scheme, which yields the gradient descent algorithm.
+
+\dfn{Gradient descent algorithm}{
+	The gradient descent algorithm for $f\in C^1(\bbR^d)$ starting at $x_0\in \bbR^d$ with parameters $(\alpha_n)_n\subset \bbR_+$, is 
+	\begin{equation}
+		\label{eq:discr-grad-desc}
+		x_{n+1} = x_n - \alpha_n \nabla f(x_n).
+	\end{equation}
+}
+
+Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line search. However, also a constant choice $\alpha = \alpha_n$ suﬃciently small will suffice. Let us show now a result of convergence of the algorithm above. 
+
+\thm{}{
+	Let $f\in C^1(\bbR^d)$ be convex, coercive (i.e., $f(x)\to +\infty$ as $x\to +\infty$), and such that $\nabla f$ is Lipschitz continuous with constant $L>0$, and admitting a unique minimizer $x^\star$. 
+	Assume that 
+	\begin{equation}
+		\sum_{n=0}^{+\infty} \alpha_n = +\infty
+		\qquad\text{and}\qquad
+		\alpha_n \le \frac{1}L,\quad 
+		\forall n\in \bbN.
+	\end{equation}
+	Then, the iterations of the algorithm \eqref{eq:discr-grad-desc} converge to $x^\star$ (i.e., $x_n\rightarrow x^\star$ as $n\to +\infty$).
+}
+
+\begin{proof}
+	Fix $n\in\bbN$.
+	To ease the notation, set $x=x_n$, $\alpha = \alpha_n$, and $x^+=x_{n+1}=x-\alpha \nabla f(x)$. Then, 
+	By the quadratic upper bound of Lemma~\ref{th:co-coercivity}, we have
+	\begin{equation}
+		\label{eq:first-step}
+			f(x_{n+1}) 
+			\le f(x_n) + \langle \nabla f(x_n), x_{n+1}-x_n \rangle+\frac{L}2\|x_{n+1}-x_n\|_2^2
+			= f(x_n)-\alpha_n \left(1-\frac{\alpha_n L}2\right) \|\nabla f(x_n)\|_2^2.
+	\end{equation}
+
+	The above implies that 
+	\begin{equation}
+		\sum_{n=0}^{N-1} \alpha_n \left(1-\frac{\alpha_n L}2\right) \|\nabla f(x_n)\|_2^2 \le \sum_{n=0}^{N-1} \left(f(x_{n})-f(x_{n+1})\right) =f(x_0) - f(x_N) \le f(x_0)-f(x^\star).
+	\end{equation}
+	Since the r.h.s.~is independent of $N$ and $1-L\alpha_n/2 \ge 1/2$, this shows that 
+	\begin{equation}
+		\sum_{n=0}^{N-1} \alpha_n  \|\nabla f(x_n)\|_2^2 \le
+		\frac12\sum_{n=0}^{N-1} \alpha_n \left(1-\frac{\alpha_n L}2\right) \|\nabla f(x_n)\|_2^2 < +\infty.
+	\end{equation}
+	Since $\sum_n \alpha_n = +\infty$ by assumption, one easily shows by contradiction that $\|\nabla f(x_n)\|_2\rightarrow 0$ as $n\to +\infty$. 
+
+	Observe that, by \eqref{eq:first-step} and the assumption $\alpha_n\le 1/L$, we deduce that $f(x_{n+1})<f(x_n)$ for any $n\in \bbN$. In particular, by coercivity, there exists $R>0$ such that $x_n\in \bar B(0,R)$ for any $n\in \bbN$, and thus the same argument used at the end of the proof of Theorem~\ref{th:conv-grad-flow} shows that $\|\nabla f(x_n)\|_2^2$ implies convergence to the unique minimum.
+\end{proof}
+
+\begin{remark}
+	The coercivity assumption can be relaxed by simply asking that the level set $\{x\mid f(x)\le f(x_0)\}$ be bounded. 
+	Is it also possible to remove the assumption of uniqueness of the minimum, in which case we have that every cluster point of the iterates is a minimum.
+\end{remark}
 
 \printbibliography
 \end{document}
