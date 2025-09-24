@@ -371,6 +371,7 @@
 	\end{remark}
 
 \section{Convex conjugate and sub-differential}
+\label{sec:conjugate-fct}
 
 \dfn{}{
 	The convex conjugate (of Fenchel dual)  of an extended function $F:\bbR^d\to \bbR\cup\{+\infty\}$ is the function $F^*:\bbR^d\to \bbR\cup\{+\infty\}$ defined by
@@ -549,7 +550,7 @@ Thanks to the previous result, we are in a position to prove the following prope
 
 
 
-\prop{}{
+\prop{subdiff-conj}{
 	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a convex function and $x,y\in \bbR^d$. Then, the following are equivalent:
 	\begin{enumerate}
 		\item[i.] $y\in \partial F(x)$.
@@ -579,9 +580,113 @@ Thanks to the previous result, we are in a position to prove the following prope
 	To complete the proof, observe that by Theorem~\ref{th:fenchel-moreau} the lower semicontinuity of $F$ yield that $F^{**}=F$, so that \emph{ii} is equivalent to $F^{**}(x)+F^*(y)=\langle x,y\rangle$. Using the fact that \emph{i}$\iff$\emph{ii} with $F$ replaced by $F^*$ completes the proof.
 \end{proof}
 
+\section{Proximal operator}
+\label{sec:proximal}
+
+\dfn{Proximal operator}{
+	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function. The proximal operator associated with $F$ is 
+	\begin{equation}
+		P_F(y) = \arg\min_{x\in\bbR^d}\left\{ F(x) + \frac12 \|x-y\|^2_2 \right\}.
+	\end{equation}
+}
+
+The above definition makes sense, since $x\mapsto F(x) + \frac12 \|x-y\|^2$ is a strongly convex function and hence has a unique minimum by Theorem~\ref{th:min-convex}.
+
+\ex{Proximal operator of a convex set}{
+	Let $F=\chi_K$ be the $0$-$\infty$ characteristic function of a convex set. Then, $P_K = P_{\chi_K}$ is the orthogonal projection onto $K$, that is 
+	\begin{equation}
+		P_F(y) = \arg\min_{x\in K}\left\{ \|x-y\|^2 \right\}.
+	\end{equation}	
+}
+
+\ex[soft-thresholding]{Soft-thresholding}{
+	Let $F(x) = |x|$ for $x\in\bbR$. Then, for any $\lambda>0$,
+	\begin{equation}
+		\label{eq:soft-thresholding}
+		P_{\lambda F}(y):=S_\lambda(y) = 
+		\begin{cases}
+			y+\lambda & \text{if } y \le -\lambda,\\
+			0 & \text{ if } |y|<\lambda ,\\
+			y-\lambda & \text{if } y \ge\lambda,\\
+		\end{cases}
+	\end{equation}
+	This function is known as soft-thresholding. See Figure~\ref{fig:soft-thresholding}.
+}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=.3\textwidth]{images/soft-thresholding.png}
+	\caption{Soft-thresholding function.}
+	\label{fig:soft-thresholding}
+\end{figure}
+
+
+The following proposition shows the relation between the proximal operator and the subdifferential, and justifies the notation 
+\begin{equation}
+	P_F = (\operatorname{Id} + \partial F)^{-1}.
+\end{equation}
+
+\prop[prox-subdiff]{}{
+	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function, then, for any $x,y\in\bbR^d$,
+	\begin{equation}
+		P_F(y) = x 
+		\iff
+		y \in x + \partial F(x). 
+	\end{equation}
+}
+
+\begin{proof}
+	By Theorem~\ref{th:suff-cond-minimum}, we have that $x=P_F(y)$ if and only if 
+	\begin{equation}
+		0 \in \partial\left[ \frac12 \|\cdot-y\|_2^2 + F(\cdot)\right](x) = x - y +\partial F(x).
+	\end{equation}
+	Here, we used differentiability of $x\mapsto \|x-y\|_2^2$. This completes the proof.
+\end{proof}
+
+An important property of the proximal operator is the following.
+
+\prop{Non-expansiveness of the proximal operator}{
+	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function, then the proximal operator is non-expansive. Namely,
+	\begin{equation}
+		\|P_F(y_1)-P_F(y_2)\|_2^2 \le \|y_1-y_2\|_2^2, \qquad \forall y_1,y_2\in\bbR^d.
+	\end{equation}
+}
+
+\begin{proof}
+	Let $x_i = P_F(y_i)$. Then, by Proposition~\ref{prop:prox-subdiff} we have $y_i \in x_i+\partial F(x_i)$. In particular, $y_i - x_i \in \partial F(x_i)$ and thus, by definition of subdifferential,
+	\begin{gather}
+		F(x_2) \ge F(x_1) + \langle y_1-x_1,x_2-x_1 \rangle 
+		\qquad\text{and}\qquad
+		F(x_1) \ge F(x_2) + \langle y_2-x_2,x_1-x_2 \rangle .
+	\end{gather}
+	Summing up, we get $0\ge \langle x_1-y_1+y_2-x_1,x_1-x_2 \rangle$, which yields
+	\begin{equation}
+		\|x_1-x_2\|_2^2 \le \langle y_1-y_2,x_1-x_2\rangle.
+	\end{equation}
+	Applying Cauchy-Schwarz inequality allows to conclude.
+\end{proof}
+
+The following relates the proximal operator of $F$ and of its complex conjugate $F^*$, defined in Section~\ref{sec:conjugate-fct}.
+
+\thm[moreau-ident]{Moreau's Identity}{
+	Let $F:\bbR^d\to \bbR\cup\{+\infty\}$ be a lower semicontinuous convex function. Then, 
+	\begin{equation}
+		P_F(y) + P_{F^*}(y) = y, \qquad \forall y\in \bbR^d.
+	\end{equation}
+	}
+
+\begin{proof}
+	Let $x = P_F(y)$ and set $z=y-x$. By Proposition~\ref{prop:prox-subdiff} we thus have $z\in \partial F(x)$. Since $F$ is lower semicontinuous, we have from Proposition~\ref{prop:subdiff-conj} that $x\in \partial F^*(z)$ Since this is equivalent to $y\in z + \partial F^*(z)$, Proposition~\ref{prop:prox-subdiff} implies that $z = P_{F^*}(y)$. Thus,
+	\begin{equation}
+		P_F(y) + P_{F^*}(y) = x + z = y.
+	\end{equation}
+\end{proof}
+
+
 \chapter{Optimization problems}
 
 \section{Convex optimization problems}
+\label{chp:optimization-problems}
 
 \dfn{}{
 An optimization problem is a minimization problem of the form
@@ -1016,14 +1121,13 @@ Since the gradient $\nabla f(x)$ encodes the direction of maximal growth of $f$ 
 By Cauchy-Lipschitz theorem, \eqref{eq:grad-flow} admits local solutions. 
 In order for them to be global, we assume the following.
 
-\begin{assumption}
-	\label{ass:grad-lip}
+\ass[grad-lip]{}{
 	The function $f\in C^{1}(\bbR^d)$ and, moreover, $\nabla f:\bbR^d\to \bbR^d$ is Lipschitz continuous with constant $L>0$. That is,
 	\begin{equation}
 		\label{eq:grad-lip}
 		\|\nabla f(x)-\nabla f(y)\|_2 \le L \|x-y\|_2,\qquad \forall x,y\in\bbR^d.
 	\end{equation}
-\end{assumption}
+}
 
 Observe that if $f\in C^2(\bbR^d)$, the above assumption is verified by assuming that $\operatorname{Hess} f(x)\le L \operatorname{Id}$ in the sense of symmetric matrices (i.e.,  all eigenvalues of $\operatorname{Hess}f(x)$ are bounded above by $L$).
 
@@ -1069,7 +1173,7 @@ Recall also that a function $f\in C^2(\bbR^d)$ that is strongly convex (i.e., th
 			&= -\langle x(t)-x^\star, \nabla f( x(t)) - \nabla f(x^\star) \rangle.
 		\end{split}
 	\end{equation}
-	By Lemma~\ref{th:co-coercivity}, to be proven later, this implies
+	By Theorem~\ref{th:co-coercivity}, to be proven later, this implies
 	\begin{equation}
 		\frac{d}{dt}\frac12\|x(t)-x^\star\|_2^2	
 		\le -\frac{1}{L} \|\nabla f(x(t))-\nabla f(x_0)\|_2^2
@@ -1081,7 +1185,7 @@ Recall also that a function $f\in C^2(\bbR^d)$ that is strongly convex (i.e., th
 	By existence and uniqueness of the minimizer of $f$, this shows that $x_\infty=x^\star$.
 \end{proof}
 
-\lem[co-coercivity]{Co-coercivity}{
+\thm[co-coercivity]{Co-coercivity}{
 	Let $f\in C^1(\bbR^d)$ be convex and such that $\nabla f$ is Lipschitz continuous with constant $L>0$. Then, we have that 
 	\begin{enumerate}
 		\item Quadratic upper bound (compare with Proposition~\ref{prop:convexity-diff}):
@@ -1162,7 +1266,7 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 \begin{proof}
 	Fix $n\in\bbN$.
 	% To ease the notation, set $x=x_n$, $\alpha = \alpha_n$, and $x^+=x_{n+1}=x-\alpha \nabla f(x)$. 
-	Then, by the quadratic upper bound of Lemma~\ref{th:co-coercivity}, we have
+	Then, by the quadratic upper bound of Theorem~\ref{th:co-coercivity}, we have
 	\begin{equation}
 		\label{eq:first-step}
 			f(x_{n+1}) 
@@ -1237,9 +1341,8 @@ For this particular setting, there is a way out which stems from replacing the a
 
 Due to the randomness in the choice of $\omega_n$, this algorithm is probabilistic. We can, however, control its average behavior. For this we need to require certain assumptions on the stochastic gradient.
 
-\begin{assumption}
-	\label{ass:stoc-grad}
-	At any iteration $n\in \bbN$ of \eqref{eq:stoc-grad-desc}, the random variable $\omega_n$ satisfies
+\ass[stoc-grad]{}{
+		At any iteration $n\in \bbN$ of \eqref{eq:stoc-grad-desc}, the random variable $\omega_n$ satisfies
 	\begin{enumerate}
 		\item The stochastic gradient $\nabla f(x,\omega_n)$ is an unbiased estimator of the real gradient, meaning that $\bbE_{\omega_n}\left[ \nabla f(x,\omega_n) \right] = \nabla f(x)$ for any $x\in \bbR^d$.
 		\item There exists $\sigma^2$ such that the following variance estimate holds 
@@ -1247,7 +1350,7 @@ Due to the randomness in the choice of $\omega_n$, this algorithm is probabilist
 			\bbE_{\omega_n}\left[ \|\nabla f(x,\omega_n)\|_2^2\right] \le \|\nabla f(x)\|_2^2 + \sigma^2,\qquad \forall x\in \bbR^d.
 		\end{equation}
 	\end{enumerate}
-\end{assumption}
+}
 
 \begin{remark}
 	In the above, one has to pay attention to the fact that $\nabla f(x,\omega_n)$ is a random variable through $\omega_n$. E.g., in the case where $\Omega$ is discrete 
@@ -1278,7 +1381,7 @@ Under these assumptions we have the following.
 
 \begin{proof}
 	Fix $n\in\bbN$.
-	Then, by the quadratic upper bound of Lemma~\ref{th:co-coercivity}, we have
+	Then, by the quadratic upper bound of Theorem~\ref{th:co-coercivity}, we have
 	\begin{equation}
 		\label{eq:first-step}
 			f(x_{n+1}) 
@@ -1322,7 +1425,7 @@ We then have the following.
 
 \begin{proof}
 	Fix $n\in\bbN$. 
-	By Proposition~\ref{prop:estimate-stoc-grad} and Lemma~\ref{th:co-coercivity}, we have 
+	By Proposition~\ref{prop:estimate-stoc-grad} and Theorem~\ref{th:co-coercivity}, we have 
 	\begin{equation}
 		\bbE_{\omega_n}\left[ f(x_{n+1}) \right] -f(x_n)
 		\le	\alpha\left( 1 - \frac{L\alpha}{2}\right)\|\nabla f(x_n)\|_2^2+\frac{L\alpha}{2}\sigma^2
@@ -1374,6 +1477,232 @@ We present a simple result concerning variable stepsize, showing that a correct 
 	\end{equation}
 	To complete the proof of the statement it suffices to apply a recurrence over $n\in\bbN$.
 \end{proof}
+
+\section{Proximal methods}
+
+Often times the objective function is not smooth, or at least not entirely smooth.
+Indeed, a common problem encountered in optimization is the following
+\begin{equation}
+	\label{eq:f+g-prox}
+	\min_{x\in\bbR^d} f(x) + g(x),
+\end{equation}
+where $f$ is sufficiently smooth (say, $C^1$ with Lipschitz gradient), while $g$ is not smooth but ``simple''.
+
+\ex{}{
+	\begin{itemize}
+		\item Constrained optimization: for a set $K$, letting $\chi_K$ be its $0$-$\infty$ characteristic function \eqref{eq:0-infty-char}, consider
+		\begin{equation}
+			\min_{x\in K} f(x)  = \min_{x\in \bbR^d} f(x) + \chi_K(x) .
+		\end{equation}
+		\item Lasso regression:
+		\begin{equation}
+			\min_{x\in\bbR^d} \|Ax - b\|_2^2 + \lambda \|x\|_1.
+		\end{equation}
+	\end{itemize}
+}
+
+Here, we will use the proximal operator introduced in Section~\ref{sec:proximal}, by considering the following algorithm.
+
+\dfn{Proximal gradient method}{
+	The proximal gradient method for \eqref{eq:f+g-prox}, with $f\in C^1(\bbR^d)$ and $g$ convex, starting at $x_0\in\bbR^d$ with parameters $(\alpha_n)_n\subset \bbR_+$, is
+	\begin{equation}
+		\label{eq:proximal-method}
+		x_{n+1} = P_{\alpha_n g}\left[ x_n - \alpha_n\nabla f(x_n) \right].
+	\end{equation}
+}
+
+\begin{remark}
+	Observe that if $g$ is smooth, the above reduces to 
+	\begin{equation}
+		x_{n+1} =  x_n - \alpha_n\left( \nabla f(x_n) + \nabla g(x_{n+1})\right).
+	\end{equation}
+	In particular, this becomes \emph{implicit} (the right-hand side depends on $x_{n+1}$), and does not reduce to the gradient descent.
+	
+	On the other hand, if $g=\chi_K$ for some convex set $K\subset \bbR^d$, the above reduces to the \emph{projected gradient descent} (see exercises).
+\end{remark}
+	
+The idea of the above algorithm is the following. 
+\begin{enumerate}
+	\item As a first guess, do a gradient descent step on the smooth part :
+	\begin{equation}
+		y_{n+1} =x_n - \alpha_n\nabla f(x_n).
+	\end{equation}
+	\item Replace this first guess with 
+	\begin{equation}
+		x_{n+1} = P_{\alpha_n g}(y_n) = \arg\min_{x\in \bbR^{d}}\left[ g(x) + \frac{1}{2\alpha_n}\|x-y_{n+1}\|_2^2 \right].
+	\end{equation}
+	Notice that $x_{n+1}$ is a point near $y_{n+1}$ (due to the $\|x-y_{n+1}\|_2^2$ in the above minimization) that makes $g$ small.
+\end{enumerate}
+
+Let us prove convergence in the constant step-size case.
+
+\thm{}{
+	Let $g:\bbR^d\to \bbR$ be smooth, and $f\in C^1(\bbR^d)$ be convex, smooth, and such that $\nabla f$ is Lipschitz with constant $L>0$. 
+	Assume, moreover that \eqref{eq:f+g-prox} admits a unique minimizer $x^\star$.
+
+	Then, the iteration of \eqref{eq:proximal-method} with $\alpha_n = \alpha < 1/L$ converges to $x^\star$.
+}
+
+\begin{proof}
+	To be added. We refer to \cite{fawziLecture}, for the moment.
+\end{proof}
+
+\ex{Regression with $\ell_1$ regularization (Lasso)}{
+Consider the problem
+\begin{equation}
+	\label{eq:lasso}
+    \min_{x \in \mathbb{R}^n}  \|Ax - b\|_2^2 + \lambda \|x\|_1,
+\end{equation}
+where $A \in \mathbb{R}^{m \times d}$ and $b \in \mathbb{R}^d$. 
+The $\|x\|_1$ term in the objective promotes sparsity in the solution $x^\star$.
+
+This fits the template \eqref{eq:f+g-prox} with 
+\begin{equation}
+    f(x) = \|Ax - b\|_2^2 
+    \quad \text{and} \quad 
+    g(x) = \lambda \|x\|_1.
+\end{equation}
+We saw in Example~\ref{ex:soft-thresholding} that the proximal operator of $g$ is the soft-thresholding operator. 
+
+The proximal gradient method applied to this problem is called the 
+\emph{iterative shrinkage-thresholding algorithm (ISTA)} and takes the form
+\[
+    x_{k+1} = S_{\alpha t}\left(x_k - 2t A^\top (A x_k - b)\right),
+\]
+where $S_{\alpha t}$ is the soft-thresholding operator \eqref{eq:soft-thresholding} with parameter $\lambda t$. 
+}
+
+\section{Dual methods}
+
+We saw in Chapter~\ref{chp:optimization-problems} that to any convex optimization problem is possible to associate a dual problem.
+In some cases, the dual problem has a structure that is more amenable to algorithms than the original, primal, problem. We explore the possibility of applying various optimization methods to the dual problem.
+
+Similarly to the previous section, we focus on optimization problems in the form
+\begin{equation}
+	\label{eq:f+gA-dual}
+	\min_{x\in\bbR^d} f(x) + g(Ax).
+\end{equation}
+Here,  $A\in \bbR^{m\times d}$, while $f$and $g$ are convex function, with $f$ typically smooth, and $g$ non-smooth.
+
+If $P_{g\circ A}$ is simple to compute, this problem can be solved by applying the proximal gradient method of the previous section. 
+However, we can encounter situations where, although $g$ has a simple proximal operatr, the proximal operator of ${g\circ A}$ is very hard to compute.
+In this section we see that, however, considering the dual problem allows to circumvent this issue.
+
+\ex{Signal denoising using total variation}{
+	Consider the problem of denoising a 1d signal $u \in \mathbb{R}^d$ with total-variation regularization:
+	\begin{equation}
+	\min_{x \in \mathbb{R}^d} 
+	 \| x - u \|_2^2+ \lambda \sum_{i=1}^{d-1} |x_{i+1} - x_i|.
+	\end{equation}
+	This problem can be put in the form \eqref{eq:f+gA-dual} with
+	\begin{equation}
+		f(x) = \|x - u\|_2^2, \qquad\text{and}\qquad
+		g(x) = \|x\|_1,
+	\end{equation}
+	and $A$ the discrete difference operator
+	\[
+	Ax = 
+	\begin{bmatrix}
+	x_2 - x_1\\
+	x_3 - x_2\\
+	\vdots\\
+	x_n - x_{d-1}
+	\end{bmatrix}.
+	\]
+}
+
+Observe that \eqref{eq:f+gA-dual} is easily rewritten as 
+\begin{equation}
+	\label{eq:f+g+A-dual}
+	\min_{(x,y)\in\bbR^{d\times m}} f(x) + g(y) 
+	\qquad\text{subject to}\qquad 
+	y = Ax.
+\end{equation}
+We have the following.
+
+\prop{}{
+	The dual problem to \eqref{eq:f+g+A-dual} is 
+	\begin{equation}
+		\label{eq:dual-f+g+A}
+		\max_{\xi\in\bbR^m} \left[ - f^*(-A^\top \xi) - g^*(\xi) \right].
+	\end{equation}
+	Here, $f^*$ and $g^*$ are the convex conjugate functions defined in Section~\ref{sec:conjugate-fct}.
+}
+
+\begin{proof}
+	The Lagrange function is $L:\bbR^d\times\bbR^d\times \bbR^m$
+	\begin{equation}
+		L(x,y,\xi) = f(x)+h(y) +\langle \xi, Ax-y\rangle.
+	\end{equation}
+	The dual function then reads
+	\begin{equation}
+		\begin{aligned}
+			H(z) 
+			&= \min_{x,y} L(x,y,z) \\
+			&= \min_{x,y} \left\{ f(x) + \langle z, Ax \rangle + g(y) - \langle z, y \rangle \right\} \\
+			&= \min_{x} \left\{ f(x) + \langle z, Ax \rangle \right\} 
+			   + \min_{y} \left\{ g(y) - \langle z, y \rangle \right\} \\
+			&= - f^*(-A^\top z) - h^*(z).
+		\end{aligned}
+	\end{equation}
+	This completes the proof.
+\end{proof}
+
+We see that the dual problem concerns now the function $f^*\circ (-A^\top)$, which inherits the good properties of $f$, and $g^*$, whose proximal operator is easy to compute. Indeed, thanks to Moreau's identity (Theorem~\ref{th:moreau-ident}) we have 
+\begin{equation}
+	P_{g^*}(y) = y - P_g(y), \qquad \forall y\ in \bbR^d.
+\end{equation}
+We thus have the following.
+
+\thm{Dual proximal gradient}{
+	Let $g$ be convex, and $f\in C^1(\bbR^d)$ be $\gamma$-strongly convex. 
+	Then, the proximal gradient method \eqref{eq:proximal-method} applied to the dual problem \eqref{eq:dual-f+g+A} reads
+	\begin{equation}
+		\begin{cases}
+			x_{n+1} = \arg\min_{x\in \bbR^d} \left[ f(x) + \langle z_n, Ax \rangle \right], \\
+			y_{n+1} = \arg\min_{y\in\bbR^m} \left[ g(y) -\langle z_n, y\rangle + \frac{\alpha_n}2\|Ax_n-y\|_2^2\right],\\
+			z_{n+1} = z_n + \alpha_n ( A x_n - y_n ).
+		\end{cases}
+	\end{equation}
+	
+	In particular, if \eqref{eq:f+gA-dual} admits a unique minimizer $x^\star$, and $\alpha_n = \alpha <\gamma /\|A\|$. 
+}
+
+\begin{remark}
+	For the signal denoising example, it is possible to derive a closed form expression for $x_n$ and $y_n$.
+\end{remark}
+
+\begin{proof}
+	Since $f$ is $\gamma$-strongly convex, it is straightforward to show that $y\mapsto -f^*(A^\top y)$ is $C^1$ and has Lipschitz constant $\gamma/\|A\|$ (here, we consider $\|A\|=\sup_{x\neq 0} \|Ax\|_2/\|x\|_2$).
+
+	The proximal method applied to the dual reads 
+	\begin{equation}
+		\label{eq:prox-1}
+		z_{n+1} = P_{\alpha_n g}\left[ z_n + \alpha_n A \nabla f^*(-A^\top z_n) \right].
+	\end{equation}
+	It is possible to show that the strong convexity of $f$ implies
+	\begin{equation}
+		\nabla f^* (v) = \arg\max_{x\in\bbR^d} \left[\langle v,x\rangle - f(x) \right] 
+		= \arg\min_{x\in\bbR^d} \left[f(x)-\langle v,x\rangle \right] 
+	\end{equation}
+	Thus, \eqref{eq:prox-1} read 
+	\begin{equation}
+		\begin{cases}
+			x_{n+1} =\arg\min_{x\in\bbR^d} \left[f(x)+\langle z_n,Ax\rangle \right] ,\\
+			z_{n+1}=P_{\alpha_n g}\left[ z_n + \alpha_n A x_n \right].
+		\end{cases}
+	\end{equation}
+	
+	The statement follows by using Moreau's identity (Theorem~\ref{th:moreau-ident}) and the following simple equalities for the conjugate and the proximal operator:
+	\begin{equation}
+		(\alpha g)^*(y) = \alpha g(y / \alpha)
+		\qquad\text{and}\qquad 
+		P_{\alpha g(\cdot/\alpha)} (x) = \alpha P_{\alpha^{-1}g}(x/\alpha), 
+		\qquad \forall\alpha>0.
+	\end{equation}
+\end{proof}
+
+
 
 \printbibliography
 \end{document}	
