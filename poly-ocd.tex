@@ -1188,7 +1188,7 @@ Recall also that a function $f\in C^2(\bbR^d)$ that is strongly convex (i.e., th
 \thm[co-coercivity]{Co-coercivity}{
 	Let $f\in C^1(\bbR^d)$ be convex and such that $\nabla f$ is Lipschitz continuous with constant $L>0$. Then, we have that 
 	\begin{enumerate}
-		\item Quadratic upper bound (compare with Proposition~\ref{prop:convexity-diff}):
+		\item Quadratic upper bound (compare with Proposition~\ref{prop:convexity-diff}, this does not require convexity):
 		\begin{equation}
 			\label{eq:quad-low-bound}
 			f(y) \le f(x) + \langle \nabla f(x), y-x \rangle + \frac{L}2 \|y-x\|^2, \qquad \forall x,y\in \bbR^d.
@@ -1207,7 +1207,17 @@ Recall also that a function $f\in C^2(\bbR^d)$ that is strongly convex (i.e., th
 }
 
 \begin{proof}
-	The quadratic upper bound is a direct consequence of \eqref{eq:grad-lip} and the linear lower bound given by convexity (see Proposition~\ref{prop:convexity-diff}).
+	The quadratic upper bound is a direct consequence of the fact that 
+	\begin{equation}
+		f(y)
+		=f(x)+\int_0^1 \frac{d}{dt} f(x+t(y-x)) \, dt
+		=f(x)+\int_0^1 \langle\nabla f(x+t(y-x)), y-x \rangle\, dt.
+	\end{equation}
+	Indeed, the $L$-Lipschitz property of $\nabla f$ and the Cauchy-Schwarz inequality yields 
+	\begin{equation}
+		\langle\nabla f(x+t(y-x)), y-x \rangle 
+		\le \langle\nabla f(x), y-x \rangle + L \|y-x\|^2.
+	\end{equation}
 
 	To prove the second part of the statement, since $\nabla f(x^\star) =0$ the right-hand inequality follows from the quadratic lower bound \eqref{eq:quad-low-bound} with $x=x^\star$. On the other hand, still by \eqref{eq:quad-low-bound} with $x=y$ and $y=z$ we obtain 
 	\begin{equation}
@@ -1268,7 +1278,7 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 	% To ease the notation, set $x=x_n$, $\alpha = \alpha_n$, and $x^+=x_{n+1}=x-\alpha \nabla f(x)$. 
 	Then, by the quadratic upper bound of Theorem~\ref{th:co-coercivity}, we have
 	\begin{equation}
-		\label{eq:first-step}
+		\label{eq:first-step1}
 			f(x_{n+1}) 
 			\le f(x_n) + \langle \nabla f(x_n), x_{n+1}-x_n \rangle+\frac{L}2\|x_{n+1}-x_n\|_2^2
 			= f(x_n)-\alpha_n \left(1-\frac{\alpha_n L}2\right) \|\nabla f(x_n)\|_2^2.
@@ -1285,7 +1295,7 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 	\end{equation}
 	Since $\sum_n \alpha_n = +\infty$ by assumption, one easily shows by contradiction that $\|\nabla f(x_n)\|_2\rightarrow 0$ as $n\to +\infty$. 
 
-	Observe that, by \eqref{eq:first-step} and the assumption $\alpha_n\le 1/L$, we deduce that $f(x_{n+1})<f(x_n)$ for any $n\in \bbN$. In particular, by coercivity, there exists $R>0$ such that $x_n\in \bar B(0,R)$ for any $n\in \bbN$, and thus the same argument used at the end of the proof of Theorem~\ref{th:conv-grad-flow} shows that $\|\nabla f(x_n)\|_2^2$ implies convergence to the unique minimum.
+	Observe that, by \eqref{eq:first-step1} and the assumption $\alpha_n\le 1/L$, we deduce that $f(x_{n+1})<f(x_n)$ for any $n\in \bbN$. In particular, by coercivity, there exists $R>0$ such that $x_n\in \bar B(0,R)$ for any $n\in \bbN$, and thus the same argument used at the end of the proof of Theorem~\ref{th:conv-grad-flow} shows that $\|\nabla f(x_n)\|_2^2$ implies convergence to the unique minimum.
 \end{proof}
 
 \begin{remark}
@@ -1315,8 +1325,8 @@ can become extremely expensive and the implementation of a gradient descent unre
 This is known as the \emph{curse of dimensionality}.
 
 \ex{}{
-If we are trying to learn a regression model $\omega = (\hat z, \hat y)$ would be the observations, the model would be $y=mz+q$, with parameter $x=(m,q)$. 
-Then, the loss function for the sample $(\hat z,\hat y)$ is then
+If we are trying to learn a regression model, $\omega = (\hat z, \hat y)$ would be the observations, and the model would be $y=mz+q$, with parameter $x=(m,q)$. 
+Then, the loss function for the sample $(\hat z,\hat y)$ is 
 \begin{equation}
 	\ell((m,q),(\hat z, \hat y)) = ( \hat y- m\hat z - q )^2.
 \end{equation}
