@@ -67,7 +67,7 @@
 
 	An important result (that we will not prove) on convex sets is the following.
 
-	\thm{Separation theorem}{
+	\thm[separation]{Separation theorem}{
 		Let $K_1,K_2\subset \bbR^d$ be two convex sets such with disjoint interior. Then there exists $v\in \bbR^d$ and $\lambda \in \bbR$ such that 
 		\begin{equation}
 			K_1\subset H_{v,\lambda}, \qquad K_2 \subset \bbR^d \setminus H_{v,\lambda}. 
@@ -152,8 +152,37 @@
 	We 	have the following properties for the polar cone.
 
 	\prop{}{
-		The polar cone $K^*$ is a closed, convex cone. If, moreover, the cone $K$ is closed, then $K^{**}=K$.
+		The dual cone $K^*$ is a closed, convex cone. If, moreover, the cone $K$ is closed and convex, then $K^{**}=K$.
 	}
+
+	\begin{proof}
+		The fact that $K^*$ is closed follows immediately by continuity of $y\mapsto \langle x,y\rangle$ for any $x\in K$. 
+		To show that $K^*$ is convex, let $y,z\in K^*$, $x\in K$, and compute 
+		\begin{equation}
+			\langle ty + (1-t)z, x\rangle = t \langle y, x\rangle +(1-t) \langle z,x\rangle \ge 0 \qquad \forall t\in [0,1].
+		\end{equation}
+
+		Consider now $x\in K$. By definition of $K^*$ we have that $\langle x,y\rangle\ge 0$ for all $y\in K^*$, which implies that $K\subset K^{**}$. 
+		
+		In order to show the opposite inclusion, we will show that $x\notin K$ implies that $x\notin K^**$. Let $x\notin K$ and observe that then $\{x\}$ is a convex set whose interior is disjoint from $K$. By the Separation Theorem~\ref{th:separation}, there exists $v\in \bbR^d$ and $\lambda\in\bbR$ such that 
+		\begin{equation}
+			\langle y,v \rangle\ge  \lambda\qquad \forall y\in K
+			\qquad\text{and}\qquad 
+			\langle x,v \rangle < \lambda.
+		\end{equation}
+		Since $0\in K$, for the above to be true it has to hold $\lambda \le 0$, and hence it holds
+		\begin{equation}
+			\langle y,v \rangle\ge  0\qquad \forall y\in K
+			\qquad\text{and}\qquad 
+			\langle x,v \rangle < 0.
+		\end{equation} 
+		In particular, the first part of the above yields $v\in K^*$. Hence, the second part of the above yields $x\notin K^**$, as desired.
+	\end{proof}
+
+	\begin{remark}
+		The convexity assumption in the above is essential, a counterexample is easily constructed by considering $K$ to be the union of two half-lines.
+		In general, $K^{**} = \overline{\operatorname{conv}(K)^{**}}$. 
+	\end{remark}
 
 	\section{Convex functions}
 
