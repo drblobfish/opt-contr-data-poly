@@ -288,7 +288,7 @@
 			\end{equation}
 			and strongly convex if and only if there exists $\gamma>0$ such that
 			\begin{equation}
-				\operatorname{Hess} F(x) \ge \frac{\gamma}/2 \qquad \forall x\in\bbR^d.
+				\operatorname{Hess} F(x) \ge \frac{\gamma}2 \qquad \forall x\in\bbR^d.
 			\end{equation}
 			Here, we denoted by $\operatorname{Hess}F(x)$ the Hessian of $F$ at $x$.
 		\end{itemize}
@@ -674,7 +674,7 @@ The following proposition shows the relation between the proximal operator and t
 
 An important property of the proximal operator is the following.
 
-\prop{Non-expansiveness of the proximal operator}{
+\prop[prox-non-exp]{Non-expansiveness of the proximal operator}{
 	Let $F:\bbR^d\to \bbR\cup \{+\infty\}$ be a convex function, then the proximal operator is non-expansive. Namely,
 	\begin{equation}
 		\|P_F(y_1)-P_F(y_2)\|_2^2 \le \|y_1-y_2\|_2^2, \qquad \forall y_1,y_2\in\bbR^d.
@@ -1291,7 +1291,7 @@ A natural time-discretization of the gradient flow \eqref{eq:grad-flow} is via t
 Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line search. However, also a constant choice $\alpha = \alpha_n$ suﬃciently small will suffice. Let us show now a result of convergence of the algorithm above. 
 
 \thm[grad-desc]{}{
-	Let $f\in C^1(\bbR^d)$ be convex, coercive (i.e., $f(x)\to +\infty$ as $x\to +\infty$), and such that $\nabla f$ is Lipschitz continuous with constant $L>0$, and admitting a unique minimizer $x^\star$. 
+	Let $f\in C^1(\bbR^d)$ be coercive (i.e., $f(x)\to +\infty$ as $x\to +\infty$), and such that $\nabla f$ is Lipschitz continuous with constant $L>0$, and admitting a unique minimizer $x^\star$. 
 	Assume that 
 	\begin{equation}
 		\sum_{n=0}^{+\infty} \alpha_n = +\infty
@@ -1331,6 +1331,52 @@ Here the parameters $\alpha_n$ are tyipically chosen adaptively with a line sear
 	The coercivity assumption can be relaxed by simply asking that the level set $\{x\mid f(x)\le f(x_0)\}$ be bounded. 
 	Is it also possible to remove the assumption of uniqueness of the minimum, in which case we have that every cluster point of the iterates is a minimum.
 \end{remark}
+
+Under additional assumptions on the function $f$, we can quantify its the rate of convergence.
+
+\thm[]{}{
+	Under the assumptions of Theorem~\ref{th:grad-desc}, letting $\alpha_n = \alpha \le 1/L$, we have
+	\begin{itemize}
+		\item If $f$ is convex, the convergence is \emph{sublinear}: there exists $c>0$ such that
+		\begin{equation}
+			\label{eq:grad-desc-convex}
+			f(x_n)-f(x^\star) \le c{\|x_0-x^\star\|_2^2}
+		\end{equation}
+		\item If $f$ is $\gamma$-strongly convex, the convergence is \emph{exponential}: there exists $c>0$ and $\mu\in(0,1)$ such that
+		\begin{equation}
+			\|x_n-x^\star\|_2 \le \mu^n\|x_0-x^\star\|_2, \qquad\forall n\in\bbN.
+		\end{equation}  
+	\end{itemize} 
+}
+
+\begin{proof}
+	By definition of $x_{n+1}$ we have
+	\begin{equation}
+		\label{eq:cosine-thm}
+		\|x_{n+1}-x^\star \|_2^2 
+		= \|x_n - x^\star\|_2^2 - 2 \alpha \langle \nabla f(x_n),x_n-x^\star \rangle  + \alpha^2 \|\nabla f(x_n)\|_2^2 .
+	\end{equation}
+	Let us start by assuming that $f$ is convex, so that
+	\begin{equation}
+		f(x_n)-f(x^\star) \le \langle \nabla f(x_n), x_n-x^\star \rangle 
+		= \frac{1}{2\alpha} \left[ \|x_n - x^\star\|_2^2 + \alpha^2 \|\nabla f(x_n)\|_2^2  \right].
+	\end{equation}
+	Applying point 2 of Theorem~\ref{th:co-coercivity} to bound the gradient term, we thus get 
+	\begin{equation}
+		\left(1-{\alpha}{L}\right) f(x_n)-f(x^\star) \le \frac{1}{2\alpha}\|x_n - x^\star\|_2^2 .
+	\end{equation}
+	Since $1-{\alpha}{L}> 0$, the statement follows by a recursion argument.
+	
+	Let us now assume that $f$ is $\gamma$-strongly convex. Using the fact that $\nabla f(x^\star)=0$, from the differential characterization of convexity (Theorem~\ref{prop:convexity-diff}) we obtain
+	\begin{equation}
+		\langle\nabla f(x_n),x_n-x^\star\rangle \ge \frac\gamma2\|x_n-x^\star\|_2^2.
+	\end{equation}
+	Hence, using also \eqref{eq:grad-lip}, from \eqref{eq:cosine-thm} we obtain
+	\begin{equation}
+		\|x_{n+1}-x^\star \|_2^2 \le \mu(\alpha)\|x_n - x^\star\|_2^2, \qquad \mu(\alpha) = 1 - \alpha \gamma + \alpha^2 L^2  .
+	\end{equation}
+	One easily checks that $\mu(\alpha)\in (0,1)$ for $\alpha\in (1,L^{-1})$. The statement follows by a recursion argument.
+\end{proof}
 
 \section{Stochastic gradient descent}
 
@@ -1576,15 +1622,88 @@ The idea of the above algorithm is the following.
 Let us prove convergence in the constant step-size case.
 
 \thm{}{
-	Let $g:\bbR^d\to \bbR$ be smooth, and $f\in C^1(\bbR^d)$ be convex, smooth, and such that $\nabla f$ is Lipschitz with constant $L>0$. 
+	Let $g:\bbR^d\to \bbR$ be convex and lower semicontinuous, and $f\in C^1(\bbR^d)$ be  such that $\nabla f$ is Lipschitz with constant $L>0$. 
 	Assume, moreover that \eqref{eq:f+g-prox} admits a unique minimizer $x^\star$.
-
+% 
 	Then, the iteration of \eqref{eq:proximal-method} with $\alpha_n = \alpha < 1/L$ converges to $x^\star$.
+
+	Moreover, the same conclusions as in Theorem~\ref{th:th:grad-desc-rates} holds for the rate of convergence.
 }
 
 \begin{proof}
 	To be added. We refer to \cite{fawziLecture}, for the moment.
+
+	Let $n\in\bbN$, and denote $x^+=x_{n+1}$ and $x=x_n$.
+	We will bound the two parts of the objective function separately. 
+	By definition of proximal operator, we have that for any $z$ it holds
+	\begin{equation}
+		g(x^+) + \frac{1}{2\alpha}\|x^+-(x - \alpha \nabla f(x))\|_2^2 
+		\le g(z) + \frac{1}{2\alpha}\|z-(x - \alpha \nabla f(x))\|_2^2.
+	\end{equation}
+	Pick $z=x$ to obtain
+	\begin{equation}
+		g(x^+) + \frac{1}{2\alpha}\|x^+-x - \alpha \nabla f(x)\|_2^2 
+		\le g(x) + \frac{\alpha}{2}\|\nabla f(x)\|_2^2.
+	\end{equation}
+	Rearranging the terms and expanding the squared norm allows to obtain
+	\begin{equation}
+		\label{eq:bound-g}
+		g(x^+) - g(x) 
+		\le\frac{\alpha}{2}\|\nabla f(x)\|_2^2 - \frac{1}{2\alpha}\|x^+-x - \alpha \nabla f(x)\|_2^2 
+		= -\frac{1}{2\alpha} \|x^+-x\|_2^2 -\langle \nabla f(x),x^+-x\rangle.
+	\end{equation}
+
+	
+	Recall that, by the quadratic upper bound of Theorem~\ref{th:co-coercivity}, we have 
+	\begin{equation}
+		f(x^+) \le f(x) + \langle\nabla f(x),x^+-x\rangle + \frac{L}{2}\|x^+-x\|_2^2.
+	\end{equation}
+	Summing up with \eqref{eq:bound-g}, this yields 
+	\begin{equation}
+		f(x^+)+g(x^+) \le f(x)+g(x) +\frac{1}2\left(L-\frac1\alpha\right) \|x^+-x\|_2^2.
+	\end{equation}
+
+	Since $c=L-\alpha^{-1}>0$, one can then sum over $n$ to obtain
+	\begin{equation}
+		\sum_{n=1}^{+\infty}\|x_{n+1}-x_n\|_2^2  \le \lim_{n\to+\infty} \frac{f(x_0)-f(x_n)}{c} \le\frac{f(x_n)-f(x^\star)}{c}  <+\infty.
+	\end{equation}
+	In particular, $\|x_{n+1}-x_n\|_2\rightarrow 0$ as $n\to +\infty$.
+
+	Let now $x_\infty$ be a cluster point of $(x_n)_n$, i.e., there exists $(x_{n_k})_k\subset (x_n)_n$ such that $x_{n_k} \rightarrow x_\infty$. 
+	 Since $x_{n+1}=P_{\alpha g}(x_n-\alpha \nabla f(x_n))$, reinterpreting the optimality condition for the definition of proximal operator in subgradient form we have
+	\[
+		-\nabla f(x_n)-\frac{1}{\alpha}\|x_{n+1}-x_n\|^2_2\in\partial h(x_{n+1}),
+	\]
+	and passing to a convergent subsequence implies that 
+	\begin{equation}
+		0 \in \nabla f(x_\infty)+\partial g(x_\infty).
+	\end{equation}
+	Here, we use that the graph of $\partial g$ is closed due to the lower semicontinuity of $g$. But by Theorem~\ref{th:suff-cond-minimum}, this implies that $x^\star = x_\infty$, completing the proof.
+
+	Let us now assume that $f$ is strongly convex and twice differentiable (we refer to \cite{fawziLecture} for a proof in the convex case). In particular, $\gamma\operatorname{Id}\le \operatorname{Hess}f(x)\le L\operatorname{Id}$ by Proposition~\ref{prop:convexity-diff} and the $L$-Lipschitz condition on $\nabla f$.
+
+	We use the non-expansiveness of the proximal operator (Theorem~\ref{prop:prox-non-exp}), to obtain
+	\begin{equation}
+		\label{eq:aaa}
+		\|x_{n+1}-x_n\|_2 = \|P_{\alpha g}(x_n-\alpha \nabla f(x_n))-P_{\alpha g}(x_{n-1}-\alpha \nabla f(x_{n-1}))\|_2
+		\le \|x_n-x_{n-1}-\alpha (\nabla f(x_n)- \nabla f(x_{n-1}))\|_2 .
+	\end{equation}
+	Observe that we have
+	\begin{equation}
+		\nabla f(x_n)- \nabla f(x_{n-1})	
+		=\int_0^1 \frac{d}{dt}\nabla f(tx_n+(1-t)x_{n-1})\, dt
+		=\left[\int_0^1 \operatorname{Hess}f (tx_n+(1-t)x_{n-1})\, dt\right] (x_n-x_{n-1})
+		=: M (x_n-x_{n-1}),
+	\end{equation}
+	where $\gamma\operatorname{Id}\le M\le L\operatorname{Id}$.
+	Continuing from \eqref{eq:aaa}, we obtain 
+	\begin{equation}
+	\|x_{n+1}-x_n\|_2 = \|(\operatorname{Id}-\alpha M)(x_n-x_{n-1})\|_2 \le \|M\|\|x_n-x_{n-1}\|_2.
+	\end{equation}
+	Since $\|M\|=\max\{|1-\alpha \gamma|,|1-\alpha L|\}<1$, a recursion argument completes the proof.
 \end{proof}
+
+
 
 \ex{Regression with $\ell_1$ regularization (Lasso)}{
 Consider the problem
@@ -1606,9 +1725,9 @@ We saw in Example~\ref{ex:soft-thresholding} that the proximal operator of $g$ i
 The proximal gradient method applied to this problem is called the 
 \emph{iterative shrinkage-thresholding algorithm (ISTA)} and takes the form
 \[
-    x_{k+1} = S_{\alpha t}\left(x_k - 2t A^\top (A x_k - b)\right),
+    x_{k+1} = S_{\alpha \lambda}\left(x_k - 2t A^\top (A x_k - b)\right),
 \]
-where $S_{\alpha t}$ is the soft-thresholding operator \eqref{eq:soft-thresholding} with parameter $\lambda t$. 
+where $S_{\alpha \lambda}$ is the soft-thresholding operator \eqref{eq:soft-thresholding} with parameter $\alpha \lambda$. 
 }
 
 \section{Dual methods}
@@ -1621,7 +1740,7 @@ Similarly to the previous section, we focus on optimization problems in the form
 	\label{eq:f+gA-dual}
 	\min_{x\in\bbR^d} f(x) + g(Ax).
 \end{equation}
-Here,  $A\in \bbR^{m\times d}$, while $f$and $g$ are convex function, with $f$ typically smooth, and $g$ non-smooth.
+Here,  $A\in \bbR^{m\times d}$, while $f$ and $g$ are convex function, with $f$ typically smooth, and $g$ non-smooth.
 
 If $P_{g\circ A}$ is simple to compute, this problem can be solved by applying the proximal gradient method of the previous section. 
 However, we can encounter situations where, although $g$ has a simple proximal operatr, the proximal operator of ${g\circ A}$ is very hard to compute.
