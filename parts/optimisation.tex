@@ -348,7 +348,7 @@
      Assume that $x^\star$ is a local minimum, i.e., there exists $r>0$ such that $F(x^\star)\le F(x)$ for any $x\in B(0,r)$.
      Let $y\in \bbR^d$ and consider a point on the ray starting at $x^\star$ and passing through $y$:
      \begin{equation}
-         z = x^\star + s (y-x^\star) =   (1-s)x^\star + s y\qquad s\ge.
+         z = x^\star + s (y-x^\star) =   (1-s)x^\star + s y\qquad s\ge 0.
      \end{equation}
      Taking $s < \min\{1, r'/\|x^\star - y\|\}$ we have that $z\in B(0,r)$. Hence, by local minimality of $x^\star$ and convexity of $F$ we have
      \begin{equation}
@@ -1006,7 +1006,7 @@
      \thm[saddle-point]{Saddle-point property}{
          Consider an optimisation problem (convex of conical). Then, the primal-dual optimal values $p^\star$ and $d^\star$ satisfy
          \begin{equation}
-             \label{eq:saddle-point} = F_0(x)
+             \label{eq:saddle-point}
              p^\star = \inf_{x\in \bbR^d}\sup_{\xi\in \bbR^m,\, \nu\in \bbR^M_+} L(x,\xi,\nu)
              \qquad\text{and}\qquad
              d^\star = \sup_{\xi\in \bbR^m,\, \nu\in \bbR^M_+} \inf_{x\in \bbR^d} L(x,\xi,\nu).
