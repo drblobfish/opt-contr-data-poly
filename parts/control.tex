@@ -1,0 +1,585 @@
+\chapter{Controllability}
+
+For this chapter we follow \cite{trelatControl2024}.
+% Unless specified otherwise, missing proofs can be found in 
+
+\section{Control systems}
+
+\dfn[]{Control system}{
+    A control system in $\bbR^n$ is the differential equation 
+    \begin{equation}
+        \label{eq:cs-edo}
+        \dot x = f(t,x,u),
+    \end{equation}
+    where
+    \begin{itemize}
+        \item The \emph{state} is a the function $x: \bbR \to \bbR^n$;
+        \item $f:\bbR\times \bbR^n \times \bbR^m \to \bbR^n$ is  of class $C^1$ w.r.t.~$(x,u)\in \bbR^n\times \bbR^m$, and locally integrable w.r.t.~$t\in \bbR$;
+        \item The \emph{control} $u:\bbR \times U$ is a measurable and essentially bounded function of time, taking values in $U\subset \bbR^m$.
+    \end{itemize}
+
+    The control system is 
+    \begin{itemize}
+        \item \emph{Linear} is $f(t,x,u) = A(t)x + B(t)u+r(t)$ for $A:\bbR\to \bbR^{n\times n}$, $B:\bbR\to \bbR^{n\times m}$, $r:\bbR\to \bbR^n$. In this case, we assume these functions to be of class $L^\infty$ on every compact interval.
+        \item \emph{Autonomous} if $f(t,x,u)=f(x,u)$ is independent of time. Otherwise, the system is \emph{instationary} or \emph{time-varying}.
+    \end{itemize}
+}
+
+Once a control $u$ and an initial condition $x_0\in\bbR^n$ are fixed, the existence and uniqueness of solutions to the non-autonomous equation \eqref{eq:cs-edo} is guaranteed by the following.
+
+\thm[]{Carathéodory Existence Theorem}{
+    Consider the Cauchy problem 
+    \begin{equation}
+        \label{eq:cauchy-prob}
+        \begin{cases}
+            \dot x = f(t,x),\\
+            x(0)=x_0\in \bbR^n.
+        \end{cases}
+    \end{equation}
+    Assume that $f:\bbR\times \bbR^n\to \bbR^n$ satisfies the following conditions
+    \begin{itemize}
+        \item $f(t,\cdot)$ is Lipschitz continuous for any $t\in \bbR$ with Lispchitz constant $L(t)$ that is locally integrable;
+        \item $f(\cdot,x)$ is measurable for any $x\in \bbR^n$;
+        \item there exists $r,M>0$ such that $\|f(t,x)\|_2\le M$ for any $(t,x)\in (-r,r) \times B(0,r)$.
+    \end{itemize}
+    Then, there exists a unique solution to \eqref{eq:cauchy-prob}, maximally defined on some open interval $I\subset\bbR$ such that $0\in \bbR$.
+}
+
+When considering the control system on an interval $[0,T]$, we need its solutions to not blow up before the time $T$. 
+
+\dfn[]{Admissible controls}{
+    Let $x_0\in \bbR^n$ and $T>0$. A control $u\in L^\infty([0,T],U)$ is \emph{admissible} on $[0,T]$ at $x_0$ if the associated trajectory $x_u$ of \eqref{eq:cs-edo} such that $x_u(0)=x_0$ is well-defined on $[0,T]$.
+    We let 
+    \begin{equation}
+        \mcU_{x_0,T} = \{ u\in L^\infty([0,T],U) \mid u \text{ is admissible} \}.
+    \end{equation}
+}
+
+\dfn[]{Controllability}{
+    The \emph{end-point mapping} $\End_{x_0,T}$ is defined by
+    \begin{equation}
+        \End_{x_0,T} :\mcU_{x_0,T}\to \bbR^n ,\qquad 
+        \End_{x_0,T}(u) = x_u(T).
+    \end{equation}
+    The \emph{reachable (or accessible) set} from $x_0$ in time $T>0$ is
+    \begin{eqnarray}
+        \reach_{x_0,T} =\End_{x_0,T}(\mcU_{x_0,T}) .
+    \end{eqnarray}
+
+    The system \eqref{eq:cs-edo} is
+    \begin{itemize}
+        \item \emph{Globally controllable} from $x_0$ in time $T>0$ if $\End_{x_0,T}$ is surjective, that is,
+              \begin{equation}
+                  \reach_{x_0,T}= \bbR^n.
+              \end{equation}
+        \item \emph{Locally controllable} from $x_0$ in time $T>0$ around $x_1\in \reach_{x_0,T}$ if $x_1$ is in the interior of $\reach_{x_0,T}$. That is, if $\End_{x_0,T}$ is locally surjective near $x_1$.
+    \end{itemize}
+}
+
+\section{Controllability of linear autonomous systems}
+
+In this section we consider the linear autonomous control system
+\begin{equation}
+    \label{eq:cs-linear}
+    \dot x = Ax + Bu.
+\end{equation}
+It is possible to show that there is no blow-up in finite time for linear systems, and thus $\mcU_{x_0,T} = L^\infty([0,T], U)$.
+
+An essential tool for the study of these systems is the variation of constants formula (or Duhamel formula) for its solutions:
+\begin{equation}
+    \label{eq:duhamel-formula}
+    x_u(t) = e^{tA}x_0 + \int_0^t e^{(t-s)A}Bu(s)\, ds, 
+    \qquad \forall t\in [0,T], \,  u\in L^\infty([0,T], U).
+\end{equation}
+
+We also need to recall the following celebrated result.
+
+\thm[cayley-hamilton]{Cayley-Hamilton Theorem}{
+    Let $A\in \bbR^{n\times n}$ be a matrix with characteristic polynomial 
+    \begin{equation}
+        \chi_A(z) = \det(z\idty - A) = z^n + a_1 z^{n-1}+\ldots +a_{n-1}z + a_n.
+    \end{equation}
+    Then, letting $p_A(A)$ be the number obtained by replacing the unknown $z$ with the matrix $A$ in this expression, we have $p_A(A)=0$. 
+    That it,
+    \begin{equation}
+        A^n + a_1 A^{n-1} + \ldots + a_{n-1} A + a_n =0.
+    \end{equation}
+}
+
+In the case of linear systems, it turns out that controllability can be verified via a purely algebraic condition.
+
+\dfn[]{Kalman rank condition}{
+    We say that the pair $(A,B)\in \bbR^{n\times n}\times \bbR^{n\times m}$ satisfies the \emph{Kalman rank condition} if the Kalman matrix 
+    \begin{eqnarray}
+        K=[ B, AB, \ldots, A^{n-1}B] \in \bbR^{  n \times nm},
+    \end{eqnarray}
+    is of maximal rank $n$.
+}
+
+\thm[kalman-thm]{Kalman Theorem}{
+    Assume that $U=\bbR^n$. Then, \eqref{eq:cs-linear} is controllable from $x_0\in\bbR^n$ and in time $T>0$ if and only if $(A,B)$ satisfies the Kalman rank condition.
+
+    In particular, if a linear system is controllable from $x_0$ in time $T>0$, then it is controllable from any initial point and in any time.
+}
+
+\begin{proof}
+    By the variation of constants formula \eqref{eq:duhamel-formula}, we see that controllability is equivalent to the surjectivity of the linear operator 
+    \begin{equation}
+        \label{eq:Lu}
+        L : L^\infty([0,T],\bbR^m) \to \bbR^n, 
+        \qquad 
+        Lu =\int_0^T e^{-As}Bu(s)\, ds .
+    \end{equation}
+    Here, we used that the exponential matrix $e^{TA}$ is always invertible.
+
+    Let us prove that the fact that $L$ invertible implies $\rank K=n$. We proceed by contradiction and assume that $\rank K<n$. That is, there exists $p\in \bbR^n$, $p\neq 0$, such that 
+    \begin{equation}
+        \label{eq:AiB}
+        p^\top K = 0 
+        \iff
+        p^\top A^i B = 0, \qquad \forall i\in \llbracket 1,n\rrbracket.
+    \end{equation}
+    Recall that by Cayley-Hamilton Theorem, we can write $A^j$ as a linear combination of $\idty, A,\ldots, A^{n-1}$. That is, for any $j\in\bbN$, there exists $a_{0},\ldots, a_{n-1}$ such that
+    \begin{equation}
+        A^j = \sum_{i=0}^{n-1}a_i A^i.
+    \end{equation}
+    This implies that \eqref{eq:AiB} actually holds for any $i\in \bbN$, which yields
+    \begin{equation}
+        p^\top e^{-As}B =  \sum_{j=0}^{+\infty} p^\top \frac{(-As)^j}{j!}B = 0.
+    \end{equation}
+    In particular, this shows that $p^\top Lu=0$ for any $u\in L^\infty([0,T],\bbR^m)$ proving that $L$ is not surjective.
+
+    To prove the opposite implication, assume that there exists $p\in \bbR^n$, $p\neq0$, such that 
+    \begin{equation}
+        \label{eq:pLu}
+        p^\top Lu=0\qquad \forall u\in L^\infty([0,T],\bbR^m). 
+    \end{equation}
+    Consider, for $i\in \llbracket 1,n\rrbracket$ and $\tau\in [0,T]$, the control 
+    \begin{equation}
+        u(\tau) = 
+        \begin{cases}
+            e_i, & \text{ if } t\in[0,\tau],\\
+            0 & \text{ otherwise.}
+        \end{cases}
+    \end{equation}
+    Here, $e_i$ is the $i$-th element of the canonical basis of $\bbR^n$. Thus, we have
+    \begin{equation}
+        Lu = \int_0^\tau e^{-As}Bu\,ds = \left[\frac{\idty - e^{-\tau A}}{A}\right] B u, \qquad
+        \text{where}\qquad 
+        \frac{\idty - e^{-\tau A}}{A} = \sum_{j=1}^{+\infty} \frac{(-1)^{j-1}\tau^j}{j!}A^{j-1}.
+    \end{equation}
+    Assumption \eqref{eq:pLu} then yields 
+    \begin{equation}
+       0 = p^\top\left[\frac{\idty - e^{-\tau A}}{A}\right]Bu = \sum_{j=1}^{+\infty} \frac{(-1)^{j-1}\tau^j}{j!}p^{\top}A^{j-1}Bu , 
+       \qquad \forall \tau\in [0,T].
+    \end{equation}
+    By analyticity\footnote{Equivalently, one can observe that $$0=\frac{d^k}{d\tau^k}\left[\sum_{j=1}^{+\infty} \frac{(-1)^{j-1}\tau^j}{j!}p^{\top}A^{j-1}Bu\right]_{\tau =0} = p^\top A^{k-1}Bu, \qquad \forall k\in\bbN.$$} w.r.t.~$\tau$ of the right-hand side, this implies that $p^\top A^{j-1}Bu=0$, that is $\rank K<n$.
+\end{proof}
+
+\cor[local-contr-with-control-constraint]{Controllability with control constraints}{
+    Assume that $0\in \Int(U)$, and that the Kalman condition holds true. Then, the control system is locally controllable around $e^{TA}x_0$ for any $x_0\in \bbR^n$ and any $T>0$. Namely,
+    \begin{equation}
+        e^{TA}x_0\in \Int\reach(x_0,T) .
+    \end{equation}
+}
+
+\begin{proof}
+    By the variation of constant formula \eqref{eq:duhamel-formula}, we have (for the unconstrained system)
+    \begin{equation}
+        \End_{x_0,T}(u) = e^{TA}x_0 + Lu,
+    \end{equation}
+    where $L$ is the operator defined in \eqref{eq:Lu}. 
+    Observe that $L$ is a continuous linear map, since 
+    \begin{equation}
+        \|Lu\|_2 \le T \max_{s\in [0,T]} \|e^{-As}B\| \, \|u\|_\infty.
+    \end{equation}
+    In particular, $L$ is an open mapping and hence for any neighborhood $V\subset U$ of the origin, we have that $\End_{x_0,T}(V)$ is a neighborhood of $\End_{x_0,T}(0)= e^{TA}x_0\in\reach(x_0,T)$.
+\end{proof}
+
+
+\thm[]{Hautus Test}{
+    The following assertions are equivalent 
+    \begin{enumerate}
+        \item The pair $(A,B)$ satisfies the Kalman rank condition.
+        \item $\rank [\lambda\idty - A, B] = n$ for any $\lambda\in \bbC$.
+        \item $\rank [\lambda\idty - A, B] = n$ for any $\lambda\in \Spec A$.
+        \item For any eigenvector $z$ of $A^\top$, we have $B^\top z \neq 0$.
+        \item There exists $c>0$ such that 
+        \begin{equation}
+            \label{eq:lambda-c}
+            \|(\lambda\idty - A^\top) z \|_2^2 + \|B^\top z\|_2^2 \ge c\|z\|_2^2, 
+            \qquad
+            \forall z\in \bbR^n,\, 
+            \forall \lambda\in \bbC.
+        \end{equation}
+    \end{enumerate}
+}
+
+\begin{proof}
+    We start by showing the equivalence of assertions 2 to 5.
+
+    \emph{$2\iff 3$} Since $\Spec A \subset \bbC$, we have that assertion 2 implies assertion 3.
+    On the other hand, if assertion 3 holds we obtain assertion 2 by recalling that $\lambda\idty - A$ is invertible for any $\lambda \in \bbC\setminus \Spec A$.
+
+
+    \emph{$3\iff 4$}
+    If assertion 4 does not hold for an eigenvector $z$ associated to $\lambda\in \Spec A$, we clearly have $z^\top (\lambda\idty - A)  =z^\top B=0$, which contradicts assertion 3. A similar reasoning shows the opposite implication.
+
+    \emph{$2\iff 5$} If assertion 2 does not hold, we contradict assertion 5 as above. To prove the other implication, let
+    \begin{equation}
+        M_\lambda = (\bar \lambda\idty - A)(\lambda \idty - A^\top ) + BB^\top.
+    \end{equation}
+    The matrix $M_\lambda$ is symmetric and it holds
+    \begin{equation}
+        \label{eq:lambda-c}
+        \|(\lambda\idty - A^\top) z \|_2^2 + \|B^\top z\|_2^2 \ge z^\top M_\lambda z
+        \qquad
+        \forall z\in \bbR^n.
+    \end{equation}
+    Hence, letting $\mu(\lambda)$ be the smallest eigenvalue of $M_\lambda$, we have assertion 5 with $c = \inf_{\lambda \in \bbC} \mu(\lambda)$. We have that $c>0$ since $\lambda\mapsto \mu(\lambda)$ is continuous and $\mu(\lambda) \rightarrow + \infty$ as $|\lambda|\to +\infty$.
+
+    \emph{$1\iff 4$}
+    We are left to showing that assertion 1 is equivalent to the other equivalent assertions. 
+    It is immediate to observe that if assertion 4 does not hold, the same is true for assertion 1. 
+    To show the opposite implication,  set
+    \begin{equation}
+        N = \{ z\in\bbR^n\mid z^\top A^k B = 0\, \forall k\in \bbN\}.
+    \end{equation}
+    In particular, $N = \{0\}$ if and only if $(A,B)$ satisfies the Kalman rank condition. Assume this is not the case. Then, since $N$ is non-trivial $A^\top$ invariant (i.e., $A^\top N \subset N$) subspace, we have that $A^\top$ has at least one non-zero eigenvalue $z\in N\setminus\{0\}$. But then, $B^\top z=0$ by definition of $N$, contradicting assertion 4.
+\end{proof}
+
+\subsection{Similar systems and normal forms}
+
+In this section we look at what happens if we perform a change of basis $x_2 = Px_1$ for some $P\in \operatorname{GL}_2(\bbR)$.
+
+\dfn{Similar systems}{
+    The linear control systems 
+    \begin{equation}
+        \dot x_1 = A_1x_1 + B_1 u_1
+        \qquad\text{and}\qquad
+        \dot x_2 = A_2x_2 + B_2 u_2,
+    \end{equation}
+    are \emph{similar} if there exists $P\in \operatorname{GL}_2(\bbR)$ such that $A_2= PA_1P^{-1}$ and $B_2 = PB_1$. 
+    In this case we say that the pairs $(A_1,B_1)$ and $(A_2,B_2)$ are similar.
+}
+
+Observe that the Kalman property is intrinsic, i.e., is invariant under the similarity transformation $P$.
+Indeed, letting $K_1$ and $K_2$ be the Kalman matrices associated to two similar systems, we have $K_2=PK_1$.
+
+An important application of similar systems is the existence of various normal forms, i.e., a change of coordinates (and sometimes a change of inputs) that transforms a nonlinear or linear control system into a simpler, standardized structure, where its controllability, observability, or stabilization properties become explicit.
+
+The following result goes in that direction, and can be seen as an extension of Kalaman Theorem (Theorem~\ref{th:kalman-thm}) to non-controllable systems.
+
+\prop[]{}{
+    Consider a linear system \eqref{eq:cs-linear} whose Kalman matrix $K$ satisfies $\rank K = r$. Then, letting $y=(y_1,y_2)^\top\in \bbR^{r\times (n-r)}$, the system is similar to 
+    \begin{eqnarray}
+        \dot y_1 &=& A_1' y_1 + B_1 u + A_3' y_2 \\
+        \dot y_2 &=& A'_2 y_2.
+    \end{eqnarray}
+    In particular, this splits the original system in a controllable part (the variable $y_1$) and an uncontrollable one (the variable $y_2$).
+}
+
+\begin{proof}
+    Let us assume that $\rank K < n$, otherwise there is nothing to prove.
+    Consider the subspace $F=\operatorname{Ran} K$, and observe that it holds 
+    \begin{equation}
+        F =\operatorname{Ran} B + \operatorname{Ran} AB + \ldots +\operatorname{Ran} A^{n-1}B.
+    \end{equation}
+    Then, $\dim F=r$ and, using the Cayley-Hamilton Theorem is straightforward to verify that $F$ is invariant under $A$ (i.e., $AF\subset F$).
+    Hence, $\bbR^n = F\oplus G$ for some subspace $G$ such that $\dim G=n-r$.
+    Pick   a basis $(f_1,\ldots, f_r)$ of $F$, and a basis $(f_{r+1},\ldots, f_n)$ of $G$, and let $P$ be the matrix encoding the change of basis from $(f_1,\ldots, f_n)$ to the canonical basis of $\bbR^n$.
+
+    Using the invariance of $F$ w.r.t.~$A$, we obtain that 
+    \begin{equation}
+        A' = PAP^{-1} =
+        \begin{pmatrix}
+            A_1' & A_3' \\ 
+            0 & A_2'
+        \end{pmatrix},
+    \end{equation}
+    where $A_1'\in \bbR^{r\times r}$. Moreover, since $\operatorname{Ran} B \subset F$, we have that 
+    \begin{equation}
+        B' = P B = 
+        \begin{pmatrix}
+            B_1'\\0
+        \end{pmatrix}.
+    \end{equation}
+\end{proof}
+
+\thm[brunovski-single-input]{Brunovski normal form, single-input case}{
+    Consider the linear system \eqref{eq:cs-linear} with scalar input (i.e., $m=1$ so that $B\in \bbR^{n\times 1}$), and assume that $(A,B)$ satisfies the Kalman rank condition.
+    Then, letting the characteristic polynomial of $A$ be 
+    \begin{equation}
+        \chi_A(z) = \det(z\idty - A) = z^n + a_1 z^{n-1} + \ldots + a_{n-1}z + a_n,
+    \end{equation}
+    the control system is similar to the following chained form 
+    \begin{equation}
+        \begin{cases}
+            \dot x_1 = x_2 \\
+            \quad \vdots \\
+            \dot x_{n-1} = x_n \\
+            \dot x_n = -a_n x_1 - a_{n-1} x_2 -\cdots -a_1 x_n + u.
+        \end{cases}
+    \end{equation}
+}
+
+\begin{proof}
+    It suffices to show that the pair $(A,B)$ is similar to $(\tilde A, \tilde B)$ given by 
+    \begin{equation}
+        \tilde A = 
+        \begin{pmatrix}
+            0 & 1 &  \cdots & 0 \\
+            \vdots & \ddots & \ddots & \vdots \\
+            0 & \cdots &  0 & 1 \\
+            -a_n & -a_{n-1} &  \cdots & -a_1 
+        \end{pmatrix}
+        \qquad\text{and}\qquad
+        \tilde B = 
+        \begin{pmatrix}
+            0\\ \vdots \\ 0 \\ 1
+        \end{pmatrix}.
+    \end{equation} 
+    
+    Let us define the vectors 
+    \begin{equation}
+        v_n = B, \, v_{n-1} = A B,\, \ldots ,\, v_1 = A^{n-1}B.
+    \end{equation}
+    These form a basis, since the Kalman matrix $K = [v_n,\ldots, v_1]$ is full rank. 
+    By definition of $v_n$ it is immediate to observe that $B$ transforms to $\tilde B$ under the change of basis defined by $\{v_1,\ldots,v_n\}$.
+
+    Let us check that this is true also for $\tilde A$ with respect to $A$.
+    By definition, it trivially holds that 
+    \begin{equation}
+        A v_{j} = A \left(A^{n-j}B\right) = A^{n-(j-1)}B =  v_{j-1}, \qquad \forall j\in \llbracket 2,n\rrbracket.
+    \end{equation}
+    In other words, in the basis $\{v_1,\ldots, v_n\}$ the matrix $A$ acts as $\tilde A$ on the last $n-1$ coordinates.
+    To compute $A v_1$, we apply Cayley-Hamilton Theorem (Theorem~\ref{th:cayley-hamilton}) to obtain
+    \begin{equation}
+        A v_1 = A^n B = (-a_{1}A^{n-1}- \ldots - a_{n-1}A-a_n)B = -a_1 v_1 - \ldots -a_n v_n.
+    \end{equation}
+    This shows that indeed $\tilde A$ corresponds to the matrix $A$ under the change of basis $\{v_1,\ldots,v_n\}$. 
+\end{proof}
+
+In the general case $m > 1$, the system decomposes into $m$ \emph{controllability chains} (also called \emph{Jordan chains of the couple} $(A,B)$).
+This, however, requires to perform also a linear change of input.
+More precisely, we have the following.
+
+\thm[]{Brunovski normal form, general case}{
+    Consider the linear system \eqref{eq:cs-linear} and assume that $(A,B)$ satisfies the Kalman rank condition.
+    Then there exist invertible matrices
+    $P \in \mathbb{R}^{n \times n}$ (change of state coordinates)
+    and $R \in \mathbb{R}^{m \times m}$ (change of input coordinates)
+    such that, under the transformations
+    \[
+        x = P \tilde x,
+        \qquad
+        u = R \tilde u,
+    \]
+    the system becomes
+    \[
+        \dot{\tilde x} = A_c \tilde x + B_c \tilde u,
+        \qquad\text{with}\qquad
+        A_c = T^{-1} A T,
+        \qquad
+        B_c = T^{-1} B R.
+    \]
+    Here $(A_c,B_c)$ has the block-diagonal \emph{Brunovský form}
+    \[
+        A_c =
+        \begin{bmatrix}
+            A_1    & 0      & \cdots & 0      \\
+            0      & A_2    & \cdots & 0      \\
+            \vdots & \vdots & \ddots & \vdots \\
+            0      & 0      & \cdots & A_m
+        \end{bmatrix},
+        \qquad
+        B_c =
+        \begin{bmatrix}
+            B_1    & 0      & \cdots & 0      \\
+            0      & B_2    & \cdots & 0      \\
+            \vdots & \vdots & \ddots & \vdots \\
+            0      & 0      & \cdots & B_m
+        \end{bmatrix},
+    \]
+    where each block $(A_i,B_i)$ is a single-input Brunovský block of size $r_i$, as in Theorem~\ref{th:brunovski-single-input}.
+    The integers $r_1,\dots,r_m$ are the \emph{controllability indices} of $(A,B)$ and satisfy
+    \[
+        r_1 + \cdots + r_m = n.
+    \]
+}
+
+\section{Controllability of time-varying linear systems}
+
+We now turn to time-varying control systems 
+\begin{equation}
+    \label{eq:cs-linear-time-var}
+    \dot x = A(t)x + B(t)u,
+\end{equation}
+where $A:\bbR \to \bbR^{n\times n}$ and $B:\bbR\to \bbR^{n\times m}$.
+
+\dfn[]{State-transition matrix}{
+    The \emph{state-transition matrix} $R:\bbR\times\bbR \to \bbR^{n\times n}$ of sytem $\dot x = A(t)x$ is the unique solution of 
+    \begin{equation}
+        \frac{\partial}{\partial t} R(t,s) = A(t) R(t,s), \qquad R(s,s) = \idty.
+    \end{equation}
+}
+
+We have the following standard result.
+
+\prop[state-transition-matrix]{}{
+    Let $R$ be the state-transition matrix of $\dot x = A(t)x$. We have
+    \begin{itemize}
+        \item In the autonomous case (i.e., $A(t)\equiv A$), we have $R(t,s) = e^{(t-s)A}$.
+        \item Semigroup property: It holds 
+        \begin{equation}
+            R(t,s)R(s,\tau) = R(t,\tau) \qquad \forall t,s,\tau\in\bbR.
+        \end{equation}
+        In particular, $R(t,s)^{-1}=R(s,t)$.
+        \item Solutions to \eqref{eq:cs-linear-time-var}: For any $x_0\in \bbR^n$, $T>0$, and $u\in \mathcal U_{x_0,T}$, we have 
+        \begin{equation}
+            x(t) = R(t,0)x_0 + \int_0^t R(t,s)Bu(s)\, ds.
+        \end{equation}
+    \end{itemize}
+}
+
+Due to the time-varying nature of the system, a reasonable generalization of Kalman rank condition would be that the Kalman matrix $K(t)$ of $(A(t),B(t))$ be full rank at each time $t>0$. 
+This is however too strong, as the following shows.
+
+\ex[]{}{
+    Consider the time-varying linear system with $n=2$ and $m=1$:
+    \begin{equation}
+        \dot x = B(t)u(t), \qquad
+        B(t) =
+        \begin{cases}
+             (1,0)^\top 
+             & \text{ if } t\in [0,1], \\
+             (0,1)^\top
+             & \text{ if } t>1.
+        \end{cases}
+    \end{equation}
+    Since $A(t)=0$ for all times, the instananeous Kalman matrix $K(t)$ is not full-rank. However, it is straightforward to explicitly show that $\reach(x_0,T)=\bbR^2$ for all $T>1$.
+}
+
+Indeed, in the time-varying case, the instantaneous lack of controllability for certain directions at a time $t_0$ is not an issue if at later times these directions are controllable. To formalize this idea, we introduce the following.
+
+\dfn[]{Controllability Gramian}{
+    The \emph{Gramian matrix} of system \eqref{eq:cs-linear-time-var} at time $T>0$ is the matrix
+    \begin{equation}
+        G_T := \int_0^T R(T,t)B(t)B(t)^\top R(T,t)^\top \, dt \in \bbR^{n\times n}.
+    \end{equation}
+}
+
+Before proving the controllability theorem, let us make the following observation.
+
+\prop[gram-matrix-observability]{Observability inequality}{
+    Let $T>0$. The Gramian matrix is a symmetric non-negative matrix, whose invertibility is equivalent to the following \emph{observability inequality}: There exists $C_T>0$ such that
+    \begin{equation}
+        \label{eq:observability}
+        \int_0^T \|B(t)^\top R(T,t)^\top \psi\|_2^2 \, dt \ge C_T \|\psi\|_2^2
+        \qquad \forall \psi\in\bbR^n.
+    \end{equation}
+}
+
+\begin{proof}
+    The symmetry of $G_T$ is immediate from the definition. Moreover,
+    \begin{equation}
+        \psi^\top G_T \psi = \int_0^T \psi^\top R(T,t)B(t) B(t)^\top R(T,t)^\top \psi\, dt = \int_0^T \|B(t)^\top R(T,t)^\top \psi\|_2^2 \, dt \ge 0.
+    \end{equation}
+    This proves both the non-negativity and the equivalence between the invertibility of $G_T$ and \eqref{eq:observability}.
+\end{proof}
+
+\begin{remark}
+    Inequality \eqref{eq:observability} is called an observability inequality for the following reason. Consider the \emph{adjoint system} to \eqref{eq:cs-linear-time-var}, which is
+    \begin{equation}
+        \dot z = -A(t)^\top  z, \qquad z(T) = \psi,
+    \end{equation}
+    and assume that the output $y(t) = B(t)^\top z(t)$ is measured.
+    In particular, the energy of this output over $[0,T]$ is the quantity
+    \begin{equation}
+        E(T) = \int_0^T \|y(t)\|_2^2\, dt.
+    \end{equation}
+    But, since $y(t) = B(t)^\top R(T,t)^\top \psi$, this coincide with the left-hand side of \eqref{eq:observability}, which can then be recast as
+    \begin{equation}
+        \int_0^T \|y(t)\|_2^2 \, dt \ge C_T \|z(T)\|_2^2.
+    \end{equation}
+    Namely, the output $y(t)$ controls the size of the final state $z(T)$.
+    In particular, if $y(t)\neq 0$ for all $t\in [0,T]$ we are sure that $z(T)=0$.
+    More generally, one can show that this inequality allows to reconstruct the state $z(T)$ from the measurements $y:[0,T]\to \bbR$.
+% 
+    This property is called \emph{observability of the adjoint system}. 
+\end{remark}
+
+The following theorem shows that the observability property introduced above is actually equivalent to the controllability of the original system.
+
+\thm[]{}{
+    Assume that $U=\bbR^m$. Then, the control system \eqref{eq:cs-linear-time-var} is controllable from $x_0\in \bbR^n$ in time $T>0$ if and only if the Gramian matrix $G_T$ is invertible.
+    In particular, if a linear time-varying system is controllable from $x_0$ in times $T>0$, then it is controllable for any time $T'>T$ and from any initial point.
+}
+
+\begin{proof}
+    By Proposition~\ref{prop:state-transition-matrix}, given a control $u$ we have that
+    \begin{equation}
+        \label{eq:end-point-formula}
+        \End_{x_0,T}(u) = x_u(T) = x^\star + Lu,
+        \qquad \text{where}\qquad
+        x^\star = R(T,0)x_0,
+        \quad\text{and}\quad
+        Lu = \int_0^T R(T,t)B(t)u(t)\, dt
+    \end{equation}
+
+
+    Assume that $G_T$ be invertible and let us prove that $\End_{x_0,T}$ is surjective (i.e., that the system is controllable).
+    Fix $x_1\in \bbR^n$ and let us construct a control $u$  of the form $u(t) = B(t)^\top R(t,T)^\top \psi$ for some $\psi\in \bbR^n$ such that $\End_{x_0,T}(u)=x_1$.
+    Since this choice of $u$ implies that $Lu = G_T\psi$, we have
+    \begin{equation}
+        \End_{x_0,T}(u) = x^\star + G_T \psi.
+    \end{equation}
+    By invertibility of $G_T$ it then suffices to choose $\psi = G^{-1}_T (x_1-x^\star)$.
+
+    Conversely, let us assume that $G_T$ is not invertible. By Proposition~\ref{prop:gram-matrix-observability} we then have that there exists $\psi\in \bbR^n$, $\psi\neq 0$, such that
+    \begin{equation}
+        \int_0^T \|B(t)^\top R(T,t)^\top \psi\|_2^2 \, dt = 0
+        \implies
+        B(t)^\top R(T,t)^\top \psi = 0 \qquad \text{for a.e.\ } t\in [0,T].
+    \end{equation}
+    It follows that
+    \begin{equation}
+        \psi^\top Lu = 0,
+        \qquad \forall u\in L^\infty([0,T],\bbR^m),
+    \end{equation}
+    where $L$ is defined in \eqref{eq:end-point-formula}.
+    Hence,
+    \begin{equation}
+        \psi^\top \End_{x_0,T}(u) = \psi^\top (x^\star + Lu) = \psi^\top x^\star, \qquad \forall u \in L^\infty([0,T],\bbR^m).
+    \end{equation}
+    In particular, the range of $\End_{x_0,T}$ is contained in a proper affine subspace of $\bbR^n$:
+    \begin{equation}
+        \operatorname{ran}\End_{x_0,T} \subset \{ z \in \bbR^n\mid \psi^\top (z-x^\star) = 0\}.
+    \end{equation}
+    This contradicts the surjectivity of $\End_{x_0,T}$.
+\end{proof}
+
+The same argument used to derive Corollary~\ref{th:local-contr-with-control-constraint} can be used to derive the following.
+
+\cor[]{Controllability with control constraints}{
+    Assume that $0\in \operatorname{int}(U)$ and that the Gramian matrix $G_T$ is invertible for some $T>0$. 
+    Then, the control system is locally controllable around $x_0\in \bbR^n$ in time $T>0$.
+}
+
+
+We conclude this section by stating a proper generalization of the Kalman rank condition to the time-varying case.
+
+\thm[Time-varying Kalman theorem]{}{
+    Consider \eqref{eq:cs-linear-time-var} with $U=\bbR^m$ and such that $t\mapsto A(t)$ and $t\mapsto B(t)$ are of class $C^\infty$.
+    Define the sequence of matrices 
+    \begin{equation}
+        B_0(t) = B(t),
+        \qquad 
+        B_{j+1} = A(t)B_j(t) - \frac{d}{dt}B_j(t), \qquad j\in \bbN.
+    \end{equation}
+    Then, the system is controllable if there exists $t_0\in [0,T]$ such that 
+    \begin{equation}
+        \bigcup_{j\in \bbN} \operatorname{ran} B_j(t_0)= \bbR^n.
+    \end{equation}
+    If, moreover, $t\mapsto A(t)$ and $t\mapsto B(t)$ are analytic, then the above property is equivalent to controllability and independent of $t_0\in [0,T]$.
+}
