@@ -76,6 +76,69 @@ When considering the control system on an interval $[0,T]$, we need its solution
     \end{itemize}
 }
 
+\ex[trivial-control]{Trivial control system}{
+    Consider the control system, for $x\in \bbR^d$,
+    \begin{equation}
+        \dot x= u, \qquad u\in L^\infty([0,T],\bbR^d).
+    \end{equation}
+    Then,
+    \begin{equation}
+        \End_{x_0,T}(u) = x_0 + \int_0^T u(s)\, ds.
+    \end{equation}
+    In particular, the system is globally controllable from any $x_0\in \bbR^d$ and in any time $T>0$.
+    Indeed, for any $x_1\in \bbR^d$, the constant control 
+    \begin{equation}
+        u(t) = \frac{x_1 - x_0}{T}, \qquad t\in [0,T],
+    \end{equation}
+    steers the system from $x_0$ to $x_1$ in time $T$.
+}
+
+\ex[]{Not globally controllable system}{
+    Consider the control system, for $x\in \bbR$,
+    \begin{equation}
+        \label{eq:not-globally-contr}
+        \dot x = u, \qquad u\in L^\infty([0,T],[0,+\infty)).
+    \end{equation}
+    Since $\dot x \ge 0$, the system cannot be globally controllable from $x_0\in \bbR$ in any time $T>0$.
+    Indeed, proceeding as in Example~\ref{ex:trivial-control} one shows that 
+    \begin{equation}
+        \reach_{x_0,T}=[x_0,+\infty), \qquad \forall x_0\in\bbR,\,  T>0.
+    \end{equation}
+    In particular, the system is locally controllable around any $x_1>x_0$.
+}
+
+% \ex[]{Not globally controllable system}{
+%     Consider the control system, for $x\in \bbR$,
+%     \begin{equation}
+%         \label{eq:not-globally-contr}
+%         \dot x = |x| + u, \qquad u\in L^\infty([0,T],[-1,1]),
+%     \end{equation}
+%     with initial condition $x_0=0$.
+%     Let us show that 
+%     \begin{equation}
+%         \reach_{0,T} =(-1,+\infty) \qquad  \forall T>0,
+%     \end{equation}
+%     In particular, the system is not globally controllable from $0$ in any time $T>0$. 
+    
+%     We start by claiming that $x(t)> -1$ for any $t\ge 0$. 
+%     To see this, assume by contradiction that
+%     \begin{equation}
+%         t_1 := \inf\{ t\ge 0 \mid x(t)<-1\} < +\infty.
+%     \end{equation}
+%     In particular, by continuity of $x$, there exists $\varepsilon>0$ such that $x(t)<0$ for $t\in [t_1,t_1+\varepsilon]$.
+%     Letting 
+%     \begin{equation}
+%         t_2 := \sup\{t\in [0,t_1]\mid x(s)<0, \, \forall s\in [t,t_1]\},
+%     \end{equation}
+%     we then have that $x(t)\in[-1,0]$ for $t \in [t_2,t_1+\varepsilon]$, and $x(t_2)=0$. This implies $\dot x \ge -x + 1$ on $[t_2,t_1+\varepsilon]$, and thus
+%     \begin{equation}
+%         x(t) \ge -1 + e^{-(t-t_2)} > -1 \qquad \forall s\in [t_2,t_1+\varepsilon].
+%     \end{equation}
+%     This contradicts the definition of $t_1$, and thus proves that $\reach_{0,T} \subset (-1,+\infty)$.
+
+%     To show the converse inclusion, let us exhibit a control steering the system from $x_0=0$ to $x_1$ in time $T>0$.
+% }
+
 \section{Controllability of linear autonomous systems}
 
 In this section we consider the linear autonomous control system
@@ -583,3 +646,329 @@ We conclude this section by stating a proper generalization of the Kalman rank c
     \end{equation}
     If, moreover, $t\mapsto A(t)$ and $t\mapsto B(t)$ are analytic, then the above property is equivalent to controllability and independent of $t_0\in [0,T]$.
 }
+
+
+\chapter{Optimal control theory for linear systems}
+
+Given a control system 
+\begin{equation}
+    \dot x = f(t,x,u), \qquad x(0)=x_0,
+\end{equation}
+that is controllable at $x_1$ in a certain time $T>0$, it is natural to wonder which control $u\in \mathcal U_{x_0,T}$ is the ``best'' to reach $x_1$.
+To answer this question, we need to introduce a cost functional $J:\mathcal U_{x_0,T} \to \bbR$, and then look for a control $u^\star$ minimizing $J$ among all controls that steer $x_0$ to $x_1$ in time $T$.
+This is the goal of optimal control theory.
+
+\dfn[]{Optimal control problem}{
+Given $x_0\in\bbR^d$, $T>0$, and $x_1\in \reach_{x_0,T}$, the \emph{optimal control problem} associated with a cost functional $J:\mathcal U_{x_0,T}\to \bbR$ is
+\begin{equation}
+    \label{eq:ocp}
+    \begin{cases}
+        \dot x = f(t,x,u) \\
+        x(0)=x_0 \\
+        x(T) = x_1 \\
+        J(u) \rightarrow \min.
+    \end{cases}
+\end{equation}
+}
+Many variants of this problem exist, e.g., where the initial or final positions are not fixed but belong to a certain subset of the state space, or where the final time is free.
+
+\dfn[]{Admissible controls for \eqref{eq:ocp}}{
+The set of \emph{admissible controls} to \eqref{eq:ocp} is 
+\begin{equation}
+    \Omega_{x_0,x_1,T} = \{ u\in \mathcal U_{x_0,T}\mid x_u(T) = x_1 \}.
+\end{equation}
+}
+Then, \eqref{eq:ocp} can be recast as an (infinite-dimensional) optimization problem under constraints. Namely,
+\begin{equation}
+    \min_{u\in \Omega_{x_0,x_1,T}} J(u).
+\end{equation}
+
+\section{Linear-quadratic optimal control problems}
+
+In this chapter, we follow \cite{jurdjevicGeometric1997}, and we only consider linear autonomous control systems of the form \eqref{eq:cs-linear}.
+For this kind of systems, we consider the following quadratic cost functional
+\begin{equation}
+    J(u) = \int_0^T c(x_u(t),u(t))\, dt,
+\end{equation}
+where $c:\bbR^n\times \bbR^m \to \bbR$ is a quadratic form. That is,
+\begin{equation}
+    c(x,u) = \frac12 u^\top Pu + u^\top Qx + \frac12 x^\top R x,
+    \qquad P\in \sym(\bbR^{m}), \, Q \in \bbR^{m\times d},\, R\in \sym(\bbR^d).
+\end{equation}
+
+The first question to be answered is the existence of solutions to the corresponding linear-quadratic (LQ) optimal control problem:
+\begin{equation}
+   \label{eq:ocp-linear}
+   \begin{cases}
+    \dot x = A x + Bu \\
+    x(0)=x_0 \\
+    x(T) = x_1 \\
+    J(u) = \int_0^T c(x_u(t),u(t))\, dt \rightarrow \min.
+   \end{cases} 
+\end{equation}
+
+\thm[ocp-existence-linear]{Existence of solution to \eqref{eq:ocp-linear}}{
+    An optimal solution for \eqref{eq:ocp-linear} exists if and only if 
+    \begin{equation}
+        J(u) \ge 0 \qquad \forall u \in \Omega_{0,0,T}.
+    \end{equation}
+}
+
+\begin{proof}
+    The idea is to use controls in $\tilde u \in \Omega_{0,0,T}$ as variations to test the optimality of $u\in \Omega_{x_0,x_1,T}$.
+    Indeed, by linearity of the control system, the control $u_\lambda = u + \lambda \tilde u$ belongs to $\Omega_{x_0,x_1,T}$ for any $\lambda\in \bbR$, i.e., it steers the system from $x_0$ to $x_1$ in time $T$.
+    Indeed, by the variation of constants formula \eqref{eq:duhamel-formula} we have
+    \begin{equation}
+        \End_{x_0,T}(u_\lambda) = e^{TA}x_0 + \int_0^T e^{(T-s)A}B(u + \lambda \tilde u(s))\, ds = x_1 + \lambda \underbrace{\int_0^T e^{(T-s)A}B\tilde u(s)\, ds}_{\End_{0,T}(\tilde u)=0} = x_1.
+    \end{equation}
+    In particular, letting $x$ (resp.~$\tilde x$, and $x_\lambda$) be the trajectory corresponding to $u$ (resp.~$\tilde u$, and $u_\lambda$), it then follows that $x_\lambda = x + \lambda \tilde x$.
+    Then, by the expression of $c(x,u)$, we have
+    \begin{equation}
+        \label{eq:aaaa}
+        c(x_\lambda,u_\lambda)
+        = \lambda^2 c(x_0, \tilde u) + \lambda \left[\frac12\tilde u^\top P u + \tilde u^\top Q x + u^\top Q x_0 + x_0^\top Rx \right] + c(x, u),
+        \qquad \forall t\in [0,T]
+    \end{equation}
+    
+    Observe that $u$ is an optimal control if and only if $J(u_\lambda)\ge J(u)$ for all $\lambda\in \bbR$ and $\tilde u\in \Omega(0,0,T)$. 
+    Indeed, for any competitor $v\in \Omega(x_0,x_1,T)$ we can write $v = u + \tilde u$ for some $\tilde u\in \Omega(0,0,T)$, and then $J(v) = J(u_1)\ge J(u)$.
+% 
+    Hence, integrating \eqref{eq:aaaa} over $[0,T]$, the optimality of $u$ is equivalent to 
+    \begin{equation}
+       \lambda^2 \underbrace{\int_0^T c(x_0, \tilde u)\, ds}_{=J(\tilde u)} + \lambda \int_0^T \left[\frac12\tilde u^\top P u^\star + \tilde u^\top Q x^\star + (u^\star)^\top Q x_0 + x_0^\top Rx^\star \right] \, ds \ge 0, 
+       \qquad \forall \lambda\in \bbR, \, \tilde u\in \Omega(0,0,T).
+    \end{equation}
+    This is clearly equivalent to the fact that $J(\tilde u)\ge 0$ for all $\tilde u\in \Omega(0,0,T)$.
+\end{proof}
+
+We henceforth consider the following assumptions.
+
+\ass[]{}{
+    \begin{itemize}
+        \item The pair $(A,B)$ satisfies the Kalman rank condition.
+        \item There exists $T_{\max}>0$ such that the functional $J$ is non-negative on $\Omega_{0,0,T_{\max}}$.
+        \item The system is \emph{dissipative}, i.e., for any $T\in (0,T_{\max}]$ there exists a control $u\in \Omega_{0,0,T}$ such that $J(u)>0$.
+    \end{itemize}
+}
+
+The first assumption ensures that the system is controllable, and thus that the optimal control problem \eqref{eq:ocp-linear} can have a solution. 
+By Theorem~\ref{th:ocp-existence-linear}, the second assumption guarantees the existence of a solution to \eqref{eq:ocp-linear} for any $T<T_{\max}$ and any $x_0,x_1\in \bbR^d$.
+The third assumption is a technical condition, and it guarantees the uniqueness of the solution.
+
+An important consequence of the third assumption is the following.
+
+\prop[dissipativity]{}{
+    Let $u\in \Omega_{x_0,x_1,T}$. Then, for any $\varepsilon>0$ there exists a control $u_\varepsilon\in \Omega_{x_0,x_1,T}$ such that 
+    \begin{equation}
+        J(u_\varepsilon)= J(u)+\varepsilon.
+    \end{equation}
+}
+
+\begin{proof}
+    Let $\bar u \in \Omega_{0,0,T}$ be such that $J(\bar u)>0$, which exists by the dissipativity assumption.
+    Then, for any $\lambda\in\bbR$ the control $u_\lambda = u+\lambda\bar u$ belongs to $\Omega_{x_0,x_1,T}$.
+    Then, $\lambda\mapsto J(u_\lambda)$ is continuous and strictly increasing, with $J(u_0)=J(u)$ and $\lim_{\lambda\to +\infty} J(u_\lambda) = +\infty$.
+    The conclusion follows by the intermediate value theorem.
+\end{proof}
+
+Observe that the second assumption is always satisfied if $P$ is non-negative definite (i.e., $c(x,u)$ is strictly convex in $u$ for any fixed $x$).
+It turns out that this is actually necessary.
+
+\prop[P-semi-def]{}{
+    We have that $P\in \sym_{\ge0}(\bbR^m)$.
+}
+
+\begin{proof}
+    Assume by contradiction that there exists a splitting $E_1\oplus E_2 = \bbR^m$ such that $P$ is negative definite on $E_2$.
+    Then, there exists $K>0$ such that $u^\top P u \le -K \|u\|_2^2$ for all $u\in E_2$.
+    This implies that 
+    \begin{equation}
+        c(x,u) \le -\frac{K}2 \|u\|_2^2 + \|u\|_2\|Q\|\|x\|_2 + \frac12 \|R\|\|x\|_2^2 \qquad \forall (x,u)\in \bbR^d\times E_2.
+    \end{equation}
+    As a consequence, there exists $T_0,c>0$ such that for any $T<T_0$ and any control $u\in L^\infty([0,T],E_2)$, with $u\in \Omega_{0,0,T}$ we have $J(u)\le -c\|u\|_{L^2}^2<0$.
+\end{proof}
+
+\subsection{Pontryagin Maximum Principle for LQ problems}
+
+Let us consider the extended system on $(x,\bar x)\in \bbR^d\times \bbR$, given by 
+\begin{equation}
+    \begin{cases}
+        \dot x = Ax + B u,\\
+        \dot{\bar x} = c(x,u).
+    \end{cases}
+    \qquad 
+    (x(0),\bar x(0)) = (x_0,0).
+\end{equation}
+Denote the corresponding reachable set at time $T>0$ by $\reach^{\text{ext}}_{x_0,T}$.
+We then have the following, to be compared with the geometric interpretation for optimality, presented in Section~\ref{sec:geometric-interpretation}.
+
+\thm[]{Optimality and extended system}{
+    Assume that the control $u^\star\in \Omega_{x_0,x_1,T}$ is an optimal solution to \eqref{eq:ocp-linear}. 
+    Then,
+    \begin{equation}
+        \label{eq:extended-optimality}
+        (x_1, J(u^\star)) \in \partial \reach^{\text{ext}}_{x_0,T}.
+    \end{equation}
+    Conversely, every point $(x_1,\bar J)\in \partial \reach^{\text{ext}}_{x_0,T}$ corresponds to an optimal solution $u^\star\in \Omega_{x_0,x_1,T}$ with $J(u^\star) = \bar J$.
+}
+
+\begin{proof}
+    The key observation is that any point $(x_,\bar J)\in \reach^{\text{ext}}_{x_0,T}$ is of the form $(x_u(T), J(u))$ for some $u\in \mathcal U_{x_0,T}$.
+
+    Then, if $u^\star$ is optimal, the extended terminal point $(x_1,J(u^\star))$ must be the lowest point of the line $\{x_1\}\times \bbR$ to belong to $\reach^{\text{ext}}_{x_0,T}$. In particular, this implies \eqref{eq:extended-optimality}.
+    
+    Conversely, assume that $(x_1,\bar J(\bar u))\in \partial \reach^{\text{ext}}_{x_0,T}$ for some control $\bar u\in \Omega_{x_0,x_1,T}$, but that $v$ is not optimal for \eqref{eq:ocp-linear}.
+    Then, there exists a control $v\in \Omega_{x_0,x_1,T}$ such that $J(v)=J(\bar u)-\varepsilon$ for a certain $\varepsilon>0$.
+% 
+    Given $\delta>0$, let $V_\delta = \{ u \in L^\infty([0,T],\bbR^m)\mid \|u-v\|_\infty<\delta\}$. 
+    % Then, the map 
+    % \begin{equation}
+    %     F:u \in V_\delta \mapsto (x_u(T),J(u)) \in \bbR^{n+1},
+    % \end{equation} 
+    % is a continous map. 
+    Since the system is controllable (see Corollary~\ref{th:local-contr-with-control-constraint}), $\End_{x_0,T}$ is an open mapping, and thus $\End_{x_0,T}(V_\delta)$ covers a neighborhood of $x_1$ in $\bbR^d$.
+    This implies that there exists $\delta>0$ sufficiently small such that 
+    \begin{equation}
+        J(u) \le J(v)+\frac\varepsilon2 = J(\bar u)-\frac{\varepsilon}2, \qquad \forall u\in V_\delta.
+    \end{equation}
+    In particular, by Proposition~\ref{prop:dissipativity}, for any $y\in \End_{x_0,T}(V_\delta)$ and any $\alpha\in [J(\bar u)-\frac{\varepsilon}2,J(\bar u)+\frac{\varepsilon}2]$ there exists $u_\alpha\in \Omega_{x_0,x_1,T}$ such that $J(u_\eta) = J(\bar u)-\frac{\varepsilon}2 + \eta$. Namely,
+    \begin{equation}
+       W:=\left[J(\bar u)-\frac{\varepsilon}2,J(\bar u)+\frac{\varepsilon}2\right] \times  \End_{x_0,T}(V_\delta) \subset \reach^{\text{ext}}_{x_0,T}.
+    \end{equation}
+    Since $W$ is a neighborhood of $(x_1,J(\bar u))$, this contradicts the fact that $(x_1,J(\bar u))\in \partial \reach^{\text{ext}}_{x_0,T}$.
+\end{proof}
+
+\ex[]{Convex LQ systems}{
+    The LQ optimal control problem \eqref{eq:ocp-linear} is \emph{convex} if $c:\bbR^d\times\bbR^m\to \bbR$ is a convex function. This is the case, e.g., if $P\in \sym_{>0}(\bbR^m)$, $R\in \sym_{\ge0}(\bbR^d)$, and $Q=0$.
+
+    An LQ optimal control problem always satisfies $c(x,u)\ge 0$. Moreover, in this case the reachable set $\reach^{\text{ext}}_{x_0,T}$ is convex.
+}
+
+
+\thm[]{Pontryagin Maximum Principle for LQ problems}{
+    Let $u^\star\in \Omega_{x_0,x_1,T}$ be an optimal solution to \eqref{eq:ocp-linear}, and let $x^\star$ be the corresponding trajectory.
+    Then, there exists a nontrivial Lipschitz function $p:[0,T]\to \bbR^d$ such that 
+    \begin{equation}
+        \begin{cases}
+            \dot x^\star = Ax^\star + Bu^\star, \\
+            \dot p = -A^\top p + Rx^\star + Q^\top u^\star,
+        \end{cases}
+        \qquad
+        \text{and}\qquad
+        u^\star(t) = \arg\max_{v\in \bbR^m} H(x^\star(t),p(t),v),
+    \end{equation}
+    where the Hamiltonian $H:\bbR^d\times \bbR^d\times \bbR^m\to \bbR$ is given by
+    \begin{equation}
+        H(x,p,u) =p^\top (Ax + Bu) -c(x,u).
+    \end{equation}
+}
+
+\begin{proof}
+    We have that $(x_1,J(u^\star))\in \partial \reach^{\text{ext}}_{x_0,T}$. 
+    Let us consider variations of the form $u_\lambda = u^\star + \lambda \tilde u$, where $\tilde u\in L^\infty([0,T],\bbR^m)$.
+    Then, by the same argument used in the proof of Theorem~\ref{th:ocp-existence-linear}, we have that $x_\lambda = x^\star + \lambda \tilde x$, where $\tilde x$ is the trajectory corresponding to $\tilde u$ with initial condition $\tilde x(0)=0$. Observe that $x_\lambda(T)\neq x_1$ in general and that, as in \eqref{eq:aaaa}, 
+    \begin{equation}
+        \label{eq:aaaa2}
+        J(u_\lambda) = J(u^\star) + \lambda \int_0^T \left[ \frac{\partial}{\partial u} c(x^\star, u^\star) \,\tilde u + \frac{\partial}{\partial x}c(x^\star, u^\star) \, \tilde x  \right] \, dt + \lambda^2 J(\tilde u).
+    \end{equation}
+
+    Consider the map $F:L^\infty([0,T],\bbR^m) \to \bbR^{d+1}$ given by
+    \begin{equation}
+        F(u) = (x_u(T), J(u)).
+    \end{equation}
+    Then, $F(u_\lambda) = (x_\lambda(T), J(u_\lambda))$ belongs to $\reach^{\text{ext}}_{x_0,T}$ for all $\lambda\in \bbR$. 
+    We compute its directional derivative $L(\tilde u):=DF_{u^\star}(\tilde u) 
+        = \lim_{\lambda\to 0} \frac{F(u_\lambda)-F(u^\star)}{\lambda}$ at $u^\star$ in the direction $\tilde u$, obtaining
+    \begin{equation}
+        L(\tilde u)
+        = \left( \tilde x(T), \int_0^T \left[ \frac{\partial}{\partial u} c(x^\star, u^\star) \, \tilde u + \frac{\partial}{\partial x}c(x^\star, u^\star) \, \tilde x  \right] \, dt   \right).
+    \end{equation}
+
+    The key observation is then the following: there exists a linear form $p_T:\bbR^d\to \bbR$ such that 
+    \begin{equation}
+        \label{eq:L-der}
+        L(\tilde u) = (\tilde x(T),p_T(\tilde x(T))), \qquad \forall \tilde u\in L^\infty([0,T],\bbR^m).
+    \end{equation}
+    Indeed, $L$ is a linear map from the infinite-dimensional space $L^\infty([0,T],\bbR^m)$ to the finite-dimensional space $\bbR^{d+1}$, and thus $\operatorname{ran} L$ is a linear subspace of $\bbR^{d+1}$ of dimension at most $d+1$. But, on one hand, controllability implies that $\operatorname{ran} L$ contains the subspace $\bbR^d\times \{0\}$, which has dimension $d$. On the other hand, if $\operatorname{ran} L = \bbR^{d+1}$ then for any $\alpha>0$ there would exists $v$ such that $L(v) = (0,-\alpha)$. 
+    In particular, the corresponding trajectory $y$ satisfies $y(T)=0$ and hence $x_\lambda (T) = x^\star(T) +\lambda y(T) = x_1$. 
+    As a consequence, \eqref{eq:aaaa2} yields 
+    \begin{equation}
+    J(u_\lambda) = J(u^\star)-\lambda \alpha+ \lambda^2 J(v), \qquad \forall \lambda\in\bbR 
+    \implies J(u_\lambda) < J(u^\star), \qquad \lambda \ll 1.
+    \end{equation} 
+    This contradicts the optimality of $u^\star$. Hence, $\operatorname{ran} L$ has dimension exactly $d$, and thus it is the graph of a linear form $p_T:\bbR^d\to \bbR$.
+
+    To complete the proof, we need to show that $p_T$ is of the form $p_T(\tilde x(T)) = p(T)^\top \tilde x(T)$ for some absolutely continuous function $p:[0,T]\to \bbR^d$ satisfying the adjoint equation $\dot p = -A^\top p + Rx^\star$.
+    \begin{equation}
+        \label{eq:adjoint-eq-proof}
+        \dot p =-A^\top p + Rx^\star + Q^\top u^\star =  -A^\top p + \frac{\partial}{\partial x}c(x^\star, u^\star).
+    \end{equation}
+    Let us consider a solution to the above with terminal condition $p(T)=p_T$.
+    Then, recalling that $\tilde x = A\tilde x + B \tilde u$ and that $\tilde x(0)=0$, by \eqref{eq:L-der} we obtain
+    \begin{equation}
+       \int_0^T \left[ \frac{\partial}{\partial u} c(x^\star, u^\star) \, \tilde u + \frac{\partial}{\partial x}c(x^\star, u^\star) \, \tilde x  \right] \, dt 
+       = p(T)^\top (x(T)) 
+       = \int_0^T \frac{d}{dt} \left[p^\top x\right]\, dt 
+       = \int_0^T \left[ \dot p^\top x + p^\top (Ax + Bu) \right]\, dt.
+    \end{equation}
+    Replacing \eqref{eq:adjoint-eq-proof} in the above, we obtain 
+    \begin{equation}
+        \int_0^T \left[\frac{\partial}{\partial u} c(x^\star, u^\star) - B^\top p \right]\, \tilde u = 0, \qquad \forall \tilde u\in L^\infty([0,T],\bbR^m). 
+    \end{equation} 
+    That is, 
+    \begin{equation}
+       \frac{\partial}{\partial u} c(x^\star, u^\star) - B^\top p = 0 \qquad \text{for a.e.\ } t\in [0,T],  
+    \end{equation}
+    which is equivalent to the maximization condition $u^\star(t) = \arg\max_{v\in \bbR^m} H(x^\star(t),p(t),v)$, since
+    \begin{equation}
+        \frac{\partial}{\partial u} H(x,p,u) = \frac{\partial}{\partial u} c(x,u) - B^\top p,
+    \end{equation}
+    and $H$ is concave in $u$ for any fixed $(x,p)$ due to the fact that $P\in \sym_{\ge0}(\bbR^m)$ by Proposition~\ref{prop:P-semi-def}.
+\end{proof}
+
+\subsection{Lagrangian interpretation of PMP for LQ problems}
+
+Let $\Lip([0,T], \bbR^d)$ be the space of Lipschitz functions $x:[0,T]\to \bbR^d$ endowed with the norm $\|x\|_{\Lip}=\|x\|_\infty + L_x$, where $L_x$ denotes the Lipschitz constant of $x$. 
+Let us consider the extended cost functional 
+\begin{equation}
+    J: \Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m) \to \bbR, \qquad
+    J(x,u) = \int_0^T c(x(t),u(t))\, dt.
+\end{equation}
+Then, the optimal control problem \eqref{eq:ocp-linear} can be rephrased as the following infinite-dimensional optimization problem with dynamical constraints:
+\begin{equation}
+    \min_{(x,u) \in \Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m)} J(x,u) \qquad\text{subject to}\qquad \dot x = Ax + Bu,\, x(0)=x_0,\, x(T)=x_1.
+\end{equation}
+Assume for simplicity that $Q=0$, so that $c(x,u)=\frac12\left(u^\top P u + x^\top Rx\right)$.
+Following the ideas presented in Chapter~\ref{chp:optimization-problems}, we then introduce the Lagrangian $\mathcal L:\Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m) \times \Lip([0,T],\bbR^d) \to \bbR$ given by
+\begin{equation}
+    \begin{split}
+        \mathcal L (x,u, p)
+         & =  \frac12\int_0^T \left(u^\top P u + x^\top Rx\right)\,dt + \int_0^T p^\top \left(\dot x - Ax-Bu\right)\, dt                                \\
+         & =  \frac12\int_0^T \left(u^\top P u + x^\top Rx\right)\,dt - \int_0^T p^\top \left(Ax+Bu-(x_1-x_0)\right)\, dt -\int_0^T \dot p^\top x\, dt. \\
+    \end{split}
+    \end{equation}
+Here $p\in \Lip([0,T],\bbR^d)$ is the Lagrange multiplier associated with the dynamical constraint $\dot x = Ax + Bu$, and in the last equality we have integrated by parts the term $\int_0^T p^\top \dot x\, dt$ and used the boundary conditions $x(0)=x_0$ and $x(T)=x_1$.
+
+An optimal solution $(x^\star, u^\star)$ should then satisfy the stationarity condition 
+\begin{equation}
+    \frac{\partial}{\partial (x,u)} \mathcal L(x^\star, u^\star, p) = 0, \qquad \text{for some } p \in\Lip([0,T],\bbR^d).
+\end{equation}
+But this yields:
+\begin{itemize}
+    \item Variation w.r.t.~$u$:
+    \begin{equation}
+        0= \frac{\partial}{\partial u} \mathcal L(x^\star, u^\star, p) = Pu + B^\top p.
+    \end{equation}
+    This yields the control law $u^\star = - P^{-1} B^\top p$.
+    \item Variation w.r.t.~$x$: 
+    % in order to do this, we need to integrate by parts the term $\int_0^T p^\top \dot x\, dt$:
+    % \begin{equation}
+    %     \int_0^T p^\top \dot x\, dt = \left[ p^\top x \right]_0^T - \int_0^T \dot p^\top x\, dt = p^\top (x_1 - x_0) - \int_0^T \dot p^\top x\, dt.
+    % \end{equation}
+    % Then, we obtain 
+    \begin{equation}
+        0 = \frac{\partial}{\partial x} \mathcal L(x^\star, u^\star, p) = R x - \dot p - A^\top p.
+    \end{equation}
+    This yields the adjoint equation $\dot p = -A^\top  p + Rx$.
+
+\end{itemize}
