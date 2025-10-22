@@ -712,6 +712,7 @@ The first question to be answered is the existence of solutions to the correspon
     \begin{equation}
         J(u) \ge 0 \qquad \forall u \in \Omega_{0,0,T}.
     \end{equation}
+    If, moreover, there exists $\alpha>0$ such that $J(u)>\alpha\|u\|_2^2$ for all $u\in \Omega_{0,0,T}$ then the optimal solution is unique.
 }
 
 \begin{proof}
@@ -726,19 +727,41 @@ The first question to be answered is the existence of solutions to the correspon
     \begin{equation}
         \label{eq:aaaa}
         c(x_\lambda,u_\lambda)
-        = \lambda^2 c(x_0, \tilde u) + \lambda \left[\frac12\tilde u^\top P u + \tilde u^\top Q x + u^\top Q x_0 + x_0^\top Rx \right] + c(x, u),
+        = \lambda^2 c(\tilde x, \tilde u) + \lambda \left[\frac12\tilde u^\top P u + \tilde u^\top Q x + u^\top Q \tilde x + \tilde x^\top Rx \right] + c(x, u),
         \qquad \forall t\in [0,T]
     \end{equation}
     
-    Observe that $u$ is an optimal control if and only if $J(u_\lambda)\ge J(u)$ for all $\lambda\in \bbR$ and $\tilde u\in \Omega(0,0,T)$. 
-    Indeed, for any competitor $v\in \Omega(x_0,x_1,T)$ we can write $v = u + \tilde u$ for some $\tilde u\in \Omega(0,0,T)$, and then $J(v) = J(u_1)\ge J(u)$.
-% 
-    Hence, integrating \eqref{eq:aaaa} over $[0,T]$, the optimality of $u$ is equivalent to 
+    Assume that $u$ is optimal. In particular, $J(u_\lambda)\ge J(u)$ for all $\lambda\in \bbR$ and $\tilde u\in \Omega(0,0,T)$. Hence, integrating \eqref{eq:aaaa} over $[0,T]$, we then have 
     \begin{equation}
        \lambda^2 \underbrace{\int_0^T c(x_0, \tilde u)\, ds}_{=J(\tilde u)} + \lambda \int_0^T \left[\frac12\tilde u^\top P u^\star + \tilde u^\top Q x^\star + (u^\star)^\top Q x_0 + x_0^\top Rx^\star \right] \, ds \ge 0, 
        \qquad \forall \lambda\in \bbR, \, \tilde u\in \Omega(0,0,T).
     \end{equation}
-    This is clearly equivalent to the fact that $J(\tilde u)\ge 0$ for all $\tilde u\in \Omega(0,0,T)$.
+    This immediately yields $J(\tilde u)\ge 0$ for all $\tilde u\in \Omega(0,0,T)$.
+
+    Let us now prove the converse implication.
+    Assume that $J(\tilde u)\ge 0$ for all $\tilde u\in \Omega_{0,0,T}$.
+    Up to fixing any $u_0\in \Omega_{x_0,x_1,T}$, we have that for any $u\in \Omega_{x_0,x_1,T}$ it holds $u - u_0 \in \Omega_{0,0,T}$, i.e., $u=u_0+\tilde u$ for some $\tilde u\in \Omega_{0,0,T}$. Hence, minimizing $J$ over $\Omega_{x_0,x_1,T}$ is equivalent to minimizing the functional $J(u_0+\tilde u)$ over $\tilde u\in \Omega_{0,0,T}$.
+    From \eqref{eq:aaaa} with $\lambda=1$, this is equivalent to minimizing the functional $\phi:\Omega_{0,0,T}\to \bbR$ defined as
+    \begin{equation}
+        \phi(\tilde u) = J(\tilde u) + L \tilde u, 
+        \qquad \text{where } 
+        L \tilde u :=\int_0^T \left[\frac12\tilde u^\top P u_0 + \tilde u^\top Q x + u_0^\top Q \tilde x + \tilde x^\top Rx \right] \, dt, 
+    \end{equation}
+    Here, $J$ is a quadratic form and $L$ is a linear functional. 
+    Even though the problem is posed on $\Omega_{0,0,T}\subset L^\infty([0,T],\bbR^m)$, we can equivalently consider it on the Hilbert space $X\subset L^2([0,T],\bbR^m)$ of $L^2$ controls steering the system from $0$ to itself in time $T$, since $L^\infty$ is dense in $L^2$ and both $J$ and $L$ extends continuously to the latter.
+    Let $N = \ker(J) \subset L^2([0,T],\bbR^m)$ and observe that $\ker(L)\supset N$. Indeed, if this was not the case $J(u_0+\lambda \tilde u)$ would be unbounded from below for $\tilde u\in N$ such that $L\tilde u <0$ and $\lambda\to +\infty$, contradicting the non-negativity of $J$ on $\Omega_{0,0,T}$.
+
+    Let now $N^\perp$ be the orthogonal complement of $N$ in $X$.
+    Since $J$ is non-negative by assumption, it is strictly positive on $N^\perp$. 
+    Thus, $\phi$ is continous, coercive and strictly convex on $N^\perp$. 
+    In particular, there exists a unique $\tilde u^\star \in N^\perp$ such that 
+    \begin{equation}
+        \phi(\tilde u^\star) = \min_{\tilde u\in N^\perp} \phi(\tilde u).
+    \end{equation}
+    Since $\phi$ is zero on $N$, it follows that $\tilde u^\star$ is a minimizer of $\phi$ on the whole $X$.
+    To conclude the proof of the converse implication it then suffices to observe that $\tilde u^\star\in \Omega_{0,0,T}$. We omit a precise argument for this fact, but this can be done exploiting the necessary conditions for optimality of the Pontryiagin Maximum Principle, to be presented in the next section.
+
+    Finally, if $J(u)\ge \alpha\|u\|_2^2$ for all $u\in \Omega_{0,0,T}$, then $J$ is strictly convex on $\Omega_{0,0,T}$, thus on $X$, and thus the minimizer is unique.
 \end{proof}
 
 We henceforth consider the following assumptions.
@@ -785,7 +808,9 @@ It turns out that this is actually necessary.
     \begin{equation}
         c(x,u) \le -\frac{K}2 \|u\|_2^2 + \|u\|_2\|Q\|\|x\|_2 + \frac12 \|R\|\|x\|_2^2 \qquad \forall (x,u)\in \bbR^d\times E_2.
     \end{equation}
-    As a consequence, there exists $T_0,c>0$ such that for any $T<T_0$ and any control $u\in L^\infty([0,T],E_2)$, with $u\in \Omega_{0,0,T}$ we have $J(u)\le -c\|u\|_{L^2}^2<0$.
+    % As a consequence, there exists $T_0,c>0$ such that for any $T<T_0$ and any control $u\in L^\infty([0,T],E_2)$, with $u\in \Omega_{0,0,T}$ we have $J(u)\le -c\|u\|_{L^2}^2<0$.
+    By controllability, for any $T>0$ there exists a control $u\in \Omega_{0,0,T}$ with values in $E_2$ and arbitrarily large $L^2$ norm. 
+    But then, the above inequality implies that $J(u)$ can be made arbitrarily negative, contradicting the non-negativity of $J$ on $\Omega_{0,0,T}$.
 \end{proof}
 
 \subsection{Pontryagin Maximum Principle for LQ problems}
@@ -845,7 +870,7 @@ We then have the following, to be compared with the geometric interpretation for
 }
 
 
-\thm[]{Pontryagin Maximum Principle for LQ problems}{
+\thm[pmp]{Pontryagin Maximum Principle for LQ problems}{
     Let $u^\star\in \Omega_{x_0,x_1,T}$ be an optimal solution to \eqref{eq:ocp-linear}, and let $x^\star$ be the corresponding trajectory.
     Then, there exists a nontrivial Lipschitz function $p:[0,T]\to \bbR^d$ such that 
     \begin{equation}
@@ -926,49 +951,399 @@ We then have the following, to be compared with the geometric interpretation for
     and $H$ is concave in $u$ for any fixed $(x,p)$ due to the fact that $P\in \sym_{\ge0}(\bbR^m)$ by Proposition~\ref{prop:P-semi-def}.
 \end{proof}
 
+% \subsection{Lagrangian interpretation of PMP for LQ problems}
+
+% Let $\Lip([0,T], \bbR^d)$ be the space of Lipschitz functions $x:[0,T]\to \bbR^d$ endowed with the norm $\|x\|_{\Lip}=\|x\|_\infty + L_x$, where $L_x$ denotes the Lipschitz constant of $x$. 
+% Let us consider the extended cost functional 
+% \begin{equation}
+%     J: \Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m) \to \bbR, \qquad
+%     J(x,u) = \int_0^T c(x(t),u(t))\, dt.
+% \end{equation}
+% Then, the optimal control problem \eqref{eq:ocp-linear} can be rephrased as the following infinite-dimensional optimization problem with dynamical constraints:
+% \begin{equation}
+%     \min_{(x,u) \in \Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m)} J(x,u) \qquad\text{subject to}\qquad \dot x = Ax + Bu,\, x(0)=x_0,\, x(T)=x_1.
+% \end{equation}
+% Assume for simplicity that $Q=0$, so that $c(x,u)=\frac12\left(u^\top P u + x^\top Rx\right)$.
+% Following the ideas presented in Chapter~\ref{chp:optimization-problems}, we then introduce the Lagrangian $\mathcal L:\Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m) \times \Lip([0,T],\bbR^d) \to \bbR$ given by
+% \begin{equation}
+%     \begin{split}
+%         \mathcal L (x,u, p)
+%          & =  \frac12\int_0^T \left(u^\top P u + x^\top Rx\right)\,dt + \int_0^T p^\top \left(\dot x - Ax-Bu\right)\, dt                                \\
+%          & =  \frac12\int_0^T \left(u^\top P u + x^\top Rx\right)\,dt - \int_0^T p^\top \left(Ax+Bu-(x_1-x_0)\right)\, dt -\int_0^T \dot p^\top x\, dt. \\
+%     \end{split}
+%     \end{equation}
+% Here $p\in \Lip([0,T],\bbR^d)$ is the Lagrange multiplier associated with the dynamical constraint $\dot x = Ax + Bu$, and in the last equality we have integrated by parts the term $\int_0^T p^\top \dot x\, dt$ and used the boundary conditions $x(0)=x_0$ and $x(T)=x_1$.
+
+% An optimal solution $(x^\star, u^\star)$ should then satisfy the stationarity condition 
+% \begin{equation}
+%     \frac{\partial}{\partial (x,u)} \mathcal L(x^\star, u^\star, p) = 0, \qquad \text{for some } p \in\Lip([0,T],\bbR^d).
+% \end{equation}
+% But this yields:
+% \begin{itemize}
+%     \item Variation w.r.t.~$u$:
+%     \begin{equation}
+%         0= \frac{\partial}{\partial u} \mathcal L(x^\star, u^\star, p) = Pu + B^\top p.
+%     \end{equation}
+%     This yields the control law $u^\star = - P^{-1} B^\top p$.
+%     \item Variation w.r.t.~$x$: 
+%     % in order to do this, we need to integrate by parts the term $\int_0^T p^\top \dot x\, dt$:
+%     % \begin{equation}
+%     %     \int_0^T p^\top \dot x\, dt = \left[ p^\top x \right]_0^T - \int_0^T \dot p^\top x\, dt = p^\top (x_1 - x_0) - \int_0^T \dot p^\top x\, dt.
+%     % \end{equation}
+%     % Then, we obtain 
+%     \begin{equation}
+%         0 = \frac{\partial}{\partial x} \mathcal L(x^\star, u^\star, p) = R x - \dot p - A^\top p.
+%     \end{equation}
+%     This yields the adjoint equation $\dot p = -A^\top  p + Rx$.
+
+% \end{itemize}
+
 \subsection{Lagrangian interpretation of PMP for LQ problems}
 
-Let $\Lip([0,T], \bbR^d)$ be the space of Lipschitz functions $x:[0,T]\to \bbR^d$ endowed with the norm $\|x\|_{\Lip}=\|x\|_\infty + L_x$, where $L_x$ denotes the Lipschitz constant of $x$. 
-Let us consider the extended cost functional 
+For simplicity, in this section we assume $Q=0$, so that the running cost takes the form
+\[
+c(x,u) = \frac{1}{2} \left( x^\top R x + u^\top P u \right).
+\]
+Let $\Lip([0,T], \mathbb{R}^d)$ denote the space of Lipschitz functions $x:[0,T]\to \mathbb{R}^d$, endowed with the norm 
+\[
+\|x\|_{\Lip} := \|x\|_\infty + L_x,
+\] 
+where $L_x$ is the Lipschitz constant of $x$. Consider the extended cost functional
 \begin{equation}
-    J: \Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m) \to \bbR, \qquad
+    J: \Lip([0,T],\mathbb{R}^d) \times L^\infty([0,T],\mathbb{R}^m) \to \mathbb{R}, 
+    \qquad
     J(x,u) = \int_0^T c(x(t),u(t))\, dt.
 \end{equation}
-Then, the optimal control problem \eqref{eq:ocp-linear} can be rephrased as the following infinite-dimensional optimization problem with dynamical constraints:
+Then, the linear–quadratic optimal control problem \eqref{eq:ocp-linear} can be rewritten as an infinite-dimensional optimization problem with dynamical constraints:
 \begin{equation}
-    \min_{(x,u) \in \Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m)} J(x,u) \qquad\text{subject to}\qquad \dot x = Ax + Bu,\, x(0)=x_0,\, x(T)=x_1.
+    \min_{(x,u) \in \Lip([0,T],\mathbb{R}^d) \times L^\infty([0,T],\mathbb{R}^m)} 
+    J(x,u)
+    \quad \text{subject to} \quad
+    \dot x = A x + B u, \quad x(0)=x_0, \quad x(T)=x_1.
 \end{equation}
-Assume for simplicity that $Q=0$, so that $c(x,u)=\frac12\left(u^\top P u + x^\top Rx\right)$.
-Following the ideas presented in Chapter~\ref{chp:optimization-problems}, we then introduce the Lagrangian $\mathcal L:\Lip([0,T],\bbR^d) \times L^\infty([0,T],\bbR^m) \times \Lip([0,T],\bbR^d) \to \bbR$ given by
-\begin{equation}
-    \begin{split}
-        \mathcal L (x,u, p)
-         & =  \frac12\int_0^T \left(u^\top P u + x^\top Rx\right)\,dt + \int_0^T p^\top \left(\dot x - Ax-Bu\right)\, dt                                \\
-         & =  \frac12\int_0^T \left(u^\top P u + x^\top Rx\right)\,dt - \int_0^T p^\top \left(Ax+Bu-(x_1-x_0)\right)\, dt -\int_0^T \dot p^\top x\, dt. \\
-    \end{split}
-    \end{equation}
-Here $p\in \Lip([0,T],\bbR^d)$ is the Lagrange multiplier associated with the dynamical constraint $\dot x = Ax + Bu$, and in the last equality we have integrated by parts the term $\int_0^T p^\top \dot x\, dt$ and used the boundary conditions $x(0)=x_0$ and $x(T)=x_1$.
 
-An optimal solution $(x^\star, u^\star)$ should then satisfy the stationarity condition 
+Following the ideas of Chapter~\ref{chp:optimization-problems}, we introduce the Lagrangian
 \begin{equation}
-    \frac{\partial}{\partial (x,u)} \mathcal L(x^\star, u^\star, p) = 0, \qquad \text{for some } p \in\Lip([0,T],\bbR^d).
+    \mathcal{L}(x,u,p) := \frac12 \int_0^T \big( x^\top R x + u^\top P u \big)\, dt
+    + \int_0^T p^\top (\dot x - A x - B u)\, dt,
 \end{equation}
-But this yields:
+where $p \in \Lip([0,T], \mathbb{R}^d)$ is the Lagrange multiplier associated with the dynamical constraint $\dot x = Ax + Bu$. 
+
+Integrating the term $\int_0^T p^\top \dot x\, dt$ by parts and using the boundary conditions $x(0)=x_0$, $x(T)=x_1$ gives
+\begin{equation}
+    \mathcal{L}(x,u,p) 
+    = \frac12 \int_0^T \big( x^\top R x + u^\top P u \big)\, dt
+    - \int_0^T p^\top (A x + B u)\, dt
+    + p(T)^\top x_1 - p(0)^\top x_0 - \int_0^T \dot p^\top x \, dt.
+\end{equation}
+
+An optimal solution $(x^\star, u^\star)$ should satisfy the stationarity condition
+\begin{equation}
+    \frac{\partial}{\partial (x,u)} \mathcal{L}(x^\star, u^\star, p) = 0
+    \qquad \text{for some } p \in \Lip([0,T], \mathbb{R}^d).
+\end{equation}
+By considering appropriate variations of $\mathcal{L}$ with respect to $x$ and $u$, concentrated on small time intervals, it is possible to show that the above condition is equivalent to the corresponding pointwise conditions (i.e., without integration in time).
+
+This yields the following conditions:
+
 \begin{itemize}
-    \item Variation w.r.t.~$u$:
+    \item {Variation with respect to $u$:} 
     \begin{equation}
-        0= \frac{\partial}{\partial u} \mathcal L(x^\star, u^\star, p) = Pu + B^\top p.
+        0 %= \frac{\partial \mathcal{L}}{\partial u}(x^\star, u^\star, p)
+          = P u^\star + B^\top p,
     \end{equation}
-    This yields the control law $u^\star = - P^{-1} B^\top p$.
-    \item Variation w.r.t.~$x$: 
-    % in order to do this, we need to integrate by parts the term $\int_0^T p^\top \dot x\, dt$:
-    % \begin{equation}
-    %     \int_0^T p^\top \dot x\, dt = \left[ p^\top x \right]_0^T - \int_0^T \dot p^\top x\, dt = p^\top (x_1 - x_0) - \int_0^T \dot p^\top x\, dt.
-    % \end{equation}
-    % Then, we obtain 
+    which gives the optimal feedback law
+    \[
+        u^\star = - P^{-1} B^\top p.
+    \]
+    
+    \item {Variation with respect to $x$:} 
     \begin{equation}
-        0 = \frac{\partial}{\partial x} \mathcal L(x^\star, u^\star, p) = R x - \dot p - A^\top p.
+        0 %= \frac{\partial \mathcal{L}}{\partial x}(x^\star, u^\star, p)
+          = R x^\star - \dot p - A^\top p,
     \end{equation}
-    This yields the adjoint equation $\dot p = -A^\top  p + Rx$.
-
+    which yields the adjoint (costate) equation
+    \[
+        \dot p = - A^\top p + R x^\star.
+    \]
 \end{itemize}
+
+Thus, the Pontryagin Maximum Principle (PMP) for the linear–quadratic problem can be interpreted as a first-order stationarity condition for the Lagrangian $\mathcal{L}$, with the adjoint $p$ serving as the Lagrange multiplier for the dynamics.
+
+\section{Linear-quadratic problems with unconstrained terminal state}
+
+The PMP given in Theorem~\ref{th:pmp} for problem \eqref{eq:ocp-linear} presents an important drawback: even though the control $u^\star$ is completely determined by the pair $(x^\star,p^\star)$, the ODE determining the latter cannot be easily solved due to the fact that the boundary conditions are on $x^\star(0)=x_0$ and $x^\star (T)=x_1$. 
+Namely, $p^\star$ is determined implicitly and is typically found by ``shooting'' methods (i.e., one chooses initial conditions $x^\star(0)=x_0$ and $p^\star(0)=\lambda$ and then looks for $\lambda$ such that $x^\star(T)=x_1$).
+
+In this section, to circumvent this problem, we consider the following relaxed version of \eqref{eq:ocp-linear}:
+\begin{equation}
+   \label{eq:ocp-linear-no-terminal}
+   \begin{cases}
+    \dot x = A x + Bu \\
+    x(0)=x_0 \\
+    J(u) = \int_0^T c(x_u(t),u(t))\, dt \rightarrow \min.
+   \end{cases} 
+\end{equation}
+Since no terminal condition is required, to avoid trivial optimal solutions $u\equiv 0$ one needs to adjust the cost $J$ by adding a ``final cost'' as
+\begin{equation}
+    \label{eq:J-no-terminal}
+    J(u) = \int_0^T c(x,u)\, dt + x(T)^\top W x(T).
+\end{equation}
+Here, $W\in \sym_{\ge 0}(\bbR^d)$ is a matrix. 
+(Compare with the penalty methods discussed in Section~\ref{sed:saddle-point}.)
+
+For simplicity we consider the following.
+
+\ass[]{}{
+    \begin{itemize}
+        \item The pair $(A,B)$ satisfies the Kalman rank condition.
+        \item The running cost is given by 
+        \begin{equation}
+            c(x,u)= \frac12 u^\top P u + \frac12 x^\top R x, 
+        \end{equation}
+        with $P\in \sym_{>0}(\bbR^d)$ and $R\in \sym_{\ge 0}(\bbR^d)$.
+    \end{itemize}
+}
+
+The results previously discussed still hold in this case (observe that $J(u)>0$ for any non-zero control). 
+We resume them in the following and refer to \cite{trelatControle2005} for the proofs.
+
+\thm[pmp-no-terminal]{Pontryiagin Maximum Principle for LQ systems with terminal cost}{
+There exists a unique optimal solution $u^\star$ to \eqref{eq:ocp-linear-no-terminal}, with corresponding trajectory $x^\star$. Moreover, there exists a nontrivial Lipschitz function $p^\star:[0,T]\to \bbR^d$ such that
+\begin{equation}
+    \begin{cases}
+        \dot x^\star = Ax^\star + Bu^\star,  \qquad x^\star(0)=x_0\\
+        \dot p = -A^\top p + Rx^\star , \qquad p^\star(T)=-Wx(T),
+    \end{cases}
+\end{equation}
+and yielding 
+\begin{equation}
+    u^\star = P^{-1}B^\top p, \qquad \text{on }[0,T].
+\end{equation}
+}
+
+We also need the following concept.
+
+\dfn[]{Value function}{
+    The \emph{value function} associated with the optimal control problem \eqref{eq:ocp-linear} with final time $T>0$ is the map $V_T:\bbR^d \to \bbR$ defined as
+    \begin{equation}
+        V_T(x_0) = \inf \left\{ J(u) \mid x_u(0)=x_0\right\}.
+    \end{equation}
+}
+
+\prop[value-fct]{}{
+    For any $T>0$ there exists $c>0$ such that 
+    \begin{equation}
+        V_s(x_0)\le c\|x_0\|_2^2, \qquad \forall x_0\in \bbR^d, \, s\in [0,T].
+    \end{equation}
+}
+
+\begin{proof}
+    Fix $x_0\in \bbR^d$ and let us consider the control $u\equiv 0$ on $[0,s]$. Then, the corresponding trajectory satisfies $x(t) =e^{tA}x_0$. 
+    Observing that $\|x(t)^\top Rx(t)\|_2^2 \le \|R\|\|x(t)\|_2^2$ and that $\|x(t)\|\le \|e^{tA}\|\|x_0\|_2^2$, we get
+    \begin{equation}
+        |J(0)| =\left| \frac12 \int_0^s x(t)^\top R x(t)\, dt + x(s)^\top W x(s)\right| 
+        \le \left[ \frac12\int_0^s \|e^{tA}\|^2 \|R\|\, dt + \|W\|\|e^{sA}\|  \right]\|x_0\|^2_2.
+    \end{equation}
+    The statement follows since $V_s(0)\le J(0)$.
+\end{proof}
+
+\subsection{The Riccati equation and the optimal feedback law}
+
+Although the PMP provides necessary conditions for optimality, it does not directly yield an explicit expression for the optimal control $u^\star$ in terms of the state $x^\star$.
+However, in the case of linear–quadratic problems, it is actually possible to express the adjoint state $p^\star$ as a function of the state $x^\star$ via the solution of a matrix differential equation known as the Riccati equation. 
+In particular, this allows us to derive an explicit feedback law for the optimal control, i.e., an expression of the form $u^\star(t) = K(t) x^\star(t)$ for some time-varying gain matrix $K(t)$.
+
+
+
+We have the following.
+
+\thm[riccati]{Riccati Equation}{
+    The unique optimal solution $u^\star$ to \eqref{eq:ocp-linear} is given by %
+    \begin{equation}
+        \label{eq:optimal-control-riccati}
+        u^\star(t) = -P^{-1} B^\top E(t) x^\star(t).
+    \end{equation}
+    Here, $x^\star$ is the corresponding optimal trajectory, and $E:[0,T]\to \sym(\bbR^d)$ is the unique solution to the matrix Riccati differential equation
+    \begin{equation}
+        \label{eq:riccati}
+        \begin{cases}
+            \dot E  =R- A^\top E - E A - E B P^{-1} B^\top E, \\
+            E(T) = -W,
+        \end{cases}
+    \end{equation}
+    In particular, the value function is given by 
+    \begin{equation}
+        \label{eq:value}
+        V_T(x_0) = x_0^\top E(0) x_0.
+    \end{equation}
+}
+
+\begin{proof}
+    % By Theorem~\ref{th:ocp-existence-linear}, the positive definiteness of $P$ implies the existence and uniqueness of the optimal control $u^\star\in \Omega_{x_0,x_1,T}$.
+    Let $x^\star$ be the optimal trajectory corresponding to the unique optimal control $u^\star$, and let $p^\star$ be the associated adjoint state, satisfying the PMP conditions of Theorem~\ref{th:th:pmp-no-terminal}.
+    In particular, we have
+    \begin{equation}
+        \label{eq:u-star-pmp}
+        u^\star(t) = -P^{-1} B^\top p^\star(t).
+    \end{equation}
+    This implies that the optimal pair $(x^\star,p^\star)$ satisfies the closed-loop system
+    \begin{equation}
+        \begin{cases}
+            \dot x^\star = A x^\star - B P^{-1} B^\top p^\star, \\
+            \dot p^\star = -A^\top p^\star + R x^\star,
+        \end{cases}
+        \qquad
+        \text{with } x^\star(0)=x_0, \quad x^\star(T)=x_1, \quad p^\star(T)=-Wx(T).
+    \end{equation}
+    
+    % Looking for a solution of the form $p= E(t) x^\star(t)$ for some matrix function $E:[0,T]\to \bbR^{d\times d}$, one easily checks that $E$ must satisfy the Riccati equation \eqref{eq:riccati}.
+    Let $E$ be a solution to \eqref{eq:riccati} (which we will show to exist on $[0,T]$ in Lemma~\ref{lem:existence-riccati}), and observe that $E(t)\in \sym(\bbR^d)$ for all $t\in [0,T]$. 
+    Indeed, $E(0)\in \sym(\bbR^d)$, and the right-hand side of \eqref{eq:riccati} is symmetric whenever $E(t)$ is symmetric.
+    
+    Let now $p=E x$, where $x$ is the solution to \eqref{eq:cs-linear}, i.e., $\dot x = Ax+Bu$, w.r.t.~the feedback control $u=P^{-1}B^\top E x$.
+    Then, by \eqref{eq:u-star-pmp}, it follows that 
+    \begin{equation}
+        \dot p = \dot x^\top E + x^\top \dot E 
+        = -A^\top p + R x^\star.
+    \end{equation}
+    That is, $(u, x, p)$ satisfies the conditions of the PMP. By unicity of the optimal control we then get $u=u^\star$, which in turn implies that $x=x^\star$, and  finally that $p=p^\star$.
+
+    We are left to show \eqref{eq:value}. 
+    We have,
+    \begin{equation}
+        \frac{d}{dt} x^\top E x 
+        =\frac{d}{dt} p^\top x 
+        = {\dot p}^\top x + p^\top \dot x
+        = x^\top R x + p^\top B u
+        = x^\top R x + u^\top P u = c(x,u).
+    \end{equation}
+    Here, we used that a simple computation relying on the feedback expression of $u$ and the fact that $p=Ex$, yields $p^\top B u = u^\top Pu$.
+    Finally, recalling that $E(T)=-W$,
+    \begin{equation}
+        V_T(x) =  \int_0^T c(x^\star,u^\star)\, dt + x(T)^\top W x(T) = \int_0^T \frac{d}{dt} x^\top E x\, dt+ x(T)^\top W x(T) = x(0)^\top E(0) x(0).
+    \end{equation}
+\end{proof}
+
+\lem[existence-riccati]{Existence of solutions to the Riccati equation}{
+    The solution to \eqref{eq:riccati} is defined on $[0,T]$.
+}
+
+\begin{proof}
+    By contradiction, let us assume that there exists $t_*\in (0,T)$ such that $\|E(t)\|\rightarrow +\infty$ as $t\downarrow t_*$. In particular, this implies that for any $M>0$ there exists $x_0\in \bbR^d$ such that $\|x_0\|_2=1$ and 
+    \begin{equation}
+        \forall M>0 \qquad \exists x_0\in \bbR^d  \text{ such that } \frac{|x_0^\top E(t_0)x_0|}{\|x_0\|^2}\ge M.
+    \end{equation}
+
+    We now claim that for any $t_0\in [0,T)$ and $x_0\in \bbR^d$, there exists $c>0$ such that 
+    \begin{equation}
+        |x_0^\top E(t_0)x_0|\le c \|x_0\|_2^2.
+    \end{equation}
+    This contradicts \eqref{eq:contr}, and thus concludes the proof.
+    
+    Let $t_0\in [0,T)$ and $x_0\in \bbR^d$ and consider $x^\star$ to be the unique optimal trajectory for \eqref{eq:ocp-linear} on the interval $[t_0,T]$ such that $x(t_0)=x_0$ (this exists since $P\in \sym_{>0}(\bbR^d)$). Then, the same computations carried out at the end of the proof of Theorem~\ref{th:riccati}, show that it must hold 
+    \begin{equation}
+        V_{T-t_0}(x_0)=-x_0^\top E(t_0)x_0.
+    \end{equation}
+    The statement then follows from Proposition~\ref{prop:value-fct}
+\end{proof}
+
+\subsection{The tracking problem}
+
+Consider the problem of finding a trajectory of a linear control system $\dot x = Ax + Bu$ in such a way that it ``best'' follows a given trajectory $\gamma:[0,T]\to \bbR^d$. 
+In general the trajectory $\gamma$ is not a solution of the control system, and thus we set up an optimal control problem in order to minimize the error 
+\begin{equation}
+    z(t) := x(t)-\gamma(t).
+\end{equation}
+We will also try to minimize the $L^2$ norm of the  control $u$.
+
+% We proceed by linearizing the control system around our trajectory:
+% \begin{equation}
+%     \dot x = f(t, \gamma + e, u)-\dot \gamma = A e + B u + r.
+% \end{equation}
+% with 
+% \begin{equation}
+%     A(t) = \frac{\partial f}{\partial x}(t,\gamma(t),0), 
+%     \qquad
+%     B(t) = \frac{\partial f}{\partial u}(t,\gamma(t),0), 
+%     \qquad 
+%     r(t) = f(t,\gamma(t),0) - \dot\gamma(t) + o(e(t),u(t)).
+% \end{equation}
+% Hence, we consider a linear
+
+Observe that $z$ is a solution of the following control system
+\begin{equation}
+    \label{eq:z-system}
+    \dot z = A z + Bu + r, \qquad z(0) = z_0,
+\end{equation}
+where $z_0 = x_0-\gamma(0)$ and $r(t) = A\gamma(T)-\dot\gamma(t)$. It is then reasonable to look for controls $u$ minimising a cost in the form \eqref{eq:J-no-terminal}. 
+% 
+
+
+We then have the following.
+
+\prop[]{Tracking problem}{
+    Let $\gamma:[0,T]\to \bbR^d$ and consider the tracking problem for the linear control system
+    \begin{equation}
+        \dot x = A x + Bu, \qquad x(0)=x_0,
+    \end{equation}
+    with cost 
+    \begin{equation}
+        J(u) =  (x(T)-\gamma(T))^\top W (x(T)-\gamma(T)) +  \int_0^T \left[(x-\gamma)^\top R(x-\gamma) + u^\top P u\right]\, dt.
+    \end{equation}
+    Then, there exists a unique optimal control $u$ which is given in feedback form by
+    \begin{equation}
+        u(t) = P^{-1} B^\top E(t)(x(t)-\gamma(t)) + P^{-1}B^\top h(t),
+    \end{equation}
+    where $E:[0,T]\to \sym(\bbR^{ d})$ and $h:[0,T]\to \bbR^d$ are the solutions of
+    \begin{eqnarray}
+        \label{eq:a1}
+        \dot E = R - A^\top E-EA-EBP^{-1}B^\top E, \qquad &E(T)=-W,\\
+        \label{eq:a2}
+        \dot h = -A^\top h - E(A\gamma - \dot \gamma) -EBP^{-1}B^\top h,\qquad &h(T)=0.
+    \end{eqnarray}
+}
+
+\begin{proof}
+    We consider the system \eqref{eq:z-system}.
+    In order to get rid of the perturbation term $r$, we augment the dimension of the system, considering the system
+    \begin{equation}
+        \dot z_1 = A_1z_1+B_1 u,
+        \qquad
+        z_1(0)=\begin{pmatrix}
+            z(0) \\1
+        \end{pmatrix},
+        \qquad
+        A_1 =
+        \begin{pmatrix}
+            A & r \\ 0 & 0
+        \end{pmatrix},
+        \qquad
+        B_1 =
+        \begin{pmatrix}
+            B \\ 0
+        \end{pmatrix}
+    \end{equation}
+    where $z_1 = (z,1)^\top \in \bbR^{d+1}$ and $R_1, W_1$ are chosen so that the cost $J(u)$ reads
+    \begin{equation}
+        J(u) = \frac{1}2\int_0^T \left[ u^\top P u + z_1^\top R_1 z_ 1 \right] \, dt + z_1(T)^\top W_1 z_1(T).
+    \end{equation}
+
+    Then, by the preceding section, we have that the optimal control is unique and reads
+    \begin{equation}
+        u(t) = P^{-1}B_1^\top E_1(t)z_1(t),
+    \end{equation}
+    where $E_1:[0,T]\to \sym(\bbR^{d+1})$ satisfies the corresponding Riccati equation. 
+    Let
+    \begin{equation}
+       E_1 = 
+       \begin{pmatrix}
+        E & h \\ h^\top & \alpha 
+       \end{pmatrix} ,
+    \end{equation}
+    for $E\in \sym(\bbR^d)$, $h\in \bbR^d$ and $\alpha\in \bbR$. Then, the Riccati equation yields \eqref{eq:a1}, \eqref{eq:a2}, and
+    \begin{equation}
+        \dot \alpha = -2r^\top h - h^\top BP^{-1}B^\top h, \qquad \alpha(T) = 0.
+    \end{equation}
+    The statement follows by the formula \eqref{eq:optimal-control-riccati} in Theorem~\ref{th:riccati} for the optimal control.
+\end{proof}
