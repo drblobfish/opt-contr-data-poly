@@ -196,7 +196,7 @@
                \end{equation}
          \item $F$ is strongly convex if there exists $\gamma>0$ such that
                \begin{equation}
-                   F(tx + (1-t)y) \le t F(x) + (1-t)F(y) - \frac{\gamma}{2}t(t-1)\|x-y\|_2^2 \qquad \forall x,y\in \bbR^d,\, t\in [0,1].
+                   F(tx + (1-t)y) \le t F(x) + (1-t)F(y) - \frac{\gamma}{2}t(t-1)\|x-y\|_2^2 \qquad \forall x,y\in \bbR^d,\, t\in ]0,1[.
                \end{equation}
      \end{itemize}
  
@@ -205,7 +205,7 @@
  
  Observe that it holds
  \begin{equation}
-     \text{convex} \impliedby \text{strongly convex} \impliedby \text{strictly convex}
+     \text{convex} \impliedby \text{strictly convex} \impliedby \text{strongly convex}
  \end{equation}
  
  We say that a standard function $F:K\to \bbR$ is convex, strictly convex, strongly convex, or concave, if the same is true for its extension $\bar F$. Observe that this requires $K$ to be convex.
