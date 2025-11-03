@@ -1,0 +1,68 @@
+\begin{tikzpicture}[shorten >=1pt,-latex,draw=black!100, node distance=\layersep,auto]
+
+    % INPUT LAYER
+    \foreach \name / \y in {1,...,3}
+    \node[input neuron] (I-\name) at (0,-2*\y+2.75) {$x_{\name}$};
+
+    % HIDDEN LAYER
+    \foreach \name / \y in {1,...,4}
+    \node[hidden neuron] (H-\name) at (\layersep,-2*\y+3.5) {$x^2_\name$};
+
+    % OUTPUT LAYER
+    \node[output neuron] (O-1) at (2*\layersep,-1.25 cm) {$y$};
+
+    % CONNECTIONS
+    % Input -> Hidden
+    \foreach \target in {1,...,4}
+    \path (I-1) edge node[above] {$w_{1\target}$} (H-\target);
+
+    \foreach \source in {2,...,3}
+    \foreach \target in {1,...,4}
+    \path[dashed] (I-\source) edge  (H-\target);
+
+    % Hidden -> Output
+    \foreach \source in {1,...,4}
+    \path (H-\source) edge node[above] {$w_{\source3}$} (O-1);
+
+    % ANNOTATIONS
+    \node[annot,above of=H-1, node distance=1.5cm, align=center] (hl) {Hidden layer\\(\second layer)};
+    \node[annot,above of=O-1, node distance=2.25cm, align=center] (hl2) {Output layer\\(\third layer)};
+    \node[annot,left of=hl, align=center] {Input layer\\(\first layer)};
+
+\end{tikzpicture}
+
+% \begin{tikzpicture}[shorten >=1pt,-latex,draw=black!100, node distance=\layersep,auto]
+
+%     \foreach \name / \y in {1,...,3}
+%     \node[input neuron] (I-\name) at (0,-3*\y+2.75) {$x_{\name}$};
+%     \path[yshift=1.5cm]
+%     node[hidden neuron] (H-1) at (\layersep,-1 cm) {}
+%     node[hidden neuron] (Q-1) at (\layersep,-2.5 cm) {}
+%     node[hidden neuron] (H-2) at (\layersep,-4 cm) {}
+%     node[hidden neuron] (Q-2) at (\layersep,-5.5 cm) {}
+%     node[hidden neuron] (H-3) at (\layersep,-7 cm) {}
+%     node[hidden neuron] (Q-3) at (\layersep,-8.5 cm) {};
+%     \node[hidden neuron] (H2-1) at (2*\layersep,-3*1+2.75) {};
+%     \node[hidden neuron] (H2-2) at (2*\layersep,-3*2+2.75) {};
+%     \node[hidden neuron] (H2-3) at (2*\layersep,-3*3+2.75) {};
+%     \node[output neuron] (H3-1) at (3*\layersep,-3.25 cm) {};
+%     \node[annot,right of=H3-1, node distance=1.7cm, align=center] () {};
+
+%     \foreach \y in {1,...,3}
+%     \foreach \target in {H,Q}
+%     \foreach \source in {1,...,3}
+%     \path (I-\source) edge (\target-\y);
+%     \foreach \y in {1,...,3}
+%     \foreach \source in {H,Q}
+%     \foreach \target in {1,...,3}
+%     \path (\source-\y) edge (H2-\target);
+%     \foreach \y in {1,...,3}
+%     \path (H2-\y) edge (H3-1);
+
+
+%     \node[annot,above of=H-1, node distance=1.5cm, align=center] (hl) {\first hidden layer\\(\second layer)};
+%     \node[annot,above of=H2-1, node distance=2.25cm, align=center] (hl2) {\second hidden layer\\(\third layer)};
+%     \node[annot,above of=H3-1, node distance=5.25cm, align=center] (hl3) {Output layer\\(\fourth layer)};
+%     \node[annot,left of=hl, align=center] {Input layer\\ (\first layer)};
+
+% \end{tikzpicture}

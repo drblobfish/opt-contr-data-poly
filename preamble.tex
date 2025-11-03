@@ -480,6 +480,50 @@
 }
 {def}
 
+% %================================
+% % PROBLEM BOX
+% %================================
+
+% \tcbuselibrary{theorems,skins,hooks}
+% \newtcbtheorem[number within=section]{Problem}{Problem}
+% {%
+% 	enhanced,
+% 	breakable,
+% 	colback = mydefinitbg,
+% 	frame hidden,
+% 	boxrule = 0sp,
+% 	borderline west = {2pt}{0pt}{mydefinitfr},
+% 	sharp corners,
+% 	detach title,
+% 	before upper = \tcbtitle\par\smallskip,
+% 	coltitle = mytheoremfr,
+% 	fonttitle = \bfseries\sffamily,
+% 	description font = \mdseries,
+% 	separator sign none,
+% 	segmentation style={solid, mytheoremfr},
+% }
+% {prob}
+
+% \tcbuselibrary{theorems,skins,hooks}
+% \newtcbtheorem[number within=chapter]{problem}{Problem}
+% {%
+% 	enhanced,
+% 	breakable,
+% 	colback = mydefinitbg,
+% 	frame hidden,
+% 	boxrule = 0sp,
+% 	borderline west = {2pt}{0pt}{mydefinitfr},
+% 	sharp corners,
+% 	detach title,
+% 	before upper = \tcbtitle\par\smallskip,
+% 	coltitle = mytheoremfr,
+% 	fonttitle = \bfseries\sffamily,
+% 	description font = \mdseries,
+% 	separator sign none,
+% 	segmentation style={solid, mytheoremfr},
+% }
+% {prob}
+
 
 
 % \newtcbtheorem[number within=section]{Definition}{Definition}{enhanced,
@@ -598,7 +642,7 @@
 		(frame.north) -| cycle;
 	},
 	#1
-}{def}
+}{prob}
 \makeatother
 
 

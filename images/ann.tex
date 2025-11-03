@@ -1,0 +1,71 @@
+ \begin{tikzpicture}[shorten >=0pt,-latex,draw=black!100, node distance=\layersep,auto, scale=0.92]
+     \def\layersep{2.9cm}
+     \def\neuronsep{1.8cm}
+     \def\ninput{3}
+     \def\nhidden{5}
+     \def\noutput{3}
+ 
+     \tikzmath{
+         \ninputl=\ninput-1;
+         \nhiddenl=\nhidden-1;
+         \noutputl=\noutput-1;
+         \nmax=max(\ninput,\nhidden,\noutput);
+     }
+ 
+     \foreach \inode in {1,...,\ninputl}
+     \node[input neuron] (I-\inode) at (0,.5*\ninput*\neuronsep-\inode*\neuronsep+\neuronsep) {$\inode$};
+     \node (I-dots) at (0,.5*\ninput*\neuronsep-\ninputl*\neuronsep) {$\vdots$};
+     \node[input neuron] (I-\ninput) at (0,.5*\ninput*\neuronsep-\ninput*\neuronsep) {$l_0$};
+ 
+     \foreach \inode in {1,...,\nhiddenl}
+     \node[hidden neuron] (H1-\inode) at (\layersep,.5*\nhidden*\neuronsep-\inode*\neuronsep+\neuronsep) {$\inode$};
+     \node (H1-dots) at (\layersep,.5*\nhidden*\neuronsep-\nhiddenl*\neuronsep) {$\vdots$};
+     \node[hidden neuron] (H1-\nhidden) at (\layersep,.5*\nhidden*\neuronsep-\nhidden*\neuronsep) {$x_1$};
+ 
+     \foreach \inode in {1,...,\nhiddenl}
+     \node[hidden neuron] (H2-\inode) at (2*\layersep,.5*\nhidden*\neuronsep-\inode*\neuronsep+\neuronsep) {$\inode$};
+     \node (H2-dots) at (2*\layersep,.5*\nhidden*\neuronsep-\nhiddenl*\neuronsep) {$\vdots$};
+     \node[hidden neuron] (H2-\nhidden) at (2*\layersep,.5*\nhidden*\neuronsep-\nhidden*\neuronsep) {$x_2$};
+ 
+     \foreach \inode in {1,...,\nhiddenl}
+     \node (Hdots-\inode) at (3*\layersep,.5*\nhidden*\neuronsep-\inode*\neuronsep+\neuronsep) {$\cdots$};
+     \node (Hdots-dots) at (3*\layersep,.5*\nhidden*\neuronsep-\nhiddenl*\neuronsep) {$\ddots$};
+     \node (Hdots-\nhidden) at (3*\layersep,.5*\nhidden*\neuronsep-\nhidden*\neuronsep) {$\cdots$};
+ 
+     \foreach \inode in {1,...,\nhiddenl}
+     \node[hidden neuron] (H3-\inode) at (4*\layersep,.5*\nhidden*\neuronsep-\inode*\neuronsep+\neuronsep) {$\inode$};
+     \node (H3-dots) at (4*\layersep,.5*\nhidden*\neuronsep-\nhiddenl*\neuronsep) {$\vdots$};
+     \node[hidden neuron] (H3-\nhidden) at (4*\layersep,.5*\nhidden*\neuronsep-\nhidden*\neuronsep) {$x_{N}$};
+ 
+     \foreach \inode in {1,...,\noutputl}
+     \node[output neuron] (O-\inode) at (5*\layersep,.5*\noutput*\neuronsep-\inode*\neuronsep+\neuronsep) {$\inode$};
+     \node (O-dots) at (5*\layersep,.5*\noutput*\neuronsep-\noutputl*\neuronsep) {$\vdots$};
+     \node[output neuron] (O-\noutput) at (5*\layersep,.5*\noutput*\neuronsep-\noutput*\neuronsep) {$x_{N+1}$};
+ 
+     \foreach \inode in {1,...,\ninput}
+     \foreach \hnode in {1,...,\nhidden}
+     \path (I-\inode) edge (H1-\hnode);
+ 
+     \foreach \inode in {1,...,\nhidden}
+     \foreach \hnode in {1,...,\nhidden}
+     \path (H1-\inode) edge (H2-\hnode);
+ 
+     \foreach \inode in {1,...,\nhidden}
+     \foreach \hnode in {1,...,\nhidden}
+     \path (H2-\inode) edge [-] (Hdots-\hnode);
+ 
+     \foreach \inode in {1,...,\nhidden}
+     \foreach \hnode in {1,...,\nhidden}
+     \path (Hdots-\inode) edge (H3-\hnode);
+ 
+     \foreach \inode in {1,...,\nhidden}
+     \foreach \hnode in {1,...,\noutput}
+     \path (H3-\inode) edge (O-\hnode);
+ 
+     \node[annot] (input) at (0,.5*\nmax*\neuronsep+.5*\neuronsep) {Input layer\\(\first layer)};
+     \node[annot] (hidden1) at (\layersep,.5*\nmax*\neuronsep+.5*\neuronsep) {\first hidden layer\\(\second layer)};
+     \node[annot] (hidden2) at (2*\layersep,.5*\nmax*\neuronsep+.5*\neuronsep) {\second hidden layer\\(\third layer)};
+     \node[annot] (dots) at (3*\layersep,.5*\nmax*\neuronsep+.5*\neuronsep) {$\cdots$};
+     \node[annot] (hidden3) at (4*\layersep,.5*\nmax*\neuronsep+.5*\neuronsep) {\nth{$N$} hidden layer\\(\nth{$N+1$} layer)};
+     \node[annot] (output) at (5*\layersep,.5*\nmax*\neuronsep+.5*\neuronsep) {Output layer\\(\nth{$(N+2)$} layer)};
+ \end{tikzpicture}

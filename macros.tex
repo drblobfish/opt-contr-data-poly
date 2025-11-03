@@ -100,3 +100,33 @@
 		}
 		\caption{#3\label{#1}}
 \end{algorithm}}
+
+
+%%%%%
+% ANN PICTURES
+%%%%%
+
+\usetikzlibrary{matrix,chains,positioning,decorations.pathreplacing,arrows,math}
+\usetikzlibrary{shapes,arrows}
+\tikzset{
+  font={\fontsize{9pt}{12}\selectfont}}
+\usepackage{adjustbox}
+
+\tikzset{
+  font={\fontsize{9pt}{12}\selectfont}}
+
+
+\tikzstyle{every edge}=[draw=black!70]
+\tikzstyle{neuron}=[circle,fill=black!25,draw=black!75,minimum size=20pt,inner sep=0pt,thick]
+\tikzstyle{input neuron}=[neuron,draw={black}, fill={rgb:red,1;white,5}]
+\tikzstyle{hidden neuron}=[neuron, draw={black}, fill={rgb:blue,1;white,5}]
+\tikzstyle{output neuron}=[neuron,draw={black}, fill={rgb:green,1;white,5}]
+\tikzstyle{annot} = [text width=9em, text centered]
+\tikzstyle{annot2} = [text width=4em, text centered]
+
+\newcommand{\first}{1\textsuperscript{st}\xspace}
+\newcommand{\second}{2\textsuperscript{nd}\xspace}
+\newcommand{\third}{3\textsuperscript{rd}\xspace}
+\newcommand{\fourth}{4\textsuperscript{th}\xspace}
+\newcommand{\ith}{$i$\textsuperscript{th}\xspace}
+\newcommand{\nth}[1]{#1\textsuperscript{th}\xspace}

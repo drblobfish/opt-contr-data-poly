@@ -1,0 +1,202 @@
+\chapter{Machine learning}
+
+The fundamental problem of machine learning can be formalized as follows.
+
+\pr[]{Machine learning problem}{
+    Let $X,Y$ be two sets, and $A(X,Y)$ be a set of functions from $X$ to $Y$.
+    Assume moreover that we are given a subset $\mathcal F\subset A(X,Y)$ of these functions parametrized over a set $\Theta$, that is
+    \begin{equation}
+        \mathcal F = \left\{ \phi_\theta \in A(X,Y)\mid \theta\in \Theta \right\}.
+    \end{equation}
+    Then, given a function $\psi\in A(X,Y)$ the machine learning (ML) problem consists in finding $\hat \theta\in \Theta$ such that
+    \begin{equation}
+        \psi \approx \phi_{\hat \theta}.
+    \end{equation}
+    This has to be done using the \emph{available} information about $\psi$.
+}
+
+\ex[pointwise-obs]{Linear approximation and pointwise observation}{
+    Let $\psi:[0,2\pi]\to \bbR$ be a continuous function (in particular, $\psi\in L^2([0,2\pi]))$).
+    
+    Consider $\{\phi_i\}_{i=1}^{+\infty}\subset L^2([0,2\pi])\cap C([0,2\pi])$ to be an orthonormal system for $L^2([0,2\pi])$, and for any $N\in \bbN$ let $\Theta = \bbR^N$ and consider
+    \begin{equation}
+        \mathcal F = \left\{ \phi_\theta = \sum_{i=1}^N \theta_i \phi_i \mid \theta_i\in \bbR^N \right\}
+    \end{equation}
+
+    Assume to be given $M$ observations $\{(x_i,y_i)\}_{i=1}^M$ such that
+    \begin{equation}
+        y_i = \psi(x_i), \qquad i\in \llbracket 1,M\rrbracket.
+    \end{equation}
+    The task here is to find $\hat \theta\in\Theta$ such that 
+    \begin{equation}
+        \sum_{i=1}^M \left| \phi_{\hat\theta}(x_i)-y_i \right|^2
+        =\min_{\theta} 
+        \sum_{i=1}^M \left| \phi_{\theta}(x_i)-y_i \right|^2.
+    \end{equation}
+}
+
+\ex[]{Finite elements}{
+    Let $B_1(0)\subset \bbR^d$ and $\psi : B_1(0)\to \bbR$ be a real-valued function such that $\psi\in H_0^2(B_1(0))$. 
+    Then, given independent functions $\{\phi_i\}_{i=1}^N$ we can consider $\Theta=\bbR^N$ and let
+    \begin{equation}
+        \mathcal F = \left\{ \phi_\theta = \sum_{i=1}^N \theta_i \phi_i \mid \theta_i\in \bbR^N \right\}
+    \end{equation}
+
+    A typical situation, and the basis for the \emph{finite element methods}, is to know $f = \Delta \psi$, in which case one looks for $\hat \theta\in \Theta$ such that 
+    \begin{equation}
+        \|\phi_{\hat\theta}-\psi\|_{L^2} = \min_\theta \|\phi_\theta-\psi\|_{L^2}.
+    \end{equation}
+}
+
+In modern machine learning one is interested in ``going beyond'' these examples, by considering a nonlinear parametrization of the approximating family $\mcF$. That is, 
+\begin{center}
+    the map $\theta\mapsto \phi_\theta$ is nonlinear.
+\end{center}
+
+In the following we will focus on the problem of data-fitting exoked in Example~\ref{ex:pointwise-obs}, see also Example~\ref{ex:}. This is the following.
+
+\dfn[data-fitting-pb]{Data-fitting problem}{
+    Consider the following data:
+    \begin{itemize}
+        \item A function $\psi:X\to Y$ to approximate, of which only a set of samples $\mfX=\{( x_i,\psi( x_i))\mid i\in \llbracket 1,M\rrbracket\}$ is known;
+        \item A set $\mcF = \{\psi_\theta:X\to Y\mid \theta\in \Theta\}$ of possible approximations;
+        \item A loss function $\ell : Y\times Y \to \bbR$.
+    \end{itemize}
+    Then, the data-fitting problem is the following:
+    \begin{equation}
+        \text{Find } \hat\theta\in\Theta \text{ such that } \hat\theta = \arg\min_{\theta} \frac1N \sum_{(x_i,\hat y_i)\in\mfX} \ell(\phi_\theta(x_i),\hat y_i).
+    \end{equation}
+}
+
+\begin{figure}
+    \centering
+    \input{images/losses.tex}
+    \caption{Typical loss functions for $Y=\bbR$ (right) and cross-entropy loss.}
+    \label{fig:losses}
+\end{figure}
+
+When $Y$ has a vector space structure, it is natural to consider $\ell(y,\hat y)=\ell(r)$ where $r=y-\hat y$ is called the residual.
+In this case, typical choices for the loss function are appropriate norms on the space $Y$. 
+% 
+For example, if $Y\in \bbR^n$ one tyically considers $\ell$ to be the $\ell_1$ or the $\ell_2$. Another common choice is the \emph{Huber error loss}, which ``mixes'' the two. It is defined for $\delta>0$ as
+\begin{equation}
+    \mfh_\delta(r) = 
+    \begin{cases}
+        \frac12 \|r\|_2^2, & \text{if }\|r\|_1\le \delta\\
+        \delta\left( \|r\|_1 - \frac\delta2 \right)&\text{otherwise.}
+    \end{cases}
+\end{equation}
+See Figure~\ref{fig:losses}, left.
+
+A special mention need to be done in the case for \emph{classification problems}, i.e., problems where the function $\psi$ assigns a discrete label (e.g., cat or dog) to the inputs. In this the relevant values for $\psi$ are $\{0,1\}$, say, but one approximate it with functions taking value in $Y=\bbR$ and interprets values different from $0$ or $1$ as uncertain.
+In this case, the most used loss function is the \emph{cross-entropy} function, which is defined by
+\begin{equation}
+    \ell(y,\hat y) = -\left[ y \log \hat y + (1-y)\log(1-\hat y) \right].
+\end{equation}
+This function has a probabilistic interpretation and encodes, roughly speaking, the ``surprise'' of seeing $\hat y$ after the model predicted $y$.
+See Figure~\ref{fig:losses}, right.
+
+
+
+
+
+\chapter{Feed-forward neural networks}
+
+
+In this chapter we introduce and discuss the simplest example of neural network.
+These are obtained by concatenating the simplest possible nonlinear operations:
+\begin{equation}
+    \phi_\theta(x) = \sigma(Wv + b), \qquad \text{where } \theta=(W,b) \in \bbR^{n\times m}\times \bbR^n.
+\end{equation}
+Here, the function $\sigma:\bbR\to \bbR$ is a nonlinear \emph{activation} function that is assumed to be applied element-wise to the vector $Wx+b$.
+Typically activation functions are depicted in Figure~\ref{fig:activations}.
+
+\begin{figure}[b]
+    \centering
+    \input{images/activations.tex}
+    \caption{Activation functions}
+    \label{fig:activations}
+\end{figure}
+
+\dfn[]{One-hidden layer feed-forward ANN}{
+    Let $\sigma:\bbR\to \bbR$ be an activation function and let $d_1\in \bbN$.
+    A scalar-valued one-hidden layer feed-forward ANN $\psi_\theta:\bbR^d\to \bbR$ is identified by the set of parameters
+    \begin{equation}
+        \Theta = \left\{ (W_2,W_1,b_1)\in \bbR^{1\times d_1}\times\bbR^{d_1\times d}\times \bbR^{d_1} \right\},
+    \end{equation}
+    and it reads
+    \begin{equation}
+        \psi_\theta(x) = W_2\, \sigma(W_1+b_1) = \sum_{j=1}^{d_1} w_{2j} \sigma\left( \sum_{i=1}^{d} w_{ji}x_i + b_{1j} \right).
+    \end{equation}
+
+    Here, the \emph{architecture parameters} of the network are
+    \begin{itemize}
+        \item $d_1\in \bbN$ is the \emph{width} of the hidden layer;
+        \item $W_i$ it the \emph{weight} matrix for the $i$-th layer;
+        \item $b_1$ is the \emph{bias} of the \first layer.
+    \end{itemize}
+    }
+
+In Figure~\ref{fig:one-hidden-layer} we present an example of a one-hidden layer feed-forward ANN
+
+\def\layersep{4cm}
+\begin{figure}[t]
+    \centering
+    \begin{adjustbox}{width=.7\textwidth}
+        \input{images/ann-1-layer.tex}
+    \end{adjustbox}
+    \caption{\label{fig:one-hidden-layer}Graphical illustration of an single hidden layer ANN, yielding a function from $\bbR^3$ to $\bbR$. We only explicited the weights relative to the first variable.}
+\end{figure}
+
+The general expression for a feed-forward ANN can then be inferred, see Figure~\ref{fig:deepANN} for a graphical representation.
+
+\dfn[]{Feed-forward fully-connected ANN}{
+    Let $\sigma:\bbR\to \bbR$ be an activation function and let $d_1,\ldots, d_N\in \bbN$.
+    An $N$-hidden layer feed-forward ANN $\psi_\theta:\bbR^d\to \bbR$ is identified by the set of parameters
+    \begin{equation}
+        \Theta = \left\{ (W_{N+1},\ldots,W_1,b_1) \mid W_{i}\in\bbR^{d_{i}\times d_{i-1}}, \, b_i\in \bbR^{d_i} \right\},
+    \end{equation}
+    where we let $d_0=d$ and $d_{N+1}=n$. 
+    The corresponding function is then
+    \begin{equation}
+        \label{eq:ANN}
+        \phi\theta(x) = \psi^{N+1} \circ \psi^N \circ\cdots\psi^1(x),
+    \end{equation}
+    where 
+    \begin{gather}
+        \phi^{i}: x_{i-1} \in \bbR^{d_{i-1}}\mapsto \sigma(W_i x_{i-1}+b_i)\in \bbR^{d_i}, \qquad \forall i\in \llbracket 1,N\rrbracket\\
+        \phi^{N+1}: x_{N} \in \bbR^{d_{N}}\mapsto W_N x_{N}\in \bbR.
+    \end{gather}
+
+    Here, the \emph{architecture parameters} of the network are
+    \begin{itemize}
+        \item $d_i\in \bbN$ is the \emph{width} of the \nth{i} hidden layer;
+        \item $W_i$ it the \emph{weight} matrix for the \nth{i} layer;
+        \item $b_i$ is the \emph{bias} of the \nth{i} layer.
+    \end{itemize}
+}
+
+\begin{figure}
+    \centering
+	% \hspace{-2cm}
+    \begin{adjustbox}{width=.9\textwidth}
+        \input{images/ann.tex}
+    \end{adjustbox}
+\caption{\label{fig:deepANN}Graphical illustration of a fully-connected feedforward ANN consisting of
+$N+2\in\bbN$ affine transformations (i.e., consisting of $N+1$ layers: one input layer, $N$ hidden layers, and one output layer). Image from \cite{jentzenMathematicalIntroductionDeep2023}.}
+% with $l_-1\in\bbN$ neurons on the input layer (i.e., with $l_0$-dimensional input layer), with
+% $l_0\in\bbN$ neurons on the \first hidden layer (i.e., with $l_1$-dimensional \first hidden layer),
+% with $l_1\in\bbN$ neurons on the \second hidden layer (i.e., with $l_2$-dimensional \second hidden layer),
+% $\dots$, with $l_{L-2}$ neurons on the \nth{$(L-1)$} hidden layer (i.e., with $(l_{L-1})$-dimensional \nth{$(L-1)$} hidden layer),
+% and with $l_L$ neurons in the output layer (i.e., with $l_L$-dimensional output layer). Image from \cite{jentzenMathematicalIntroductionDeep2023}.}
+\end{figure}
+
+\section{Learning and backpropagation}
+
+Once a loss function has been chosen, the data-fitting problem of Definition~\ref{def:data-fitting-pb} can be solved using the algorithms presented in Chapter~\ref{chp:numerical-algo}, along with their various extensions.  
+All of these algorithms, however, require the computation of the gradient of the loss function, which in turn involves differentiating the function $\phi_\theta$ from \eqref{eq:ANN}.  
+This task is particularly challenging because $\phi_\theta$ is defined as a composition of many functions. Even in the simplified case where $\sigma$ is the identity (i.e., $\sigma(x) = x$), expanding \eqref{eq:ANN} explicitly leads to a sum with an order of $d_1 \times \dots \times d_N$ terms.  
+In contemporary neural networks, the layer dimensions $d_1, \dots, d_N$ are so large that explicitly computing such a sum is completely infeasible, which is why efficient methods like backpropagation are essential.
+
+
+\chapter{Residual neural networks, neural ODEs and control}
