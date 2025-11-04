@@ -339,14 +339,16 @@ To this aim we introduce the following definitions.
 In this section, we establish the following result, which stresses why the nonlinear nature of the activation function is essential.
 
 \thm[shallow-uat]{Universal approximation for shallow neural networks}{
-    Let $\sigma:\bbR\to \bbR$ be an bounded piecewise continuous function. Then, $\mcN_d^1(\sigma;1)$ is a universal approximator of $C^0(\bbR^d)$ if and only if $\sigma$ is not a polynomial.
+    Let $\sigma:\bbR\to \bbR$ be an bounded piecewise continuous function\footnote{Here, we implicitly require that the discontinuity point be locally finite.}. Then, $\mcN_d^1(\sigma;1)$ is a universal approximator of $C^0(\bbR^d)$ if and only if $\sigma$ is not a polynomial.
 }
 
 \begin{remark}
     This theorem can be extended to different functional spaces and different norms.
 \end{remark}
 
-The difficult part of this theorem (which holds for more general functions \cite{leshnoMultilayerFeedforwardNetworks1993}) is to establish the universal approximation property for non-polynomial activation fucntions. This amounts to proving three facts:
+The difficult part of this theorem (which holds for more general functions \cite{leshnoMultilayerFeedforwardNetworks1993}) is to establish the universal approximation property for non-polynomial activation fucntions. The reverse implication is left as an exercice.
+
+The result follows from the following three facts:
 \begin{enumerate}
     \item If $\mcN_1^1(\sigma;1)$ is a universal approximator of $C^0(\bbR)$, then $\mcN_d^1(\sigma;1)$ is a universal approximator of $C^0(\bbR^d)$;
     \item If $\sigma\in C^\infty(\bbR)$ is not a polynomial, then $\mcN_1^1(\sigma;1)$ is a universal approximator of $C^0(\bbR)$;
@@ -472,36 +474,116 @@ To conclude the proof, we need to recall the following concept.
 
 \begin{proof}
     The fact that $\sigma\star\varphi\in C^\infty_c(\bbR)$ is standard, and follows observing that $(\sigma\star \varphi)'=\sigma\star (\varphi')$.
+    For the proof of the last part of the statement, we refer to \cite[Lemma~3.15]{petersenMathematicalTheoryDeep2025}.
 
-    Let us build an explicit sequence $f_n\in \mcN_1^1(\sigma;1)$ such that $f_n\rightarrow \sigma\star\varphi$ uniformly on compact sets. Let $a>0$ be such that $\operatorname{supp}\varphi\subset[-a,a]$, fix $n\in \bbN$, and denote $y_j:=-a+2aj/n$ for $j\in \llbracket0,n-1\rrbracket$.
-    Then, we let 
+    Let us build an explicit sequence $f_n\in \mcN_1^1(\sigma;1)$ such that $f_n\rightarrow \sigma\star\varphi$ uniformly on compact sets. 
+    Let $a>0$ be such that $\operatorname{supp}\varphi\subset[-a,a]$.  
+    Then, for any $n\in \bbN$ we let $y_j=-a+2a/n$ and set
     \begin{equation}
-        f_n(x) := \frac{2a}n \sum_{j=0}^{n-1} \sigma(x-y_j)\varphi(y_j).
+        f_n(x) := \frac{1}N \sum_{j=0}^{N-1} \sigma(x-y_j)\varphi(y_j).
     \end{equation}
     It follows easily that $f_n\in \mcN_1^1(\sigma;1)$. Let us show the required convengerce on an arbitrary compact set $[-b,b]$, $b>0$.
-
-    Since $|[y_j,y_{j+1}]|=y_{j+1}-y_j=2a/n$, for any $x\in [-b,b]$ we have 
+    
+    Since $y_{j+1}-y_j\le 1/n$, for any $x\in [-b,b]$ we have 
     \begin{equation}
+        \label{eq:stima1}
         |\sigma\star \varphi(x)-f_n(x)| \le
-        \sum_{j=0}^{n-1} \left| \int_{y_j}^{y_{j+1}} \left( \sigma(x-y)\varphi(y)-\sigma(x-y_j)\varphi(y_j)\right)\, dy \right|.
+        \sum_{j=0}^{N-1} \left| \int_{y_j}^{y_{j+1}} \left( \sigma(x-y)\varphi(y)-\sigma(x-y_j)\varphi(y_j)\right)\, dy \right|.
     \end{equation}
-    By assumption, there exists $\{z_1,\ldots z_M\}\subset [-b,b]$ such that $\sigma$ is continous on $[-b,b]\setminus\{z_1,\ldots,z_M\}$. 
-    Fixing $\varepsilon>0$ sufficiently small, we have that $\sigma$ is then uniformly continuous on the compact set 
+    Let us bound each term in the sum above. 
+    
+    Observe that there exists $C>0$ such that 
     \begin{equation}
-        K_\varepsilon = \bigcup_{k=1}^{M-1}[z_k+\varepsilon,z_{k+1}-\varepsilon].
+        \left| \sigma(x-y)\varphi(y)-\sigma(x-y_j)\varphi(y_j)\right|
+        \le C, \qquad \forall x,y\in \bbR, \, j\in \llbracket0,n-1\rrbracket.
     \end{equation}
-    This allows to define the partititon $J_c\bigcup J_d = \llbracket 0,n-1\rrbracket$ by posing $j\in J_c$ if and only if $[x-y_{j+1},x-y_j]\subset K_\varepsilon$, and $j\in J_d$ otherwise.
-    Observe that this partition depends on $x$.
-
-    If $y_j\in J_d$, we have that there exists $z_i$ at distance less than $\varepsilon$ from $[x-y_{j+1},x-y_j]$. In particular, we have
+    Then, for any $j\in \llbracket0,N-1\rrbracket$ we can estimate 
     \begin{equation}
-        \sum_{j\in J_d}(y_{j+1}-y_j) = \left| \bigcup_{j\in J_d} [x-y_{j+1},x-y_j] \right| \le \left| \bigcup_{i=1}^M \left[ z_i-\varepsilon-\frac{2a}n , z_i+\varepsilon+\frac{2a}n \right] \right|
-        \le M\left(2\varepsilon+\frac{4a}n\right).
+        \label{eq:stima2}
+        \left| \int_{y_j}^{y_{j+1}} \left( \sigma(x-y)\varphi(y)-\sigma(x-y_j)\varphi(y_j)\right)\, dy \right|
+        \le C (y_{j+1}-y_{j}) \le \frac{C}{n}.
+    \end{equation} 
+    Recall that, by assumption, there exists $\{z_1,\ldots z_M\}\subset [-a,a]$ such that $\sigma$ is continous on $[-a,a]\setminus\{z_1,\ldots,z_M\}$. 
+    We will use the above estimate for the at most $M$ intervals containing one of the points $x-z_i$, $i\in \llbracket1,M\rrbracket$.
+    Let $J_d$ be the set of such indexes and $J_c=\llbracket0,N-1\rrbracket\setminus J_d$.
+    
+    Let us now fix $\varepsilon>0$ and such that $\varepsilon\le \min \{ \frac{|(x-z_i)-y_j|}2 \mid i\in \llbracket1,M\rrbracket \text{ and } j\in \llbracket0,n\rrbracket \}$ and consider the compact set
+    \begin{equation}
+        K = [-a,a] \setminus \bigcup_{i=1}^m (z_i-\varepsilon,z_i+\varepsilon)\supset \bigcup_{j\in J_c} [y_j,y_{j+1}].
     \end{equation}
+    Observe that $\sigma$ is uniformly continuous on $K$.
+    Then, for any $j\in J_c$ and $y\in [y_j,y_{j+1}]$ we have that $x-y\in K$ and $x-y_j\in K$. 
+    Thus,
+    \begin{equation}
+        \left| \sigma(x-y)\varphi(y)-\sigma(x-y_j)\varphi(y_j)\right|
+        \le |\sigma(x-y)-\sigma(x-y_j)|\,|\varphi(y)|+|\sigma(x-y_j)|\,|\varphi(y)-\varphi(y_j)| 
+        \le \|\varphi\|_\infty \max_{\substack{s_1,s_2\in K\\|s_1-s_2|\le \frac{2a}n}}|\sigma(s_1)-\sigma(s_2)|
+        + \|sigma\|_\infty \max_{\substack{s_1,s_2\in [-a,a]\\|s_1-s_2|\le \frac{2a}n}}|\varphi(s_1)-\varphi(s_2)| := \eta_n.
+    \end{equation}
+    By uniform continuity of $\sigma$ on $K$ and of $\varphi$ on $[-a,a]$ we have $\eta_n(x)\rightarrow 0$ as $n\to 0$ uniformly for $x\in [-b,b]$.
+    Using  \eqref{eq:stima1} and \eqref{eq:stima2}, this shows that
+    \begin{equation}
+        |\sigma\star \varphi(x)-f_n(x)| \le 
+        \sum_{j\in J_d} \frac Cn + \sum_{j\in J_c} \frac{\eta_n(x)}{n} \le \frac{CM}n + \eta_n(x) \rightarrow 0,
+    \end{equation}
+    uniformly for $x\in [-b,b]$.
+\end{proof}
 
+Putting together the above results, we complete the proof of Theorem~\ref{th:shallow-uat}.
+
+\section{Deep neural networks}
+
+As a corollary to Theorem~\ref{th:shallow-uat} we have the following.
+
+\cor[deep-uat]{Universal approximation for deep neural netowrks}{
+    Let $\sigma:\bbR\to \bbR$ be an bounded piecewise continuous function. Then, for any $L\in \bbN$, $\mcN_d^1(\sigma;L)$ is a universal approximator of $C^0(\bbR^d)$ if and only if $\sigma$ is not a polynomial.
+}
+
+The proof reduces to show that it is possible to approximate the identity with a deep network with $L-1$ layers. This is contained in the following.
+
+\prop[deep-identity]{}{
+    Let $\sigma:\bbR\to \bbR$ be differentiable and non constant on an open set.
+    The, for any $L\in \bbN$ and $\varepsilon>0$, there exists a neural network $\phi\in \mcN_d^1(\sigma;L,d)$ such that 
+    \begin{equation}
+        |\phi(x)-x|\le \varepsilon, \qquad  \forall x\in K.
+    \end{equation}
+}
+
+\begin{proof}
+   We prove the statement for $L=1$, the extension to $L>1$ being straightforward.
+   Let $s^\star\in \bbR$ be such that $\sigma$ is differentiable in a neighborhood of $s^\star$ and $\varsigma:=\sigma'(s^\star)\neq 0$.
+    Let $b=(s^\star,\ldots,s^\star)\in \bbR^d$ and, for $\lambda>0$, define 
+    \begin{equation}
+        \phi_\lambda(x) := \frac{\lambda}{\varsigma} \sigma\left(\frac{x}{\lambda} + b \right) - \frac{\lambda}{\varsigma}\sigma(b).
+    \end{equation}
+    It is clear that $\phi_\lambda\in \mcN_d^1(\sigma;1,d)$.
+    Moreover, a Taylor development easily shows that
+    \begin{equation}
+        \phi_\lambda(x)-x = \lambda \frac{\sigma(x/\lambda +b)-\sigma(b)}{\varsigma} - x \rightarrow 0, \qquad \text{as }\lambda\to +\infty.
+    \end{equation}
+    This completes the proof.
 \end{proof}
 
 
+\noindent\textbf{\em Proof of Corollary~\ref{th:deep-uat}:}
+    We already know that $\mcN_d^1(\sigma;1)$ is an universal approximator. That is, for any $f\in C(\bbR^d)$, for any $K$ compact and any $\varepsilon>0$ there exists a shallow netowrk $\phi_1\in \mcN_d^1(\sigma;1)$ such that 
+    \begin{equation}
+        \| f - \phi_1\|_K \le \frac\varepsilon2.
+    \end{equation}
+    Concatenanting this with the deep network approximating the identity given by Proposition~\ref{prop:deep-identity} completes the proof.
+\qed
+
+\section{Further results}
+
+We conclude this chapter by mentioning the following remarkable result stating that, for an appropriate activation function, it is possible to approximate every function $f\in C(K)$, where $K\subset \bbR^d$, at every accuracy $\varepsilon>0$ with a neural network of size $O(d^2)$. Remarkably, this size is independent of $f$, of $K$, and even of $\varepsilon$.
+We refer to \cite[Section~3.2]{petersenMathematicalTheoryDeep2025} for a proof, based on the Kolmogorov's superposition theorem.
+
+\thm[]{Universal approximation via superexpressive activations}{
+    There exists a continuous activation function $\sigma:\bbR\to \bbR$ such that for every compact $K\subset\bbR^d$, every $\varepsilon>0$, and every $f\in C(K)$, there exists\footnote{That is, $\operatorname{width}\phi = 2d^2+2$ and $\operatorname{depth}\phi=2$} $\phi\in \mcN_d^1(\sigma; 2,2d^2+d)$ such that
+    \begin{equation}
+        |f(x)-\phi(x)|\le \varepsilon, \qquad \forall x\in K.
+    \end{equation}
+}
 
 \chapter{Residual neural networks, neural ODEs and control}
 \label{chp:resnets}
